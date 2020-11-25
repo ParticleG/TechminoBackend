@@ -1,15 +1,15 @@
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required(VERSION 3.5)
 project(TechminoBackend CXX)
 
 include(CheckIncludeFileCXX)
 
 check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
-if(HAS_ANY AND HAS_STRING_VIEW)
+if (HAS_ANY AND HAS_STRING_VIEW)
     set(CMAKE_CXX_STANDARD 17)
-else()
+else ()
     set(CMAKE_CXX_STANDARD 14)
-endif()
+endif ()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -25,14 +25,14 @@ add_executable(${PROJECT_NAME} main.cc)
 find_package(Drogon CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
 
-if(CMAKE_CXX_STANDARD LESS 17)
-#With C++14, use boost to support any and string_view
+if (CMAKE_CXX_STANDARD LESS 17)
+    #With C++14, use boost to support any and string_view
     message(STATUS "use c++14")
     find_package(Boost 1.61.0 REQUIRED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
-else()
+else ()
     message(STATUS "use c++17")
-endif()
+endif ()
 
 aux_source_directory(controllers CTL_SRC)
 aux_source_directory(filters FILTER_SRC)
@@ -40,7 +40,7 @@ aux_source_directory(plugins PLUGIN_SRC)
 aux_source_directory(models MODEL_SRC)
 
 file(GLOB_RECURSE SCP_LIST ${CMAKE_CURRENT_SOURCE_DIR}/views/*.csp)
-foreach(cspFile ${SCP_LIST})
+foreach (cspFile ${SCP_LIST})
     message(STATUS "cspFile:" ${cspFile})
     get_filename_component(classname ${cspFile} NAME_WE)
     message(STATUS "view classname:" ${classname})
@@ -48,9 +48,9 @@ foreach(cspFile ${SCP_LIST})
             COMMAND drogon_ctl
             ARGS create view ${cspFile}
             DEPENDS ${cspFile}
-            VERBATIM )
+            VERBATIM)
     set(VIEWSRC ${VIEWSRC} ${classname}.cc)
-endforeach()
+endforeach ()
 
 find_package(OpenSSL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
