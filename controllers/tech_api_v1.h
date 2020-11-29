@@ -40,7 +40,8 @@ namespace tech::api::v1 {
             //METHOD_ADD(Users::get,"/{2}/{1}",Get);//path is /tech/api/v1/Users/{arg2}/{arg1}
             //METHOD_ADD(Users::your_method_name,"/{1}/{2}/list",Get);//path is /tech/api/v1/Users/{arg1}/{arg2}/list
             //ADD_METHOD_TO(Users::your_method_name,"/absolute/path/{1}/{2}/list",Get);//path is /absolute/path/{arg1}/{arg2}/list
-            METHOD_ADD(Users::create, "", Post);
+
+            // METHOD_ADD(Users::create, "", Post);
             METHOD_ADD(Users::login, "", Get);
             METHOD_ADD(Users::modify, "", Put);
 
@@ -68,10 +69,10 @@ namespace tech::api::v1 {
         static std::string _sha256(const std::string &srcStr);
 
         static void
-        _refreshToken(JsonResponse &jsonResponse, int id, const std::string &auth_token);
+        _refreshToken(JsonResponse &jsonResponse, const std::string &email, const std::string &auth_token);
 
         static void
-        _updateToken(JsonResponse &jsonResponse, std::string email, const std::string &password);
+        _updateToken(JsonResponse &jsonResponse, const std::string &email, const std::string &password);
 
     };
 }

@@ -10,11 +10,14 @@ void App::info(const HttpRequestPtr &req, std::function<void(const HttpResponseP
     try {
         auto clientPtr = drogon::app().getDbClient();
         auto matchedApps = clientPtr->execSqlSync("select * from app");
+        auto matchedMessages = clientPtr->execSqlSync("select * from message "
+                                                      "where id = 1");
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
         jsonResponse.body["version_code"] = matchedApps[matchedApps.size() - 1]["version_code"].as<int>();
         jsonResponse.body["version_name"] = matchedApps[matchedApps.size() - 1]["version_name"].as<std::string>();
-        jsonResponse.body["notice"] = matchedApps[matchedApps.size() - 1]["notice"].as<std::string>();
+        jsonResponse.body["version_content"] = matchedApps[matchedApps.size() - 1]["version_content"].as<std::string>();
+        jsonResponse.body["notice"] = matchedMessages[0]["content"].as<std::string>();
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
@@ -35,18 +38,18 @@ void Users::create(const HttpRequestPtr &req, std::function<void(const HttpRespo
                 password = (*requestBody)["password"].asString();
         try {
             auto clientPtr = drogon::app().getDbClient();
-            auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", email);
+            auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
             if (!matchedUsers.empty()) {
                 jsonResponse.code = k403Forbidden;
                 jsonResponse.body["message"] = "Email already used";
             } else {
                 std::string passwordDigest = _sha256(password);
-                std::cout << passwordDigest << std::endl;
-
-                clientPtr->execSqlSync("insert into users (email, username, password) values ($1, $2, $3)",
+                clientPtr->execSqlSync("insert into auth (email, password) values ($1, $2)",
                                        email,
-                                       username,
                                        passwordDigest);
+                clientPtr->execSqlSync("insert into users (email, username) values ($1, $2)",
+                                       email,
+                                       username);
                 jsonResponse.code = k200OK;
                 jsonResponse.body["message"] = "OK";
             }
@@ -68,12 +71,11 @@ void Users::login(const HttpRequestPtr &req, std::function<void(const HttpRespon
         jsonResponse.body["message"] = "Wrong format.";
         jsonResponse.code = k400BadRequest;
     } else {
-        int id = (*requestBody)["id"].asInt();
-        std::string auth_token = (*requestBody)["auth_token"].asString(),
-                email = (*requestBody)["email"].asString(),
+        std::string email = (*requestBody)["email"].asString(),
+                auth_token = (*requestBody)["auth_token"].asString(),
                 password = (*requestBody)["password"].asString();
-        if (!auth_token.empty() && id != 0) {
-            _refreshToken(jsonResponse, id, auth_token);
+        if (!auth_token.empty()) {
+            _refreshToken(jsonResponse, email, auth_token);
         } else {
             _updateToken(jsonResponse, email, password);
         }
@@ -209,18 +211,13 @@ std::string Users::_sha256(const std::string &srcStr) {
     return std::string(buf);
 }
 
-void Users::_refreshToken(JsonResponse &jsonResponse, int id, const std::string &auth_token) {
+void Users::_refreshToken(JsonResponse &jsonResponse, const std::string &email, const std::string &auth_token) {
     try {
         auto clientPtr = app().getDbClient();
-        auto matchedUsers = clientPtr->execSqlSync("select * from users where id = $1", id);
+        auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
         if (matchedUsers.empty()) {
             jsonResponse.code = k404NotFound;
             jsonResponse.body["message"] = "User not found";
-            return;
-        }
-        if (!matchedUsers[0]["enable"].as<bool>()) {
-            jsonResponse.code = k451UnavailableForLegalReasons;
-            jsonResponse.body["message"] = "User unavailable";
             return;
         }
         if (auth_token != matchedUsers[0]["auth_token"].as<std::string>()) {
@@ -234,9 +231,9 @@ void Users::_refreshToken(JsonResponse &jsonResponse, int id, const std::string 
             jsonResponse.body["message"] = "Expired Token";
             return;
         }
-        clientPtr->execSqlSync("update users set auth_token_expire_time = $1 where id = $2",
+        clientPtr->execSqlSync("update auth set auth_token_expire_time = $1 where email = $2",
                                trantor::Date::now().after(EXPIRATION_SECONDS).toDbStringLocal(),
-                               id);
+                               email);
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
     } catch (const orm::DrogonDbException &e) {
@@ -246,18 +243,13 @@ void Users::_refreshToken(JsonResponse &jsonResponse, int id, const std::string 
     }
 }
 
-void Users::_updateToken(JsonResponse &jsonResponse, std::string email, const std::string &password) {
+void Users::_updateToken(JsonResponse &jsonResponse, const std::string &email, const std::string &password) {
     try {
         auto clientPtr = app().getDbClient();
-        auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", email);
+        auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
         if (matchedUsers.empty()) {
             jsonResponse.code = k404NotFound;
             jsonResponse.body["message"] = "Email not found";
-            return;
-        }
-        if (!matchedUsers[0]["enable"].as<bool>()) {
-            jsonResponse.code = k451UnavailableForLegalReasons;
-            jsonResponse.body["message"] = "User unavailable";
             return;
         }
         if (_sha256(password) != matchedUsers[0]["password"].as<std::string>()) {
@@ -265,16 +257,14 @@ void Users::_updateToken(JsonResponse &jsonResponse, std::string email, const st
             jsonResponse.body["message"] = "Wrong password";
             return;
         }
-        std::string newToken = drogon::utils::getUuid(), auth_token_expire_time = trantor::Date::now().toDbStringLocal();
-        int id = matchedUsers[0]["id"].as<int>();
-        clientPtr->execSqlSync("update users set auth_token = $1, auth_token_expire_time = $2 where id = $3",
+        std::string newToken = drogon::utils::getUuid();
+        clientPtr->execSqlSync("update auth set auth_token = $1, auth_token_expire_time = $2 where email = $3",
                                newToken,
-                               auth_token_expire_time,
-                               id);
+                               trantor::Date::now().after(EXPIRATION_SECONDS).toDbStringLocal(),
+                               email);
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
         jsonResponse.body["auth_token"] = newToken;
-        jsonResponse.body["id"] = id;
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
