@@ -227,16 +227,34 @@
     "plugins": [
         {
             //name: The class name of the plugin
-            //"name": "drogon::plugin::SecureSSLRedirector",
+            "name": "tech::plugin::RoomManager",
             //dependencies: Plugins that the plugin depends on. It can be commented out
             "dependencies": [],
             //config: The configuration of the plugin. This json object is the parameter to initialize the plugin.
             //It can be commented out
             "config": {
-                "ssl_redirect_exempt": [
-                    ".*\\.jpg"
-                ],
-                "secure_ssl_host": "localhost:8849"
+                "room_types": [
+                    {
+                        "name": "unlimited",
+                        "capacity": 2147483647
+                    },
+                    {
+                        "name": "r99",
+                        "capacity": 99
+                    },
+                    {
+                        "name": "r49",
+                        "capacity": 49
+                    },
+                    {
+                        "name": "classic",
+                        "capacity": 6
+                    },
+                    {
+                        "name": "solo",
+                        "capacity": 2
+                    }
+                ]
             }
         }
     ],
