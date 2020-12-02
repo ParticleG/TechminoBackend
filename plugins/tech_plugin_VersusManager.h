@@ -47,7 +47,7 @@ namespace tech::plugin {
 
         void unsubscribe(SubscriberID id);
 
-        bool checkPassword(const std::string& password);
+        bool checkPassword(const std::string &password);
 
         bool changePassword(std::string password, std::string newPassword);
 
@@ -134,13 +134,17 @@ namespace tech::plugin {
         /// It must be implemented by the user.
         virtual void shutdown() override;
 
-        Json::Value createRoom(const std::string &id, const std::string &name, const std::string &password,
+        Json::Value createRoom(const std::string &roomID, const std::string &name, const std::string &password,
                                const std::string &roomType);
 
         SubscriberID
         subscribe(const std::string &roomID, const RoomManager<std::string>::MessageHandler &handler);
 
+        void unsubscribe(const std::string &roomID, const SubscriberID &playerID);
+
         bool checkPassword(const std::string &roomID, const std::string &password);
+
+        void publish(const std::string &roomID, const std::string &message);
 
         size_t size();
 

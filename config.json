@@ -227,7 +227,7 @@
     "plugins": [
         {
             //name: The class name of the plugin
-            "name": "tech::plugin::RoomManager",
+            "name": "tech::plugin::VersusManager",
             //dependencies: Plugins that the plugin depends on. It can be commented out
             "dependencies": [],
             //config: The configuration of the plugin. This json object is the parameter to initialize the plugin.

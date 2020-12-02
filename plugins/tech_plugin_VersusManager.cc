@@ -4,7 +4,7 @@
  *
  */
 
-#include "tech_plugin_RoomManager.h"
+#include "tech_plugin_VersusManager.h"
 
 using namespace tech::plugin;
 
@@ -56,7 +56,7 @@ template<typename MessageType>
 SubscriberID Room<MessageType>::subscribe(Room::MessageHandler &&handler) {
     std::unique_lock<SharedMutex> lock(_sharedMutex);
     if (_count == _capacity) {
-        throw std::range_error("Topic is full");
+        throw std::range_error("Room is full");
     }
     _handlersMap[++_count] = std::move(handler);
     return _count;
@@ -69,7 +69,7 @@ void Room<MessageType>::unsubscribe(SubscriberID id) {
 }
 
 template<typename MessageType>
-bool Room<MessageType>::checkPassword(const std::string& password) {
+bool Room<MessageType>::checkPassword(const std::string &password) {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     return sha256(password) == _password;
 }
@@ -291,14 +291,9 @@ SubscriberID tech::plugin::RoomManager<MessageType>::_subscribeToRoom(const std:
     std::unique_lock<SharedMutex> lock(_sharedMutex);
     auto iter = _roomIDMap.find(roomID);
     if (iter != _roomIDMap.end()) {
-        try {
-            return iter->second->subscribe(std::move(handler));
-        } catch (std::range_error &error) {
-            LOG_WARN << error.what();
-            throw error;
-        }
+        return iter->second->subscribe(std::move(handler));
     }
-    throw std::out_of_range("Topic not found");
+    throw std::out_of_range("Room not found");
 }
 
 void VersusManager::initAndStart(const Json::Value &config) {
@@ -320,11 +315,11 @@ void VersusManager::shutdown() {
     /// Shutdown the plugin
 }
 
-Json::Value VersusManager::createRoom(const std::string &id, const std::string &name, const std::string &password,
+Json::Value VersusManager::createRoom(const std::string &roomID, const std::string &name, const std::string &password,
                                       const std::string &roomType) {
     std::unique_lock<SharedMutex> lock(_sharedMutex);
-    _roomManager.createRoom(id, name, password, roomType, _roomTypes.at(roomType));
-    return _roomManager.getRoomJson(id);
+    _roomManager.createRoom(roomID, name, password, roomType, _roomTypes.at(roomType));
+    return _roomManager.getRoomJson(roomID);
 }
 
 SubscriberID VersusManager::subscribe(const std::string &roomID,
@@ -333,9 +328,19 @@ SubscriberID VersusManager::subscribe(const std::string &roomID,
     return _roomManager.subscribe(roomID, handler);
 }
 
+void VersusManager::unsubscribe(const std::string &roomID, const SubscriberID &playerID) {
+    std::unique_lock<SharedMutex> lock(_sharedMutex);
+    _roomManager.unsubscribe(roomID, playerID);
+}
+
 bool VersusManager::checkPassword(const std::string &roomID, const std::string &password) {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     return _roomManager.checkPassword(roomID, password);
+}
+
+void VersusManager::publish(const std::string &roomID, const std::string &message) {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    _roomManager.publish(roomID, message);
 }
 
 size_t VersusManager::size() {
@@ -345,5 +350,9 @@ size_t VersusManager::size() {
 
 Json::Value VersusManager::getRoomList(const std::string &roomType) {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
-    return _roomManager.getRoomList(roomType);
+    auto iter = _roomTypes.find(roomType);
+    if (iter != _roomTypes.end()) {
+        return _roomManager.getRoomList(roomType);
+    }
+    throw std::out_of_range("Unsupported room type");
 }
