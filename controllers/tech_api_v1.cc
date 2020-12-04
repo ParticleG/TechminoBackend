@@ -252,6 +252,45 @@ void Auth::login(const HttpRequestPtr &req, std::function<void(const HttpRespons
     jsonResponse.send(callback);
 }
 
+void Auth::checkAccessToken(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+    JsonResponse jsonResponse;
+    auto requestBody = req->getJsonObject();
+    if (!req->getJsonError().empty()) {
+        jsonResponse.body["message"] = "Wrong format";
+        jsonResponse.code = k400BadRequest;
+    } else {
+        std::string email = (*requestBody)["email"].asString(),
+                accessToken = (*requestBody)["access_token"].asString();
+        try {
+            auto clientPtr = app().getDbClient();
+            auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
+            if (matchedUsers.empty()) {
+                jsonResponse.code = k404NotFound;
+                jsonResponse.body["message"] = "User not found";
+            } else if (accessToken != matchedUsers[0]["access_token"].as<std::string>()) {
+                jsonResponse.code = k403Forbidden;
+                jsonResponse.body["message"] = "Access_token is incorrect";
+            } else if (trantor::Date::now() > trantor::Date::fromDbStringLocal(
+                    matchedUsers[0]["access_token_expire_time"].as<std::string>())) {
+                jsonResponse.code = k401Unauthorized;
+                jsonResponse.body["message"] = "Access_token is expired";
+            } else {
+                clientPtr->execSqlSync(
+                        "update auth set access_token_expire_time = $1 where email = $2",
+                        trantor::Date::now().after(EXPIRATION_ACCESS_TOKEN).toDbStringLocal(),
+                        email);
+                jsonResponse.code = k200OK;
+                jsonResponse.body["message"] = "OK";
+            }
+        } catch (const orm::DrogonDbException &e) {
+            LOG_ERROR << "error:" << e.base().what();
+            jsonResponse.code = k500InternalServerError;
+            jsonResponse.body["message"] = "Database corrupted!";
+        }
+    }
+    jsonResponse.send(callback);
+}
+
 void Auth::getAccessToken(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     JsonResponse jsonResponse;
     auto requestBody = req->getJsonObject();
@@ -271,8 +310,7 @@ void Auth::getAccessToken(const HttpRequestPtr &req, std::function<void(const Ht
                 jsonResponse.code = k403Forbidden;
                 jsonResponse.body["message"] = "Auth_token is incorrect";
             } else if (trantor::Date::now() >
-                       trantor::Date::fromDbStringLocal(
-                               matchedUsers[0]["auth_token_expire_time"].as<std::string>())) {
+                       trantor::Date::fromDbStringLocal(matchedUsers[0]["auth_token_expire_time"].as<std::string>())) {
                 jsonResponse.code = k401Unauthorized;
                 jsonResponse.body["message"] = "Auth_token is expired";
             } else {

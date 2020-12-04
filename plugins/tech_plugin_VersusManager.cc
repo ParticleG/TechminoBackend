@@ -66,6 +66,7 @@ template<typename MessageType>
 void Room<MessageType>::unsubscribe(SubscriberID id) {
     std::unique_lock<SharedMutex> lock(_sharedMutex);
     _handlersMap.erase(id);
+    --_count;
 }
 
 template<typename MessageType>
@@ -94,6 +95,12 @@ template<typename MessageType>
 bool Room<MessageType>::full() const {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     return _count == _capacity;
+}
+
+template<typename MessageType>
+uint64_t Room<MessageType>::count() const {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    return _count;
 }
 
 template<typename MessageType>
@@ -333,6 +340,15 @@ void VersusManager::unsubscribe(const std::string &roomID, const SubscriberID &p
     _roomManager.unsubscribe(roomID, playerID);
 }
 
+SubscriberID VersusManager::joinChat(const Room<std::string>::MessageHandler &handler) {
+    std::unique_lock<SharedMutex> lock(_sharedMutex);
+    return _chattingRoom.subscribe(handler);
+}
+
+void VersusManager::quitChat(SubscriberID playerID) {
+    std::unique_lock<SharedMutex> lock(_sharedMutex);
+    _chattingRoom.unsubscribe(playerID);
+}
 bool VersusManager::checkPassword(const std::string &roomID, const std::string &password) {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     return _roomManager.checkPassword(roomID, password);
@@ -343,9 +359,17 @@ void VersusManager::publish(const std::string &roomID, const std::string &messag
     _roomManager.publish(roomID, message);
 }
 
+void VersusManager::chat(const std::string &message) {
+    _chattingRoom.publish(message);
+}
+
 size_t VersusManager::size() {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     return _roomManager.size();
+}
+
+uint64_t VersusManager::chatCount() {
+    return _chattingRoom.count();
 }
 
 Json::Value VersusManager::getRoomList(const std::string &roomType) {
