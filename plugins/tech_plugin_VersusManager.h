@@ -55,6 +55,8 @@ namespace tech::plugin {
 
         bool full() const;
 
+        uint64_t count() const;
+
         void clear();
 
         Json::Value toJson();
@@ -142,17 +144,26 @@ namespace tech::plugin {
 
         void unsubscribe(const std::string &roomID, const SubscriberID &playerID);
 
+        SubscriberID joinChat(const Room<std::string>::MessageHandler &handler);
+
+        void quitChat(SubscriberID playerID);
+
         bool checkPassword(const std::string &roomID, const std::string &password);
 
         void publish(const std::string &roomID, const std::string &message);
 
+        void chat(const std::string &message);
+
         size_t size();
+
+        uint64_t chatCount();
 
         Json::Value getRoomList(const std::string &roomType);
 
     private:
         std::unordered_map<std::string, uint64_t> _roomTypes;
         RoomManager<std::string> _roomManager;
+        Room<std::string> _chattingRoom{"room_chatting", "Chat room", "", "unlimited", 2147483647};
         mutable SharedMutex _sharedMutex;
     };
 

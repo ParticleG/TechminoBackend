@@ -60,12 +60,16 @@ namespace tech::api::v1 {
         METHOD_LIST_BEGIN
             METHOD_ADD(Auth::login, "", Get);
             // METHOD_ADD(Auth::create, "", Post);
-            METHOD_ADD(Auth::getAccessToken, "/access", Get);
+            METHOD_ADD(Auth::checkAccessToken, "/access", Get);
+            METHOD_ADD(Auth::getAccessToken, "/access", Post);
         METHOD_LIST_END
 
         // static void create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
         static void login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+
+        static void
+        checkAccessToken(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
         static void
         getAccessToken(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
