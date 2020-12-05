@@ -5,12 +5,20 @@ using namespace tech::socket::v1;
 
 void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
                             const WebSocketMessageType &type) {
+    WSCloser wsCloser;
     auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
     if (type == WebSocketMessageType::Ping) {
         LOG_DEBUG << "Received a PING";
     } else if (type == WebSocketMessageType::Text || type == WebSocketMessageType::Binary) {
+        if (message == "/quit"){
+            wsConnPtr->forceClose();
+//            wsCloser._code = CloseCode::kNormalClosure;
+//            wsCloser._reason = "Player request closed";
+//            wsCloser.close(wsConnPtr);
+            return;
+        }
         auto &player = wsConnPtr->getContextRef<Player>();
-        roomManager->chat(player._name + ": " + message);
+        roomManager->chat(player._name + "#" + std::to_string(player._id) + ":" + message);
     } else if (type == WebSocketMessageType::Pong) {
         LOG_DEBUG << "Message is Pong";
     } else if (type == WebSocketMessageType::Close) {
@@ -52,7 +60,7 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         wsCloser.close(wsConnPtr);
         return;
     }
-    roomManager->chat("#join:" + std::to_string(roomManager->chatCount()));
+    roomManager->chat("#J:" + std::to_string(roomManager->chatCount()));
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
 }
 
@@ -62,7 +70,7 @@ void Chat::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
         auto &player = wsConnPtr->getContextRef<Player>();
         roomManager->quitChat(player._subscriberID);
-        roomManager->chat("#leave:" + std::to_string(roomManager->chatCount()));
+        roomManager->chat("#L:" + std::to_string(roomManager->chatCount()));
     }
 }
 
