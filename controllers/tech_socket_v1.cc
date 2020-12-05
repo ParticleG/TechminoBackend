@@ -10,11 +10,8 @@ void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
     if (type == WebSocketMessageType::Ping) {
         LOG_DEBUG << "Received a PING";
     } else if (type == WebSocketMessageType::Text || type == WebSocketMessageType::Binary) {
-        if (message == "/quit"){
+        if (message == "/quit") {
             wsConnPtr->forceClose();
-//            wsCloser._code = CloseCode::kNormalClosure;
-//            wsCloser._reason = "Player request closed";
-//            wsCloser.close(wsConnPtr);
             return;
         }
         auto &player = wsConnPtr->getContextRef<Player>();
@@ -60,7 +57,8 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         wsCloser.close(wsConnPtr);
         return;
     }
-    roomManager->chat("#J:" + std::to_string(roomManager->chatCount()));
+    roomManager->chat("#J:" + std::to_string(roomManager->chatCount()) +
+                      "@" + player._name + "#" + std::to_string(player._id));
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
 }
 
@@ -70,7 +68,8 @@ void Chat::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
         auto &player = wsConnPtr->getContextRef<Player>();
         roomManager->quitChat(player._subscriberID);
-        roomManager->chat("#L:" + std::to_string(roomManager->chatCount()));
+        roomManager->chat("#L:" + std::to_string(roomManager->chatCount()) +
+                          "@" + player._name + "#" + std::to_string(player._id));
     }
 }
 
