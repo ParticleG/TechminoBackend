@@ -18,7 +18,6 @@ namespace tech::socket::v1 {
             wsConnPtr->shutdown(_code, _reason);
         }
     };
-
     bool authorization(WSCloser &wsCloser, Player &player) {
         if (player._email.empty() || player._accessToken.empty() || player._roomID.empty()) {
             wsCloser._code = CloseCode::kInvalidMessage;
@@ -70,6 +69,18 @@ namespace tech::socket::v1 {
         WS_PATH_LIST_BEGIN
             WS_PATH_ADD("/tech/socket/v1/chat");
         WS_PATH_LIST_END
+    private:
+        void _messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message) {
+            if (message == "/ping") {
+                wsConnPtr->send("", WebSocketMessageType::Pong);
+            } else if (message == "/quit") {
+                wsConnPtr->forceClose();
+            } else {
+                auto &player = wsConnPtr->getContextRef<Player>();
+                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+                roomManager->chat(player._name + "#" + std::to_string(player._id) + ":" + message);
+            }
+        }
     };
 
     class Solo : public drogon::WebSocketController<Solo> {

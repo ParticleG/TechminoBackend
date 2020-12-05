@@ -6,16 +6,10 @@ using namespace tech::socket::v1;
 void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
                             const WebSocketMessageType &type) {
     WSCloser wsCloser;
-    auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
     if (type == WebSocketMessageType::Ping) {
         LOG_DEBUG << "Received a PING";
     } else if (type == WebSocketMessageType::Text || type == WebSocketMessageType::Binary) {
-        if (message == "/quit") {
-            wsConnPtr->forceClose();
-            return;
-        }
-        auto &player = wsConnPtr->getContextRef<Player>();
-        roomManager->chat(player._name + "#" + std::to_string(player._id) + ":" + message);
+        _messageHandler(wsConnPtr, message);
     } else if (type == WebSocketMessageType::Pong) {
         LOG_DEBUG << "Message is Pong";
     } else if (type == WebSocketMessageType::Close) {
