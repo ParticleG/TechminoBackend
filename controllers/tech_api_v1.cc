@@ -147,7 +147,7 @@ void Users::modify(const HttpRequestPtr &req, std::function<void(const HttpRespo
             } else if (auth_token != result[0]["auth_token"].as<std::string>()) {
                 jsonResponse.code = k401Unauthorized;
                 jsonResponse.body["message"] = "Token expired";
-            } else if (tech::plugin::sha256(password) != result[0]["password"].as<std::string>()) {
+            } else if (tech::utils::Crypto::sha256(password) != result[0]["password"].as<std::string>()) {
                 jsonResponse.code = k403Forbidden;
                 jsonResponse.body["message"] = "Wrong password";
             } else {
@@ -155,10 +155,10 @@ void Users::modify(const HttpRequestPtr &req, std::function<void(const HttpRespo
                 jsonResponse.code = k200OK;
                 jsonResponse.body["message"] = "OK";
                 jsonResponse.body["auth_token"] = new_token;
-                result = clientPtr->execSqlSync("update users set password = $1, auth_token = $2 where id = $3",
-                                                tech::plugin::sha256(newPassword),
-                                                new_token,
-                                                id);
+                clientPtr->execSqlSync("update users set password = $1, auth_token = $2 where id = $3",
+                                       tech::utils::Crypto::sha256(newPassword),
+                                       new_token,
+                                       id);
             }
         } catch (const orm::DrogonDbException &e) {
             jsonResponse.code = k500InternalServerError;
@@ -314,7 +314,7 @@ void Auth::getAccessToken(const HttpRequestPtr &req, std::function<void(const Ht
                 jsonResponse.code = k401Unauthorized;
                 jsonResponse.body["message"] = "Auth_token is expired";
             } else {
-                std::string newToken = tech::plugin::md5(drogon::utils::getUuid());
+                std::string newToken = tech::utils::Crypto::md5(drogon::utils::getUuid());
                 clientPtr->execSqlSync(
                         "update auth set access_token = $1, access_token_expire_time = $2 where email = $3",
                         newToken,
@@ -375,7 +375,7 @@ void Auth::_updateToken(JsonResponse &jsonResponse, const std::string &email, co
             jsonResponse.body["message"] = "Email not found";
             return;
         }
-        if (tech::plugin::sha256(password) != matchedUsers[0]["password"].as<std::string>()) {
+        if (tech::utils::Crypto::sha256(password) != matchedUsers[0]["password"].as<std::string>()) {
             jsonResponse.code = k403Forbidden;
             jsonResponse.body["message"] = "Password is incorrect";
             return;
@@ -438,7 +438,8 @@ void online::Versus::create(const HttpRequestPtr &req, std::function<void(const 
         if (authorization(jsonResponse, email, accessToken)) {
             try {
                 auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-                auto tempRoom = roomManager->createRoom("room_" + utils::getUuid(), roomName, roomPassword, roomType);
+                auto tempRoom = roomManager->createRoom("room_" + drogon::utils::getUuid(), roomName, roomPassword,
+                                                        roomType);
                 jsonResponse.code = k200OK;
                 jsonResponse.body["message"] = "OK";
                 jsonResponse.body["room"] = tempRoom;
