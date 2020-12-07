@@ -2,7 +2,7 @@
 
 using namespace tech::utils;
 
-void CommunicationManager::initServer(const uint16_t &port, const std::string &name) {
+void CommunicationManager::initAndStart(const uint16_t &port, const std::string &name, const size_t &ioLoopNum) {
     _tcpServer = new TcpServer(
             drogon::app().getLoop(),
             InetAddress(port),
@@ -26,9 +26,4 @@ void CommunicationManager::initServer(const uint16_t &port, const std::string &n
             // LOG_DEBUG << "connection disconnected";
         }
     });
-}
-
-void CommunicationManager::startServer(const size_t &ioLoopNum) {
-    _tcpServer->setIoLoopNum(ioLoopNum);
-    _tcpServer->start();
 }

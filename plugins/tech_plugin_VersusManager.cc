@@ -15,26 +15,7 @@ void VersusManager::initAndStart(const Json::Value &config) {
             LOG_ERROR << "Invalid port";
             abort();
         }
-        _communicationManager.initServer(config["port"].asInt(), "versus");
-        _communicationManager.setRecvMessageCallback(
-                [](const TcpConnectionPtr &connectionPtr, MsgBuffer *buffer) {
-                    // LOG_DEBUG<<"recv callback!";
-//                    std::cout << std::string(buffer->peek(), buffer->readableBytes()) << std::endl;
-                    connectionPtr->send(buffer->peek(), buffer->readableBytes());
-                    buffer->retrieveAll();
-                    // connectionPtr->forceClose();
-                }
-        );
-        _communicationManager.setConnectionCallback(
-                [](const TcpConnectionPtr &connPtr) {
-                    if (connPtr->connected()) {
-//                        LOG_DEBUG << "New connection";
-                    } else if (connPtr->disconnected()) {
-//                        LOG_DEBUG << "connection disconnected";
-                    }
-                }
-        );
-        _communicationManager.startServer(3);
+        _communicationManager.initAndStart(config["port"].asInt(), "versus", 4);
     } else {
         LOG_ERROR << R"(Requires "port" in plugin's config')";
         abort();

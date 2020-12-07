@@ -13,9 +13,7 @@ using namespace trantor;
 namespace tech::utils {
     class CommunicationManager {
     public:
-        void initServer(const uint16_t &port, const std::string &name);
-
-        void startServer(const size_t &ioLoopNum);
+        void initAndStart(const uint16_t &port, const std::string &name, const size_t &ioLoopNum);
 
     private:
         TcpServer *_tcpServer;
