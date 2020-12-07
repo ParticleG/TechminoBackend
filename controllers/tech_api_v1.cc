@@ -45,13 +45,13 @@ void App::info(const HttpRequestPtr &req, std::function<void(const HttpResponseP
     try {
         auto clientPtr = drogon::app().getDbClient();
         auto matchedApps = clientPtr->execSqlSync("select * from app");
-        auto matchedMessages = clientPtr->execSqlSync("select * from message where id = 1");
+        auto matchedContents = clientPtr->execSqlSync(R"(select content from message where type = 'notice' order by id desc)");
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
         jsonResponse.body["version_code"] = matchedApps[matchedApps.size() - 1]["version_code"].as<int>();
         jsonResponse.body["version_name"] = matchedApps[matchedApps.size() - 1]["version_name"].as<std::string>();
         jsonResponse.body["version_content"] = matchedApps[matchedApps.size() - 1]["version_content"].as<std::string>();
-        jsonResponse.body["notice"] = matchedMessages[0]["content"].as<std::string>();
+        jsonResponse.body["notice"] = matchedContents[0]["content"].as<std::string>();
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
