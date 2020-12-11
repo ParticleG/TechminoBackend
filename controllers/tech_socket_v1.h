@@ -50,7 +50,7 @@ namespace tech::socket::v1 {
         } catch (const orm::DrogonDbException &e) {
             LOG_ERROR << "error:" << e.base().what();
             wsCloser._code = CloseCode::kUnexpectedCondition;
-            wsCloser._reason = "Database corrupted!";
+            wsCloser._reason = "Internal error";
             return false;
         }
     }
