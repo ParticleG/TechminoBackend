@@ -35,7 +35,7 @@ bool tech::api::v1::authorization(JsonResponse &jsonResponse, const std::string 
     } catch (const orm::DrogonDbException &e) {
         LOG_ERROR << "error:" << e.base().what();
         jsonResponse.code = k500InternalServerError;
-        jsonResponse.body["message"] = "Database corrupted";
+        jsonResponse.body["message"] = "Internal error";
         return false;
     }
 }
@@ -55,7 +55,7 @@ void App::info(const HttpRequestPtr &req, std::function<void(const HttpResponseP
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
-        jsonResponse.body["message"] = "Database corrupted";
+        jsonResponse.body["message"] = "Internal error";
     }
     jsonResponse.send(callback);
 }
@@ -90,7 +90,7 @@ void App::info(const HttpRequestPtr &req, std::function<void(const HttpResponseP
 //        } catch (const orm::DrogonDbException &e) {
 //            jsonResponse.code = k500InternalServerError;
 //            LOG_ERROR << "error:" << e.base().what();
-//            jsonResponse.body["message"] = "Database corrupted";
+//            jsonResponse.body["message"] = "Internal error";
 //        }
 //    }
 //    jsonResponse.send(callback);
@@ -118,7 +118,7 @@ void Users::info(const HttpRequestPtr &req, std::function<void(const HttpRespons
             } catch (const orm::DrogonDbException &e) {
                 LOG_ERROR << "error:" << e.base().what();
                 jsonResponse.code = k500InternalServerError;
-                jsonResponse.body["message"] = "Database corrupted";
+                jsonResponse.body["message"] = "Internal error";
                 return;
             }
         }
@@ -163,7 +163,7 @@ void Users::modify(const HttpRequestPtr &req, std::function<void(const HttpRespo
         } catch (const orm::DrogonDbException &e) {
             jsonResponse.code = k500InternalServerError;
             LOG_ERROR << "error:" << e.base().what();
-            jsonResponse.body["message"] = "Database corrupted!";
+            jsonResponse.body["message"] = "Internal error";
         }
     }
     jsonResponse.send(callback);
@@ -195,7 +195,7 @@ Users::getData(const HttpRequestPtr &req, std::function<void(const HttpResponseP
         } catch (const orm::DrogonDbException &e) {
             jsonResponse.code = k500InternalServerError;
             LOG_ERROR << "error:" << e.base().what();
-            jsonResponse.body["message"] = "Database corrupted!";
+            jsonResponse.body["message"] = "Internal error";
         }
     }
     jsonResponse.send(callback);
@@ -227,7 +227,7 @@ void Users::saveData(const HttpRequestPtr &req, std::function<void(const HttpRes
         } catch (const orm::DrogonDbException &e) {
             jsonResponse.code = k500InternalServerError;
             LOG_ERROR << "error:" << e.base().what();
-            jsonResponse.body["message"] = "Database corrupted!";
+            jsonResponse.body["message"] = "Internal error";
         }
     }
     jsonResponse.send(callback);
@@ -285,7 +285,7 @@ void Auth::checkAccessToken(const HttpRequestPtr &req, std::function<void(const 
         } catch (const orm::DrogonDbException &e) {
             LOG_ERROR << "error:" << e.base().what();
             jsonResponse.code = k500InternalServerError;
-            jsonResponse.body["message"] = "Database corrupted!";
+            jsonResponse.body["message"] = "Internal error";
         }
     }
     jsonResponse.send(callback);
@@ -328,7 +328,7 @@ void Auth::getAccessToken(const HttpRequestPtr &req, std::function<void(const Ht
         } catch (const orm::DrogonDbException &e) {
             LOG_ERROR << "error:" << e.base().what();
             jsonResponse.code = k500InternalServerError;
-            jsonResponse.body["message"] = "Database corrupted!";
+            jsonResponse.body["message"] = "Internal error";
         }
     }
     jsonResponse.send(callback);
@@ -362,7 +362,7 @@ void Auth::_refreshToken(JsonResponse &jsonResponse, const std::string &email, c
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
-        jsonResponse.body["message"] = "Database corrupted";
+        jsonResponse.body["message"] = "Internal error";
     }
 }
 
@@ -392,7 +392,7 @@ void Auth::_updateToken(JsonResponse &jsonResponse, const std::string &email, co
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
-        jsonResponse.body["message"] = "Database corrupted";
+        jsonResponse.body["message"] = "Internal error";
     }
 }
 
@@ -465,7 +465,7 @@ void online::Versus::create(const HttpRequestPtr &req, std::function<void(const 
 //                accessToken = (*requestBody)["access_token"].asString(),
 //                roomID = (*requestBody)["room_id"].asString(),
 //                roomPassword = (*requestBody)["room_password"].asString();
-//        if (authorization(jsonResponse, email, accessToken)) {
+//        if (_authorization(jsonResponse, email, accessToken)) {
 //            try {
 //                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
 //                auto tempRoom = roomManager->getRoom(roomType, roomID);
@@ -510,7 +510,7 @@ online::Versus::authorization(JsonResponse &jsonResponse, const std::string &ema
     } catch (const orm::DrogonDbException &e) {
         LOG_ERROR << "error:" << e.base().what();
         jsonResponse.code = k500InternalServerError;
-        jsonResponse.body["message"] = "Database corrupted!";
+        jsonResponse.body["message"] = "Internal error";
         return false;
     }
 }
