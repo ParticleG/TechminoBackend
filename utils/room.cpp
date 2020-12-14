@@ -72,7 +72,7 @@ Json::Value tech::utils::Room::toJson() {
     tempJson["room_id"] = _id;
     tempJson["name"] = _name;
     tempJson["type"] = _type;
-    tempJson["count"] = _count;
-    tempJson["capacity"] = _capacity;
+    tempJson["count"] = static_cast<Json::UInt64>(_count);
+    tempJson["capacity"] = static_cast<Json::UInt64>(_capacity);
     return tempJson;
 }
