@@ -16,11 +16,16 @@ jobs:
       - name: Checkout Backend source code
         uses: actions/checkout@v2
 
-      - name: Download Drogon release
-        uses: actions/download-artifact@v2
+      - name: Use Drogon Cache
+        id: use_drogon_cache
+        uses: actions/cache@v2
         with:
-          name: drogon-release
           path: ${{github.workspace}}/drogon-release
+          key: ${{ runner.os }}-drogon-cache
+
+      - name: Check Cache
+        if: steps.use_drogon_cache.outputs.cache-hit != 'true'
+        run: error
 
       - name: Install Drogon
         working-directory: ${{github.workspace}}/drogon-release
@@ -39,9 +44,3 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: cmake --build . --config $BUILD_TYPE
-
-      - name: Pack Release
-        uses: actions/upload-artifact@v2
-        with:
-          path: ${{github.workspace}}/build
-          name:

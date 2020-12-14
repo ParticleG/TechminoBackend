@@ -36,8 +36,8 @@ jobs:
           cd build
           sudo make
 
-      - name: Pack Drogon
-        uses: actions/upload-artifact@v2
+      - name: Cache Drogon
+        uses: actions/cache@v2
         with:
           path: ${{github.workspace}}/drogon-src/build
-          name: drogon_release
+          key: ${{ runner.os }}-drogon-cache
