@@ -26,14 +26,14 @@ jobs:
 
       - name: Cmake Drogon
         shell: bash
-        working-directory: ${{runner.workspace}}/drogon-src
+        working-directory: ${{github.workspace}}/drogon-src
         run: |
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
       - name: Build Drogon
-        working-directory: ${{runner.workspace}}/drogon-src
+        working-directory: ${{github.workspace}}/drogon-src
         shell: bash
         run: |
           cd build
@@ -41,13 +41,13 @@ jobs:
 
       - name: Cmake TechminoBackend
         shell: bash
-        working-directory: ${{runner.workspace}}
+        working-directory: ${{github.workspace}}
         run: |
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
       - name: Build TechminoBackend
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         shell: bash
         run: cmake --build . --config $BUILD_TYPE
