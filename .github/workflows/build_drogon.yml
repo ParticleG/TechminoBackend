@@ -13,9 +13,6 @@ jobs:
           sudo apt install libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev postgresql-all libsqlite3-dev
           sudo apt install libbrotli-dev
 
-      - name: Checkout Backend source code
-        uses: actions/checkout@v2
-
       - name: Checkout Drogon source code
         uses: actions/checkout@v2
         with:
@@ -37,23 +34,10 @@ jobs:
         shell: bash
         run: |
           cd build
-          sudo make && sudo make install
+          sudo make
 
-      - name: Cmake TechminoBackend
-        shell: bash
-        working-directory: ${{github.workspace}}
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-      - name: Build TechminoBackend
-        working-directory: ${{github.workspace}}/build
-        shell: bash
-        run: cmake --build . --config $BUILD_TYPE
-
-      - name: Pack Release
+      - name: Pack Drogon
         uses: actions/upload-artifact@v2
         with:
-          path: ${{github.workspace}}/build
-          name:
+          path: ${{github.workspace}}/drogon-src/build
+          name: drogon_release
