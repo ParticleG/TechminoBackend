@@ -1,10 +1,10 @@
-name: Build release
+name: Build Drogon
 on: workflow_dispatch
 env:
   BUILD_TYPE: Release
 jobs:
   build_release:
-    name: Ubuntu 18.04
+    name: Ubuntu Latest
     runs-on: ubuntu-latest
     steps:
       - name: Install Dependencies
