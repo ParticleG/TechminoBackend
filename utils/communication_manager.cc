@@ -8,7 +8,7 @@ void CommunicationManager::initAndStart(const uint16_t &port, const std::string 
             InetAddress(port),
             name,
             true,
-            true
+            false
     );
 
     _tcpServer->setRecvMessageCallback([](const TcpConnectionPtr &connectionPtr, MsgBuffer *buffer) {
