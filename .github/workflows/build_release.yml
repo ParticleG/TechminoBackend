@@ -25,15 +25,15 @@ jobs:
           sudo apt install libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev postgresql-all libsqlite3-dev
           sudo apt install libbrotli-dev
 
+      - name: Checkout Backend source code
+        uses: actions/checkout@v2
+
       - name: Cache Drogon
         id: cache_drogon
         uses: actions/cache@v2
         with:
           path: ${{github.workspace}}/drogon-src
           key: ${{ runner.os }}-drogon-cache
-
-      - name: Checkout Backend source code
-        uses: actions/checkout@v2
 
       - name: Checkout Drogon source code
         if: steps.cache_drogon.outputs.cache-hit != 'true'
