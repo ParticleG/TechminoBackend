@@ -34,6 +34,7 @@ else ()
     message(STATUS "use c++17")
 endif ()
 
+aux_source_directory(utils UTILS_SRC)
 aux_source_directory(controllers CTL_SRC)
 aux_source_directory(filters FILTER_SRC)
 aux_source_directory(plugins PLUGIN_SRC)
@@ -54,8 +55,8 @@ endforeach ()
 
 find_package(OpenSSL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/models)
-target_sources(${PROJECT_NAME} PRIVATE ${SRC_DIR} ${CTL_SRC} ${FILTER_SRC} ${VIEWSRC} ${PLUGIN_SRC} ${MODEL_SRC})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/utils ${CMAKE_CURRENT_SOURCE_DIR}/models)
+target_sources(${PROJECT_NAME} PRIVATE ${SRC_DIR} ${UTILS_SRC} ${CTL_SRC} ${FILTER_SRC} ${VIEWSRC} ${PLUGIN_SRC} ${MODEL_SRC})
 ################################
 # uncomment the following line for dynamically loading views 
 #set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)
