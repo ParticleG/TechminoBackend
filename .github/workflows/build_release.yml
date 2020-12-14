@@ -24,7 +24,7 @@ jobs:
           key: ${{ runner.os }}-drogon-cache
 
       - name: Check Cache
-        if: steps.use_drogon_cache.outputs.cache-hit != 'true'
+        if: ${{steps.use_drogon_cache.outputs.cache-hit}} != 'true'
         run: error
 
       - name: Install Drogon

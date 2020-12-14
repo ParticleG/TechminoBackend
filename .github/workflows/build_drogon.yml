@@ -3,10 +3,29 @@ on: workflow_dispatch
 env:
   BUILD_TYPE: Release
 jobs:
+  check_cache:
+    name: Check Drogon Cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Drogon
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/drogon-src/build
+          key: ${{ runner.os }}-drogon-cache
+
   build_release:
     name: Ubuntu Latest
     runs-on: ubuntu-latest
+    if: ${{steps.use_drogon_cache.outputs.cache-hit}} != 'true'
     steps:
+      - name: Checkout Drogon source code
+        uses: actions/checkout@v2
+        with:
+          repository: an-tao/drogon
+          submodules: true
+          fetch-depth: 0
+          path: drogon-src
+
       - name: Install Dependencies
         run: |
           sudo apt update
