@@ -13,24 +13,48 @@ jobs:
           sudo apt install libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev postgresql-all libsqlite3-dev
           sudo apt install libbrotli-dev
 
+      - name: Cache Drogon
+        id: cache_drogon
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/drogon-src
+          key: ${{ runner.os }}-drogon-cache
+
       - name: Checkout Backend source code
         uses: actions/checkout@v2
 
-      - name: Use Drogon Cache
-        id: use_drogon_cache
-        uses: actions/cache@v2
+      - name: Checkout Drogon source code
+        if: steps.cache_drogon.outputs.cache-hit != 'true'
+        uses: actions/checkout@v2
         with:
-          path: ${{github.workspace}}/drogon-release
-          key: ${{ runner.os }}-drogon-cache
+          repository: an-tao/drogon
+          submodules: true
+          fetch-depth: 0
+          path: drogon-src
 
-      - name: Check Cache
-        if: ${{steps.use_drogon_cache.outputs.cache-hit}} != 'true'
-        run: error
+      - name: Cmake Drogon
+        if: steps.cache_drogon.outputs.cache-hit != 'true'
+        shell: bash
+        working-directory: ${{github.workspace}}/drogon-src
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+      - name: Build Drogon
+        if: steps.cache_drogon.outputs.cache-hit != 'true'
+        working-directory: ${{github.workspace}}/drogon-src
+        shell: bash
+        run: |
+          cd build
+          sudo make
 
       - name: Install Drogon
-        working-directory: ${{github.workspace}}/drogon-release
+        working-directory: ${{github.workspace}}/drogon-src
         shell: bash
-        run: sudo make install
+        run: |
+          cd build
+          sudo make install
 
       - name: Cmake TechminoBackend
         shell: bash
