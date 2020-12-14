@@ -6,7 +6,7 @@ on:
         description: 'Version Code'
         required: true
       version_name:
-        description: 'Version Code'
+        description: 'Version Name'
         required: true
       body:
         description: 'Description'
