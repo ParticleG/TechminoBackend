@@ -16,28 +16,16 @@ jobs:
       - name: Checkout Backend source code
         uses: actions/checkout@v2
 
-      - name: Checkout Drogon source code
-        uses: actions/checkout@v2
+      - name: Download Drogon release
+        uses: actions/download-artifact@v2
         with:
-          repository: an-tao/drogon
-          submodules: true
-          fetch-depth: 0
-          path: drogon-src
+          name: drogon-release
+          path: ${{github.workspace}}/drogon-release
 
-      - name: Cmake Drogon
+      - name: Install Drogon
+        working-directory: ${{github.workspace}}/drogon-release
         shell: bash
-        working-directory: ${{github.workspace}}/drogon-src
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-      - name: Build Drogon
-        working-directory: ${{github.workspace}}/drogon-src
-        shell: bash
-        run: |
-          cd build
-          sudo make && sudo make install
+        run: sudo make install
 
       - name: Cmake TechminoBackend
         shell: bash
