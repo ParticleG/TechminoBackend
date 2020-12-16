@@ -108,10 +108,3 @@ jobs:
           asset_path: ./release.zip
           asset_name: release.zip
           asset_content_type: application/zip
-  windows-latest:
-    name: Windows Latest
-    runs-on: windows-latest
-    steps:
-    - name: Install Dependencies
-      run: |
-        vcpkg install drogon:x64-windows
