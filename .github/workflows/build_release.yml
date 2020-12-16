@@ -1,4 +1,4 @@
-name: Build release
+name: Build Release
 on:
   workflow_dispatch:
     inputs:
@@ -15,7 +15,7 @@ on:
 env:
   BUILD_TYPE: Release
 jobs:
-  build_release:
+  ubuntu-latest:
     name: Ubuntu Latest
     runs-on: ubuntu-latest
     steps:
@@ -108,3 +108,10 @@ jobs:
           asset_path: ./release.zip
           asset_name: release.zip
           asset_content_type: application/zip
+  windows-latest:
+    name: Windows Latest
+    runs-on: windows-latest
+    steps:
+    - name: Install Dependencies
+      run: |
+        vcpkg install drogon:x64-windows
