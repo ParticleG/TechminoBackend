@@ -1,0 +1,26 @@
+name: Build release
+on:
+  workflow_dispatch:
+env:
+  BUILD_TYPE: Release
+jobs:
+  windows-latest:
+    name: Windows Latest
+    runs-on: windows-latest
+    steps:
+      - name: Install Dependencies
+        run: |
+          vcpkg install drogon:x64-windows
+
+      - name: Cmake TechminoBackend
+        shell: cmd
+        working-directory: ${{github.workspace}}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+      - name: Build TechminoBackend
+        working-directory: ${{github.workspace}}/build
+        shell: cmd
+        run: cmake --build . --config $BUILD_TYPE
