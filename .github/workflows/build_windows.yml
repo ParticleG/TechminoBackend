@@ -8,14 +8,25 @@ jobs:
     name: Windows Latest
     runs-on: windows-latest
     steps:
+      - name: Checkout TechminoBackend source code
+        uses: actions/checkout@v2
+
+      - name: Cache Vcpkg
+        id: cache_vcpkg
+        uses: actions/cache@v2
+        with:
+          path: C:/Users/runneradmin/AppData/Local/vcpkg/installed
+          key: ${{ runner.os }}-vcpkg-cache
+
       - name: Install Dependencies
-        run: |
-          vcpkg install drogon:x64-windows
+        if: steps.cache_vcpkg.outputs.cache-hit != 'true'
+        run: vcpkg install drogon:x64-windows
 
       - name: Cmake TechminoBackend
         shell: cmd
         working-directory: ${{github.workspace}}
         run: |
+          ls
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
