@@ -11,10 +11,15 @@ jobs:
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
 
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v6
+        with:
+          setupOnly: true
+          vcpkgDirectory: '${{github.workspace}}/vcpkg'
+
       - name: Cache vcpkg
         uses: lukka/run-vcpkg@v6
         with:
-          # Location of the vcpkg as submodule of the repository.
           vcpkgDirectory: '${{github.workspace}}/vcpkg'
           vcpkgTriplet: 'x64-windows'
           vcpkgArguments: 'drogon'
