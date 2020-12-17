@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Dependences
-        uses: actions/cache@v2
         id: cache_dependences
+        uses: actions/cache@v2
         with:
-          path: "~/dependencies"
+          path: ~/dependencies
           key: ${{hashFiles('${{github.workspace}}/main.cc')}}
 
       - name: Install Dependences
