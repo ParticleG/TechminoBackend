@@ -11,8 +11,16 @@ jobs:
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
 
-      - name: Setup vcpkg
+      - name: Setup Vcpkg
         id: setup_vcpkg
+        uses: lukka/run-vcpkg@v6
+        with:
+          setupOnly: true
+          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
+          vcpkgDirectory: '${{github.workspace}}/vcpkg'
+
+      - name: Install Packages
+        id: install_vcpkg
         uses: lukka/run-vcpkg@v6
         with:
           vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
