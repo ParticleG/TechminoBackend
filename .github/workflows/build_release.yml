@@ -15,7 +15,86 @@ on:
 env:
   BUILD_TYPE: Release
 jobs:
-  ubuntu-latest:
+  windows_latest:
+    name: Windows Latest
+    runs-on: windows-latest
+    steps:
+      - name: Checkout TechminoBackend source code
+        uses: actions/checkout@v2
+
+      - name: Setup Vcpkg
+        id: setup_vcpkg
+        uses: lukka/run-vcpkg@v6
+        with:
+          setupOnly: true
+          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
+          vcpkgDirectory: '${{github.workspace}}/vcpkg'
+
+      - name: Install Packages
+        id: install_vcpkg
+        uses: lukka/run-vcpkg@v6
+        with:
+          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
+          vcpkgDirectory: '${{github.workspace}}/vcpkg'
+          vcpkgTriplet: 'x64-windows'
+          vcpkgArguments: 'drogon'
+
+      - name: Cmake TechminoBackend
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+          useVcpkgToolchainFile: true
+          cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}'
+          buildWithCMake: true
+          buildDirectory: '${{github.workspace}}/build'
+          buildWithCMakeArgs: '--config ${{env.BUILD_TYPE}}'
+
+      - name: Pack TechminoBackend
+        working-directory: ${{github.workspace}}
+        shell: bash
+        run: 7z a windows-x64.zip -r ./build/Release
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{github.event.inputs.version_code}}
+          release_name: ${{github.event.inputs.version_name}}
+          body: ${{github.event.inputs.body}}
+          draft: false
+          prerelease: false
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{github.event.inputs.version_code}}
+          release_name: ${{github.event.inputs.version_name}}
+          body: ${{github.event.inputs.body}}
+          draft: false
+          prerelease: false
+
+      - name: Export Upload URL
+        id: export_upload_url
+        run: echo "::set-output name=upload_url::${{steps.create_release.outputs.upload_url}}"
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: ./windows-x64.zip
+          asset_name: windows-x64.zip
+          asset_content_type: application/zip
+
+  ubuntu_latest:
+    needs: windows_latest
     name: Ubuntu Latest
     runs-on: ubuntu-latest
     steps:
@@ -86,25 +165,13 @@ jobs:
         shell: bash
         run: zip -r release.zip ./build
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          tag_name: ${{github.event.inputs.version_code}}
-          release_name: ${{github.event.inputs.version_name}}
-          body: ${{github.event.inputs.body}}
-          draft: false
-          prerelease: false
-
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
+          upload_url: ${{jobs.windows_latest.steps.export_upload_url.outputs.upload_url}}
           asset_path: ./release.zip
           asset_name: release.zip
           asset_content_type: application/zip
