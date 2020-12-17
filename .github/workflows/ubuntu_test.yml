@@ -13,7 +13,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '~/dependencies'
-          key: ${{hashFiles("${{github.workspace}}/main.cc")}}
+          key: ${{hashFiles('main.cc')}}
 
       - name: Install Dependences
         env:
