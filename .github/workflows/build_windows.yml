@@ -23,6 +23,7 @@ jobs:
         id: install_vcpkg
         uses: lukka/run-vcpkg@v6
         with:
+          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
           vcpkgDirectory: '${{github.workspace}}/vcpkg'
           vcpkgTriplet: 'x64-windows'
           vcpkgArguments: 'drogon'
