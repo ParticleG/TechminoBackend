@@ -16,6 +16,7 @@ jobs:
         uses: lukka/run-vcpkg@v6
         with:
           setupOnly: true
+          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
           vcpkgDirectory: '${{github.workspace}}/vcpkg'
 
       - run: |
