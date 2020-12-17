@@ -8,12 +8,15 @@ jobs:
     name: Ubuntu Latest
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout TechminoBackend source code
+        uses: actions/checkout@v2
+
       - name: Cache Dependences
         id: cache_dependences
         uses: actions/cache@v2
         with:
           path: '~/dependencies'
-          key: ${{ runner.os }}-${{ hashFiles('main.cc') }}
+          key: ${{ hashFiles('${{ github.workspace }}/main.cc') }}
 
       - name: Install Dependences
         env:
@@ -60,7 +63,7 @@ jobs:
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
-            for dep in perl-base libcrypt1 perl-modules-5.30 libperl5.30 libbz2-1.0 libgdbm-compat4 libgdbm6; do
+            for dep in perl-base perl-modules-5.30 libperl5.30 libbz2-1.0 libgdbm-compat4 libgdbm6; do
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
@@ -80,9 +83,6 @@ jobs:
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
           fi
-
-      - name: Checkout TechminoBackend source code
-        uses: actions/checkout@v2
 
       - name: Cache Drogon
         id: cache_drogon
