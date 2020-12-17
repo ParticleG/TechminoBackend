@@ -1,90 +1,9 @@
 name: Build Releases
 on:
   workflow_dispatch:
-    inputs:
-      version_code:
-        description: 'Version Code'
-        required: true
-      version_name:
-        description: 'Version Name'
-        required: true
-      body:
-        description: 'Description'
-        default: 'New release'
-        required: true
 env:
   BUILD_TYPE: Release
 jobs:
-  windows_latest:
-    name: Windows Latest
-    runs-on: windows-latest
-    steps:
-      - name: Checkout TechminoBackend source code
-        uses: actions/checkout@v2
-
-      - name: Setup Vcpkg
-        id: setup_vcpkg
-        uses: lukka/run-vcpkg@v6
-        with:
-          setupOnly: true
-          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
-          vcpkgDirectory: '${{github.workspace}}/vcpkg'
-
-      - name: Install Packages
-        id: install_vcpkg
-        uses: lukka/run-vcpkg@v6
-        with:
-          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
-          vcpkgDirectory: '${{github.workspace}}/vcpkg'
-          vcpkgTriplet: 'x64-windows'
-          vcpkgArguments: 'drogon'
-
-      - name: Cmake TechminoBackend
-        uses: lukka/run-cmake@v3
-        with:
-          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-          useVcpkgToolchainFile: true
-          cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}'
-          buildWithCMake: true
-          buildDirectory: '${{github.workspace}}/build'
-          buildWithCMakeArgs: '--config ${{env.BUILD_TYPE}}'
-
-      - name: Pack TechminoBackend
-        working-directory: ${{github.workspace}}
-        shell: bash
-        run: 7z a windows-x64.zip -r ./build/Release
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          tag_name: ${{github.event.inputs.version_code}}
-          release_name: ${{github.event.inputs.version_name}}
-          body: ${{github.event.inputs.body}}
-          draft: false
-          prerelease: false
-
-      - name: Set Upload URL
-        uses: noobly314/share-data@v1
-        with:
-          share-id: upload_url
-          mode: set
-          key: upload_url
-          value: ${{steps.create_release.outputs.upload_url}}
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: ./windows-x64.zip
-          asset_name: windows-x64.zip
-          asset_content_type: application/zip
-
   ubuntu_latest:
     needs: windows_latest
     name: Ubuntu Latest
@@ -163,12 +82,6 @@ jobs:
             done
           fi
 
-      #      - name: Install Dependencies
-      #        run: |
-      #          sudo apt update
-      #          sudo apt install libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev postgresql-all libsqlite3-dev
-      #          sudo apt install libbrotli-dev
-
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
 
@@ -224,27 +137,3 @@ jobs:
         working-directory: ${{github.workspace}}/build
         shell: bash
         run: cmake --build . --config $BUILD_TYPE
-
-      - name: Pack TechminoBackend
-        working-directory: ${{github.workspace}}
-        shell: bash
-        run: zip -r ubuntu.zip ./build
-
-      - name: Get Upload URL
-        id: get_upload_url
-        uses: noobly314/share-data@v1
-        with:
-          share-id: upload_url
-          mode: get
-          key: upload_url
-
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        with:
-          upload_url: ${{steps.get_upload_url.outputs.data}}
-          asset_path: ./ubuntu.zip
-          asset_name: ubuntu.zip
-          asset_content_type: application/zip
