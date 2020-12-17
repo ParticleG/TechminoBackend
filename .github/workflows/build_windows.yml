@@ -11,26 +11,20 @@ jobs:
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
 
-      - name: Cache Vcpkg
-        id: cache_vcpkg
-        uses: actions/cache@v2
+      - name: Cache vcpkg
+        uses: lukka/run-vcpkg@v6
         with:
-          path: C:/Users/runneradmin/AppData/Local/vcpkg/installed
-          key: ${{ runner.os }}-vcpkg-cache
-
-      - name: Install Dependencies
-        if: steps.cache_vcpkg.outputs.cache-hit != 'true'
-        run: vcpkg install drogon:x64-windows
+          # Location of the vcpkg as submodule of the repository.
+          vcpkgDirectory: 'C:/Users/runneradmin/AppData/Local/vcpkg'
+          vcpkgTriplet: 'x64-windows'
+          vcpkgArguments: 'drogon'
 
       - name: Cmake TechminoBackend
-        shell: cmd
-        working-directory: ${{github.workspace}}
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/Users/runneradmin/AppData/Local/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-      - name: Build TechminoBackend
-        working-directory: ${{github.workspace}}/build
-        shell: cmd
-        run: cmake --build . --config $BUILD_TYPE
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+          useVcpkgToolchainFile: true
+          cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=$BUILD_TYPE'
+          buildWithCMake: true
+          buildDirectory: '${{github.workspace}}/build'
+          buildWithCMakeArgs: '--config $BUILD_TYPE'
