@@ -1,6 +1,17 @@
 name: Build Windows
 on:
   workflow_dispatch:
+    inputs:
+      version_code:
+        description: 'Version Code'
+        required: true
+      version_name:
+        description: 'Version Name'
+        required: true
+      body:
+        description: 'Description'
+        default: 'New release'
+        required: true
 env:
   BUILD_TYPE: Release
 jobs:
@@ -37,3 +48,31 @@ jobs:
           buildWithCMake: true
           buildDirectory: '${{github.workspace}}/build'
           buildWithCMakeArgs: '--config ${{env.BUILD_TYPE}}'
+
+      - name: Pack TechminoBackend
+        working-directory: ${{github.workspace}}
+        shell: bash
+        run: zip -r windows-x64.zip ./build/Release
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{github.event.inputs.version_code}}
+          release_name: ${{github.event.inputs.version_name}}
+          body: ${{github.event.inputs.body}}
+          draft: false
+          prerelease: true
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: ./windows-x64.zip
+          asset_name: windows-x64.zip
+          asset_content_type: application/zip
