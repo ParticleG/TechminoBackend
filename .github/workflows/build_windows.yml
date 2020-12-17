@@ -28,12 +28,12 @@ jobs:
           vcpkgTriplet: 'x64-windows'
           vcpkgArguments: 'drogon'
 
-#      - name: Cmake TechminoBackend
-#        uses: lukka/run-cmake@v3
-#        with:
-#          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-#          useVcpkgToolchainFile: true
-#          cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}'
-#          buildWithCMake: true
-#          buildDirectory: '${{github.workspace}}/build'
-#          buildWithCMakeArgs: '--config ${{env.BUILD_TYPE}}'
+      - name: Cmake TechminoBackend
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+          useVcpkgToolchainFile: true
+          cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}'
+          buildWithCMake: true
+          buildDirectory: '${{github.workspace}}/build'
+          buildWithCMakeArgs: '--config ${{env.BUILD_TYPE}}'
