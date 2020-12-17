@@ -47,7 +47,11 @@ jobs:
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
-            for dep in postgresql-all libecpg-dev libpq-dev postgresql-common postgresql-server-dev-all postgresql-13 postgresql-plperl-13 postgresql-plpython3-13 postgresql-pltcl-13 libtcl8.6; do
+            for dep in postgresql-all libecpg-dev libpq-dev postgresql-common postgresql-server-dev-all; do
+              sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
+            done
+
+            for dep in postgresql-13 postgresql-plperl-13 postgresql-plpython3-13 postgresql-pltcl-13 libtcl8.6; do
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
@@ -55,7 +59,11 @@ jobs:
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
-            for dep in libpq5 libgssapi-krb5-2 libldap-2.4-2 libcom-err2 libk5crypto3 libkrb5-3 libkrb5support0 libkeyutils1 libgnutls30 libsasl2-2 libgmp10 libidn2-0 libp11-kit0 libtasn1-6 libunistring2 libsasl2-modules-db libdb5.3; do
+            for dep in libpq5 libgssapi-krb5-2 libldap-2.4-2 libcom-err2 libk5crypto3 libkrb5-3 libkrb5support0; do
+              sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
+            done
+
+            for dep in libkeyutils1 libgnutls30 libsasl2-2 libgmp10 libidn2-0 libp11-kit0 libtasn1-6 libunistring2 libsasl2-modules-db libdb5.3; do
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
@@ -63,7 +71,7 @@ jobs:
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
-            for dep in perl-base libbz2-1.0 libgdbm-compat4 libgdbm6; do
+            for dep in perl-base libbz2-1.0 libgdbm-compat4; do
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
