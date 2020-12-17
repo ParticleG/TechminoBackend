@@ -79,7 +79,7 @@ jobs:
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
-            for dep in locales libc-bin tzdata libicu67 libpam0g libxml2 libxslt1.1 libaudit1 libcap-ng0 liblzma5 libgcrypt20 libaudit-common; do
+            for dep in locales libc-bin tzdata libpam0g libxml2 libxslt1.1 libaudit1 libcap-ng0 liblzma5 libgcrypt20 libaudit-common; do
               sudo dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/dependencies
             done
 
