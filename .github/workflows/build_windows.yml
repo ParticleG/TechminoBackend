@@ -12,17 +12,19 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup vcpkg
+        id: setup_vcpkg
         uses: lukka/run-vcpkg@v6
         with:
           setupOnly: true
           vcpkgDirectory: '${{github.workspace}}/vcpkg'
 
-      - name: Cache vcpkg
-        uses: lukka/run-vcpkg@v6
-        with:
-          vcpkgDirectory: '${{github.workspace}}/vcpkg'
-          vcpkgTriplet: 'x64-windows'
-          vcpkgArguments: 'drogon'
+      - run: |
+          $VCPKG_ROOT/vcpkg install drogon:x64-windows --clean-after-build
+          shell: bash
+        name: Run vcpkg in a inline script in this workflow.
+
+      - name: Prints output of run-vcpkg's action
+        run: echo "root='${{ steps.setup_vcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.setup_vcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}'"
 
       - name: Cmake TechminoBackend
         uses: lukka/run-cmake@v3
