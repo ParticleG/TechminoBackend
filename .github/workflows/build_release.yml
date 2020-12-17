@@ -163,7 +163,7 @@ jobs:
       - name: Pack TechminoBackend
         working-directory: ${{github.workspace}}
         shell: bash
-        run: zip -r release.zip ./build
+        run: zip -r ubuntu.zip ./build
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -172,6 +172,6 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{jobs.windows_latest.steps.export_upload_url.outputs.upload_url}}
-          asset_path: ./release.zip
-          asset_name: release.zip
+          asset_path: ./ubuntu.zip
+          asset_name: ubuntu.zip
           asset_content_type: application/zip
