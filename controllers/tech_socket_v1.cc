@@ -20,7 +20,6 @@ void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
 }
 
 void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
-    LOG_DEBUG << "New connection";
     WSCloser wsCloser;
     Player player;
     player._email = req->getParameter("email");
@@ -57,7 +56,6 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
 }
 
 void Chat::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
-    LOG_DEBUG << "Connection closed";
     if (wsConnPtr->hasContext()) {
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
         auto &player = wsConnPtr->getContextRef<Player>();
