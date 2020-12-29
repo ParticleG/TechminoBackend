@@ -59,7 +59,7 @@ foreach (cspFile ${SCP_LIST})
 endforeach ()
 
 find_package(OpenSSL REQUIRED)
-find_package(cryptopp CONFIG REQUIRED)
+find_package(cryptopp REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto cryptopp-static)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/utils ${CMAKE_CURRENT_SOURCE_DIR}/models)
 target_sources(${PROJECT_NAME} PRIVATE ${SRC_DIR} ${UTILS_SRC} ${CTL_SRC} ${FILTER_SRC} ${VIEWSRC} ${PLUGIN_SRC} ${MODEL_SRC})
