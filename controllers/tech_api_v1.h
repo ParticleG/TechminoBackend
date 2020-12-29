@@ -83,22 +83,21 @@ namespace tech::api::v1 {
     };
 
     namespace online {
-        class Versus : public drogon::HttpController<Versus> {
+        class Rooms : public drogon::HttpController<Rooms> {
         public:
             METHOD_LIST_BEGIN
-                METHOD_ADD(Versus::info, "/{1}", Get);
-                METHOD_ADD(Versus::create, "/{1}", Post);
-//                    METHOD_ADD(Versus::join, "/{1}", Put);
+                METHOD_ADD(Rooms::list, "", Get);
+                METHOD_ADD(Rooms::info, "/{1}", Get);
+                METHOD_ADD(Rooms::create, "/{1}", Post);
             METHOD_LIST_END
+
+            static void list(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
             static void info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                              const std::string &roomType);
 
             static void create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                                const std::string &roomType);
-
-//                static void join(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
-//                                 const std::string &roomType);
 
         private:
             static bool

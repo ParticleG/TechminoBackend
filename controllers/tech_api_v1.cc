@@ -396,8 +396,7 @@ void Auth::_updateToken(JsonResponse &jsonResponse, const std::string &email, co
     }
 }
 
-void online::Versus::info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
-                          const std::string &roomType) {
+void online::Rooms::list(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     JsonResponse jsonResponse;
     auto requestBody = req->getJsonObject();
     if (!req->getJsonError().empty()) {
@@ -423,8 +422,35 @@ void online::Versus::info(const HttpRequestPtr &req, std::function<void(const Ht
     jsonResponse.send(callback);
 }
 
-void online::Versus::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
-                            const std::string &roomType) {
+void online::Rooms::info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
+                         const std::string &roomType) {
+    JsonResponse jsonResponse;
+    auto requestBody = req->getJsonObject();
+    if (!req->getJsonError().empty()) {
+        jsonResponse.body["message"] = "Wrong format";
+        jsonResponse.code = k400BadRequest;
+    } else {
+        std::string email = (*requestBody)["email"].asString(),
+                accessToken = (*requestBody)["access_token"].asString();
+        if (authorization(jsonResponse, email, accessToken)) {
+            try {
+                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+                auto roomList = roomManager->getRoomList(roomType);
+                jsonResponse.code = k200OK;
+                jsonResponse.body["message"] = "OK";
+                jsonResponse.body["room_list"] = roomList;
+            } catch (const std::out_of_range &e) {
+                LOG_ERROR << "error:" << e.what();
+                jsonResponse.code = k416RequestedRangeNotSatisfiable;
+                jsonResponse.body["message"] = "Unsupported room_type";
+            }
+        }
+    }
+    jsonResponse.send(callback);
+}
+
+void online::Rooms::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
+                           const std::string &roomType) {
     JsonResponse jsonResponse;
     auto requestBody = req->getJsonObject();
     if (!req->getJsonError().empty()) {
@@ -453,40 +479,8 @@ void online::Versus::create(const HttpRequestPtr &req, std::function<void(const 
     jsonResponse.send(callback);
 }
 
-//void online::Versus::join(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
-//                          const std::string &roomType) {
-//    JsonResponse jsonResponse;
-//    auto requestBody = req->getJsonObject();
-//    if (!req->getJsonError().empty()) {
-//        jsonResponse.body["message"] = "Wrong format";
-//        jsonResponse.code = k400BadRequest;
-//    } else {
-//        std::string email = (*requestBody)["email"].asString(),
-//                accessToken = (*requestBody)["access_token"].asString(),
-//                roomID = (*requestBody)["room_id"].asString(),
-//                roomPassword = (*requestBody)["room_password"].asString();
-//        if (_authorization(jsonResponse, email, accessToken)) {
-//            try {
-//                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-//                auto tempRoom = roomManager->getRoom(roomType, roomID);
-//                tempRoom.increaseRoomCount();
-//
-//                jsonResponse.code = k200OK;
-//                jsonResponse.body["message"] = "OK";
-//                jsonResponse.body["room"] = tempRoom.toJson();
-//                jsonResponse.body["room_type"] = roomType;
-//            } catch (const std::out_of_range &e) {
-//                LOG_ERROR << "error:" << e.what();
-//                jsonResponse.code = k416RequestedRangeNotSatisfiable;
-//                jsonResponse.body["message"] = e.what();
-//            }
-//        }
-//    }
-//    jsonResponse.send(callback);
-//}
-
 bool
-online::Versus::authorization(JsonResponse &jsonResponse, const std::string &email, const std::string &accessToken) {
+online::Rooms::authorization(JsonResponse &jsonResponse, const std::string &email, const std::string &accessToken) {
     try {
         auto clientPtr = app().getDbClient();
         auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);

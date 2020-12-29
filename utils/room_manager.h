@@ -43,6 +43,8 @@ namespace tech::utils {
 
         Json::Value getRoomJson(const std::string &roomID);
 
+        Json::Value getRoomList();
+
         Json::Value getRoomList(const std::string &roomType);
 
     private:
