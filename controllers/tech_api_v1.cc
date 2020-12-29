@@ -45,7 +45,8 @@ void App::info(const HttpRequestPtr &req, std::function<void(const HttpResponseP
     try {
         auto clientPtr = drogon::app().getDbClient();
         auto matchedApps = clientPtr->execSqlSync("select * from app");
-        auto matchedContents = clientPtr->execSqlSync(R"(select content from message where type = 'notice' order by id desc)");
+        auto matchedContents = clientPtr->execSqlSync(
+                R"(select content from message where type = 'notice' order by id desc)");
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
         jsonResponse.body["version_code"] = matchedApps[matchedApps.size() - 1]["version_code"].as<int>();
@@ -408,7 +409,7 @@ void online::Rooms::list(const HttpRequestPtr &req, std::function<void(const Htt
         if (authorization(jsonResponse, email, accessToken)) {
             try {
                 auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-                auto roomList = roomManager->getRoomList(roomType);
+                auto roomList = roomManager->getRoomList();
                 jsonResponse.code = k200OK;
                 jsonResponse.body["message"] = "OK";
                 jsonResponse.body["room_list"] = roomList;
