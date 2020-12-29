@@ -125,6 +125,15 @@ Json::Value tech::utils::RoomManager::getRoomJson(const std::string &roomID) {
     throw std::out_of_range("tech::utils::Room not found");
 }
 
+Json::Value tech::utils::RoomManager::getRoomList() {
+    Json::Value resultJson = Json::arrayValue;
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    for (const auto &room: _roomIDMap) {
+        resultJson.append(room.second->toJson());
+    }
+    return resultJson;
+}
+
 Json::Value tech::utils::RoomManager::getRoomList(const std::string &roomType) {
     Json::Value resultJson = Json::arrayValue;
     std::shared_lock<SharedMutex> lock(_sharedMutex);

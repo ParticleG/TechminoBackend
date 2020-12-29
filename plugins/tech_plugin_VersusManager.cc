@@ -89,6 +89,11 @@ uint64_t VersusManager::chatCount() {
     return _chattingRoom.count();
 }
 
+Json::Value VersusManager::getRoomList() {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    return _roomManager.getRoomList();
+}
+
 Json::Value VersusManager::getRoomList(const std::string &roomType) {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     auto iter = _roomTypes.find(roomType);

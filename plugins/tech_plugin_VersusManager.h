@@ -57,6 +57,8 @@ namespace tech {
 
             uint64_t chatCount();
 
+            Json::Value getRoomList();
+
             Json::Value getRoomList(const std::string &roomType);
 
         private:
