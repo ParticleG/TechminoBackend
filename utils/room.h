@@ -27,7 +27,7 @@ namespace tech::utils {
             std::unique_lock<SharedMutex> lock(_sharedMutex);
             _id = id;
             _name = name;
-            _password = Crypto::sha256(password);
+            _password = Crypto::blake2b(password, 1);
             _count = 0;
             _type = roomType;
             _capacity = capacity;
@@ -43,7 +43,7 @@ namespace tech::utils {
 
         bool checkPassword(const std::string &password);
 
-        bool changePassword(const std::string& password, const std::string& newPassword);
+        bool changePassword(const std::string &password, const std::string &newPassword);
 
         bool empty() const;
 
