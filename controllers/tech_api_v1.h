@@ -38,14 +38,14 @@ namespace tech::api::v1 {
     public:
         METHOD_LIST_BEGIN
             METHOD_ADD(Users::info, "", Get);
-            METHOD_ADD(Users::modify, "", Put);
+//            METHOD_ADD(Users::modify, "", Put);
             METHOD_ADD(Users::getData, "/{1}", Get);
             METHOD_ADD(Users::saveData, "/{1}", Put);
         METHOD_LIST_END
 
         static void info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
-        static void modify(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+//        static void modify(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
         static void getData(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                             std::string userId);

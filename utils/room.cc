@@ -34,13 +34,13 @@ void tech::utils::Room::unsubscribe(SubscriberID id) {
 
 bool tech::utils::Room::checkPassword(const std::string &password) {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
-    return Crypto::sha256(password) == _password;
+    return Crypto::blake2b(password, 1) == _password;
 }
 
 bool tech::utils::Room::changePassword(const std::string &password, const std::string &newPassword) {
     std::unique_lock<SharedMutex> lock(_sharedMutex);
-    if (Crypto::sha256(password) == _password) {
-        _password = Crypto::sha256(newPassword);
+    if (Crypto::blake2b(password, 1) == _password) {
+        _password = Crypto::blake2b(newPassword, 1);
         return true;
     }
     return false;

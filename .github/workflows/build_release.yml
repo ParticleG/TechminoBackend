@@ -37,7 +37,7 @@ jobs:
           vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
           vcpkgDirectory: '${{github.workspace}}/vcpkg'
           vcpkgTriplet: 'x64-windows'
-          vcpkgArguments: 'drogon'
+          vcpkgArguments: 'drogon cryptopp'
 
       - name: Cmake TechminoBackend
         uses: lukka/run-cmake@v3
@@ -95,6 +95,7 @@ jobs:
           sudo apt update
           sudo apt install libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev postgresql-all libsqlite3-dev
           sudo apt install libbrotli-dev
+          sudo apt install libcrypto++-dev libcrypto++-doc libcrypto++-utils
 
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2

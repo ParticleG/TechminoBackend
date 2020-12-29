@@ -6,22 +6,28 @@
 
 using namespace tech::utils;
 
-std::string Crypto::md5(const std::string &srcStr) {
-    unsigned char mdStr[33] = {0};
-    MD5((const unsigned char *) srcStr.c_str(), srcStr.length(), mdStr);
-    std::ostringstream oss;
-    for (int i = 0; i < 32; i++) {
-        oss << std::hex << static_cast<unsigned short>(mdStr[i]);
-    }
-    return oss.str();
+std::string Crypto::blake2b(const std::string &source, const unsigned int &divider) {
+    using namespace CryptoPP;
+    std::stringstream tempStringStream;
+    HexEncoder encoder(new FileSink(tempStringStream));
+    std::string digest;
+    BLAKE2b hash;
+    hash.Update((const byte *) source.data(), source.size());
+    digest.resize(hash.DigestSize() / divider);
+    hash.TruncatedFinal((byte *) &digest[0], digest.size());
+    StringSource tempSource(digest, true, new Redirector(encoder));
+    return tempStringStream.str();
 }
 
-std::string Crypto::sha256(const std::string &srcStr) {
-    unsigned char mdStr[33] = {0};
-    SHA256((const unsigned char *) srcStr.c_str(), srcStr.length(), mdStr);
-    std::ostringstream oss;
-    for (int i = 0; i < 32; i++) {
-        oss << std::hex << static_cast<unsigned short>(mdStr[i]);
-    }
-    return oss.str();
+std::string Crypto::keccak(const std::string &source, const unsigned int &divider) {
+    using namespace CryptoPP;
+    std::stringstream tempStringStream;
+    HexEncoder encoder(new FileSink(tempStringStream));
+    std::string digest;
+    Keccak_512 hash;
+    hash.Update((const byte *) source.data(), source.size());
+    digest.resize(hash.DigestSize() / divider);
+    hash.TruncatedFinal((byte *) &digest[0], digest.size());
+    StringSource tempSource(digest, true, new Redirector(encoder));
+    return tempStringStream.str();
 }

@@ -127,48 +127,48 @@ void Users::info(const HttpRequestPtr &req, std::function<void(const HttpRespons
     jsonResponse.send(callback);
 }
 
-void Users::modify(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
-    auto clientPtr = drogon::app().getDbClient();
-    JsonResponse jsonResponse;
-    auto requestBody = req->getJsonObject();
-    if (!req->getJsonError().empty()) {
-        jsonResponse.body["message"] = "Wrong format.";
-        jsonResponse.code = k400BadRequest;
-    } else {
-        std::string
-                id = (*requestBody)["id"].asString(),
-                auth_token = (*requestBody)["auth_token"].asString(),
-                password = (*requestBody)["password"].asString(),
-                newPassword = (*requestBody)["new_password"].asString();
-        try {
-            auto result = clientPtr->execSqlSync("select * from users where id = $1", id);
-            if (result.empty()) {
-                jsonResponse.code = k404NotFound;
-                jsonResponse.body["message"] = "User not found";
-            } else if (auth_token != result[0]["auth_token"].as<std::string>()) {
-                jsonResponse.code = k401Unauthorized;
-                jsonResponse.body["message"] = "Token expired";
-            } else if (tech::utils::Crypto::sha256(password) != result[0]["password"].as<std::string>()) {
-                jsonResponse.code = k403Forbidden;
-                jsonResponse.body["message"] = "Wrong password";
-            } else {
-                std::string new_token = drogon::utils::getUuid();
-                jsonResponse.code = k200OK;
-                jsonResponse.body["message"] = "OK";
-                jsonResponse.body["auth_token"] = new_token;
-                clientPtr->execSqlSync("update users set password = $1, auth_token = $2 where id = $3",
-                                       tech::utils::Crypto::sha256(newPassword),
-                                       new_token,
-                                       id);
-            }
-        } catch (const orm::DrogonDbException &e) {
-            jsonResponse.code = k500InternalServerError;
-            LOG_ERROR << "error:" << e.base().what();
-            jsonResponse.body["message"] = "Internal error";
-        }
-    }
-    jsonResponse.send(callback);
-}
+//void Users::modify(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+//    auto clientPtr = drogon::app().getDbClient();
+//    JsonResponse jsonResponse;
+//    auto requestBody = req->getJsonObject();
+//    if (!req->getJsonError().empty()) {
+//        jsonResponse.body["message"] = "Wrong format.";
+//        jsonResponse.code = k400BadRequest;
+//    } else {
+//        std::string
+//                id = (*requestBody)["id"].asString(),
+//                auth_token = (*requestBody)["auth_token"].asString(),
+//                password = (*requestBody)["password"].asString(),
+//                newPassword = (*requestBody)["new_password"].asString();
+//        try {
+//            auto result = clientPtr->execSqlSync("select * from users where id = $1", id);
+//            if (result.empty()) {
+//                jsonResponse.code = k404NotFound;
+//                jsonResponse.body["message"] = "User not found";
+//            } else if (auth_token != result[0]["auth_token"].as<std::string>()) {
+//                jsonResponse.code = k401Unauthorized;
+//                jsonResponse.body["message"] = "Token expired";
+//            } else if (tech::utils::Crypto::sha256(password) != result[0]["password"].as<std::string>()) {
+//                jsonResponse.code = k403Forbidden;
+//                jsonResponse.body["message"] = "Wrong password";
+//            } else {
+//                std::string new_token = drogon::utils::getUuid();
+//                jsonResponse.code = k200OK;
+//                jsonResponse.body["message"] = "OK";
+//                jsonResponse.body["auth_token"] = new_token;
+//                clientPtr->execSqlSync("update users set password = $1, auth_token = $2 where id = $3",
+//                                       tech::utils::Crypto::sha256(newPassword),
+//                                       new_token,
+//                                       id);
+//            }
+//        } catch (const orm::DrogonDbException &e) {
+//            jsonResponse.code = k500InternalServerError;
+//            LOG_ERROR << "error:" << e.base().what();
+//            jsonResponse.body["message"] = "Internal error";
+//        }
+//    }
+//    jsonResponse.send(callback);
+//}
 
 void
 Users::getData(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, std::string userId) {
@@ -315,7 +315,7 @@ void Auth::getAccessToken(const HttpRequestPtr &req, std::function<void(const Ht
                 jsonResponse.code = k401Unauthorized;
                 jsonResponse.body["message"] = "Auth_token is expired";
             } else {
-                std::string newToken = tech::utils::Crypto::md5(drogon::utils::getUuid());
+                std::string newToken = tech::utils::Crypto::keccak(drogon::utils::getUuid());
                 clientPtr->execSqlSync(
                         "update auth set access_token = $1, access_token_expire_time = $2 where email = $3",
                         newToken,
@@ -370,13 +370,17 @@ void Auth::_refreshToken(JsonResponse &jsonResponse, const std::string &email, c
 void Auth::_updateToken(JsonResponse &jsonResponse, const std::string &email, const std::string &password) {
     try {
         auto clientPtr = app().getDbClient();
-        auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
-        if (matchedUsers.empty()) {
+//        auto result = clientPtr->execSqlSync("select * from auth where email = $1", email);
+        auto result = clientPtr->execSqlSync("select crypt($1, password) = password "
+                                             "from auth "
+                                             "where email = $2",
+                                             password, email);
+        if (result.empty()) {
             jsonResponse.code = k404NotFound;
             jsonResponse.body["message"] = "Email not found";
             return;
         }
-        if (tech::utils::Crypto::sha256(password) != matchedUsers[0]["password"].as<std::string>()) {
+        if (!result[0]["?column?"].as<bool>()) {
             jsonResponse.code = k403Forbidden;
             jsonResponse.body["message"] = "Password is incorrect";
             return;

@@ -10,12 +10,12 @@ using namespace tech::plugin;
 using namespace tech::utils;
 
 void VersusManager::initAndStart(const Json::Value &config) {
-    if (config.isMember("port") && config["port"].isInt()) {
-        if (config["port"].asInt() < 10000 || config["port"].asInt() > 65535) {
+    if (config.isMember("port") && config["port"].isUInt()) {
+        if (config["port"].asUInt() < 10000 || config["port"].asUInt() > 65535) {
             LOG_ERROR << "Invalid port";
             abort();
         }
-        _communicationManager.initAndStart(config["port"].asInt(), "versus", 4);
+        _communicationManager.initAndStart(static_cast<uint16_t>(config["port"].asUInt()), "versus", 4);
     } else {
         LOG_ERROR << R"(Requires "port" in plugin's config')";
         abort();
