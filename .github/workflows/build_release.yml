@@ -100,6 +100,54 @@ jobs:
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
 
+      - name: Cache CryptoPP
+        id: cache_cryptopp
+        uses: actions/cache@v2
+        with:
+          path: ${{github.workspace}}/cryptopp-src
+          key: ${{ runner.os }}-cryptopp-cache
+
+      - name: Checkout CryptoPP source code
+        if: steps.cache_cryptopp.outputs.cache-hit != 'true'
+        uses: actions/checkout@v2
+        with:
+          repository: weidai11/cryptopp
+          submodules: true
+          fetch-depth: 0
+          path: cryptopp-src
+
+      - name: Get CMake config files
+        if: steps.cache_cryptopp.outputs.cache-hit != 'true'
+        shell: bash
+        working-directory: ${{github.workspace}}/cryptopp-src
+        run: |
+          wget -O CMakeLists.txt https://raw.githubusercontent.com/noloader/cryptopp-cmake/master/CMakeLists.txt
+          wget -O cryptopp-config.cmake https://raw.githubusercontent.com/noloader/cryptopp-cmake/master/cryptopp-config.cmake
+
+      - name: Cmake CryptoPP
+        if: steps.cache_cryptopp.outputs.cache-hit != 'true'
+        shell: bash
+        working-directory: ${{github.workspace}}/cryptopp-src
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+      - name: Build CryptoPP
+        if: steps.cache_cryptopp.outputs.cache-hit != 'true'
+        working-directory: ${{github.workspace}}/cryptopp-src
+        shell: bash
+        run: |
+          cd build
+          sudo make
+
+      - name: Install CryptoPP
+        working-directory: ${{github.workspace}}/cryptopp-src
+        shell: bash
+        run: |
+          cd build
+          sudo make install
+
       - name: Cache Drogon
         id: cache_drogon
         uses: actions/cache@v2
