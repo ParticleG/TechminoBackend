@@ -147,35 +147,3 @@ void Solo::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
         roomManager->unsubscribe(player._roomID, player._subscriberID);
     }
 }
-
-void SmallRoom::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
-                                 const WebSocketMessageType &type) {
-    //write your application logic here
-    wsConnPtr->send(message);
-}
-
-void SmallRoom::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
-    //write your application logic here
-}
-
-void SmallRoom::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
-    //write your application logic here
-}
-
-void LargeRoom::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
-                                 const WebSocketMessageType &type) {
-    std::cout << message << std::endl;
-    if (type == WebSocketMessageType::Ping) {
-        LOG_DEBUG << "Received a PING";
-    } else {
-        wsConnPtr->send(message);
-    }
-}
-
-void LargeRoom::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
-    std::cout << "new websocket connection!" << std::endl;
-}
-
-void LargeRoom::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
-    std::cout << "websocket closed!" << std::endl;
-}
