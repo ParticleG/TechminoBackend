@@ -18,6 +18,7 @@ namespace tech::socket::v1 {
             wsConnPtr->shutdown(_code, _reason);
         }
     };
+
     bool authorization(WSCloser &wsCloser, Player &player) {
         if (player._email.empty() || player._accessToken.empty() || player._roomID.empty()) {
             wsCloser._code = CloseCode::kInvalidMessage;
@@ -67,8 +68,9 @@ namespace tech::socket::v1 {
         virtual void handleConnectionClosed(const WebSocketConnectionPtr &) override;
 
         WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/chat");
+            WS_PATH_ADD("/tech/socket/v1/chat_room");
         WS_PATH_LIST_END
+
     private:
         void _messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message) {
             if (message == "/ping") {
@@ -95,39 +97,7 @@ namespace tech::socket::v1 {
         virtual void handleConnectionClosed(const WebSocketConnectionPtr &) override;
 
         WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/solo");
-        WS_PATH_LIST_END
-    };
-
-    class SmallRoom : public drogon::WebSocketController<SmallRoom> {
-    public:
-        virtual void handleNewMessage(const WebSocketConnectionPtr &,
-                                      std::string &&,
-                                      const WebSocketMessageType &) override;
-
-        virtual void handleNewConnection(const HttpRequestPtr &,
-                                         const WebSocketConnectionPtr &) override;
-
-        virtual void handleConnectionClosed(const WebSocketConnectionPtr &) override;
-
-        WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/small_room");
-        WS_PATH_LIST_END
-    };
-
-    class LargeRoom : public drogon::WebSocketController<LargeRoom> {
-    public:
-        virtual void handleNewMessage(const WebSocketConnectionPtr &,
-                                      std::string &&,
-                                      const WebSocketMessageType &) override;
-
-        virtual void handleNewConnection(const HttpRequestPtr &,
-                                         const WebSocketConnectionPtr &) override;
-
-        virtual void handleConnectionClosed(const WebSocketConnectionPtr &) override;
-
-        WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/LargeRoom");
+            WS_PATH_ADD("/tech/socket/v1/play_room");
         WS_PATH_LIST_END
     };
 }
