@@ -65,7 +65,7 @@ void Chat::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
     }
 }
 
-void Solo::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
+void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
                             const WebSocketMessageType &type) {
     auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
     if (type == WebSocketMessageType::Ping) {
@@ -83,7 +83,7 @@ void Solo::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
     }
 }
 
-void Solo::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
+void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
     wsConnPtr->send("Welcome to solo room.");
     WSCloser wsCloser;
     Player player;
@@ -139,7 +139,7 @@ void Solo::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
 }
 
-void Solo::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
+void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
     LOG_DEBUG << "websocket closed!";
     if (wsConnPtr->hasContext()) {
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();

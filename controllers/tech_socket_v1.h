@@ -85,7 +85,7 @@ namespace tech::socket::v1 {
         }
     };
 
-    class Solo : public drogon::WebSocketController<Solo> {
+    class Play : public drogon::WebSocketController<Play> {
     public:
         virtual void handleNewMessage(const WebSocketConnectionPtr &,
                                       std::string &&,
