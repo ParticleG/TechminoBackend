@@ -6,7 +6,7 @@
 using namespace drogon;
 namespace tech::socket::v1 {
     struct Player {
-        std::string _email{}, _accessToken{}, _name{}, _roomID{}, _roomPassword{};
+        std::string _email{}, _accessToken{}, _name{}, _roomID{}, _roomPassword{}, _settings{};
         drogon::SubscriberID _id{}, _subscriberID{};
     };
 
@@ -72,17 +72,7 @@ namespace tech::socket::v1 {
         WS_PATH_LIST_END
 
     private:
-        void _messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message) {
-            if (message == "/ping") {
-                wsConnPtr->send("", WebSocketMessageType::Pong);
-            } else if (message == "/quit") {
-                wsConnPtr->forceClose();
-            } else {
-                auto &player = wsConnPtr->getContextRef<Player>();
-                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-                roomManager->chat(player._name + "#" + std::to_string(player._id) + ":" + message);
-            }
-        }
+        static void _messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message);
     };
 
     class Play : public drogon::WebSocketController<Play> {
@@ -99,5 +89,8 @@ namespace tech::socket::v1 {
         WS_PATH_LIST_BEGIN
             WS_PATH_ADD("/tech/socket/v1/play_room");
         WS_PATH_LIST_END
+
+    private:
+        static void _messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message);
     };
 }
