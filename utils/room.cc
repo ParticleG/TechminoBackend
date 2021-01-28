@@ -69,10 +69,10 @@ void tech::utils::Room::clear() {
 Json::Value tech::utils::Room::toJson() {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     Json::Value tempJson;
-    tempJson["room_id"] = _id;
+    tempJson["id"] = _id;
     tempJson["name"] = _name;
     tempJson["type"] = _type;
-    tempJson["encrypted"] = checkPassword("");
+    tempJson["private"] = !checkPassword("");
     tempJson["count"] = static_cast<Json::UInt64>(_count);
     tempJson["capacity"] = static_cast<Json::UInt64>(_capacity);
     return tempJson;
