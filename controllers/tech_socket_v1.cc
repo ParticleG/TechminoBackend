@@ -106,7 +106,7 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     Player player;
     player._email = req->getParameter("email");
     player._accessToken = req->getParameter("access_token");
-    player._roomID = req->getParameter("room_id");
+    player._roomID = req->getParameter("id");
     player._roomPassword = req->getParameter("password");
     if (!authorization(wsCloser, player)) {
         wsConnPtr->send(wsCloser._reason);
