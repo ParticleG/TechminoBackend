@@ -75,10 +75,10 @@ namespace tech::api::v1 {
         getAccessToken(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 
     private:
-        static void
+        static bool
         _refreshToken(JsonResponse &jsonResponse, const std::string &email, const std::string &auth_token);
 
-        static void
+        static bool
         _updateToken(JsonResponse &jsonResponse, const std::string &email, const std::string &password);
     };
 
