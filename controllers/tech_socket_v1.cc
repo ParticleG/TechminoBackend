@@ -174,6 +174,7 @@ void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
 
 void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message) {
     char commandType = message[0];
+    std::cout << message << std::endl;
     if (commandType == 'P') {
         wsConnPtr->send("", WebSocketMessageType::Pong);
     } else if (commandType == 'Q') {
@@ -182,10 +183,10 @@ void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::s
         auto &player = wsConnPtr->getContextRef<Player>();
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
         roomManager->chat("T" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
-    } else if (commandType == 'M') {
+    } else if (commandType == 'C') {
         auto &player = wsConnPtr->getContextRef<Player>();
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-        roomManager->chat("P" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->chat("C" + std::to_string(player._id) + ":" + message.substr(1));
     } else if (commandType == 'S') {
         auto &player = wsConnPtr->getContextRef<Player>();
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
