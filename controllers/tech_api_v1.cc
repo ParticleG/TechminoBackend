@@ -370,7 +370,6 @@ void Auth::_refreshToken(JsonResponse &jsonResponse, const std::string &email, c
 void Auth::_updateToken(JsonResponse &jsonResponse, const std::string &email, const std::string &password) {
     try {
         auto clientPtr = app().getDbClient();
-//        auto result = clientPtr->execSqlSync("select * from auth where email = $1", email);
         auto result = clientPtr->execSqlSync("select crypt($1, password) = password "
                                              "from auth "
                                              "where email = $2",
@@ -392,6 +391,7 @@ void Auth::_updateToken(JsonResponse &jsonResponse, const std::string &email, co
                                email);
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
+        jsonResponse.body["id"] = result[0]["_id"].as<Json::Int64>();
         jsonResponse.body["email"] = email;
         jsonResponse.body["auth_token"] = newToken;
     } catch (const orm::DrogonDbException &e) {
