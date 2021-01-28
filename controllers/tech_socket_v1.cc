@@ -158,7 +158,6 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     roomManager->publish(player._roomID, "J" + player._name +
                                          ":" + std::to_string(player._id));
 
-    wsConnPtr->send(wsCloser._reason);
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
 }
 
