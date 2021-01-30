@@ -35,6 +35,10 @@ namespace tech::utils {
 
         void publish(const std::string &message) const;
 
+        void publish(const std::string &message, const SubscriberID &excludedID) const;
+
+        void tell(const std::string &message, const SubscriberID &targetID) const;
+
         SubscriberID subscribe(const MessageHandler &handler);
 
         SubscriberID subscribe(MessageHandler &&handler);

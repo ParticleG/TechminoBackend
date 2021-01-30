@@ -1,6 +1,8 @@
 #include <plugins/tech_plugin_VersusManager.h>
 #include "tech_socket_v1.h"
 
+#define DEBUG_MODE
+
 using namespace tech::socket::v1;
 
 void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
@@ -157,6 +159,9 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     }
     roomManager->publish(player._roomID, "J" + player._name +
                                          ":" + std::to_string(player._id));
+#ifdef DEBUG_MODE
+    std::cout << "[SERVER#0]$J " << player._name + ":" + std::to_string(player._id) << std::endl;
+#endif
 
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
 }
@@ -168,32 +173,41 @@ void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
         roomManager->unsubscribe(player._roomID, player._subscriberID);
         roomManager->publish(player._roomID, "L" + player._name +
                                              ":" + std::to_string(player._id));
+#ifdef DEBUG_MODE
+        std::cout << "[SERVER#0]$L " << player._name + ":" + std::to_string(player._id) << std::endl;
+#endif
     }
 }
 
 void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message) {
+    auto &player = wsConnPtr->getContextRef<Player>();
+    auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
     char commandType = message[0];
-    std::cout << message << std::endl;
+    std::cout << "[" << player._name << "#" << player._id << "]$" << commandType << " " << message.substr(1)
+              << std::endl;
     if (commandType == 'P') {
+#ifdef DEBUG_MODE
+        std::cout << "[SERVER#0]$P" << std::endl;
+#endif
         wsConnPtr->send("", WebSocketMessageType::Pong);
     } else if (commandType == 'Q') {
+#ifdef DEBUG_MODE
+        std::cout << "[SERVER#0]$Q " << player._name + ":" + std::to_string(player._id) << std::endl;
+#endif
         wsConnPtr->forceClose();
+    } else if (commandType == 'B') {
+        roomManager->publish(player._roomID,
+                             "B");
     } else if (commandType == 'T') {
-        auto &player = wsConnPtr->getContextRef<Player>();
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-        roomManager->chat("T" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->publish(player._roomID,
+                             "T" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
     } else if (commandType == 'C') {
-        auto &player = wsConnPtr->getContextRef<Player>();
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-        roomManager->chat("C" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->publish(player._roomID,
+                             "C" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
     } else if (commandType == 'S') {
-        auto &player = wsConnPtr->getContextRef<Player>();
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-        roomManager->chat("S" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->publish(player._roomID, "S" + std::to_string(player._id) + ":" + message.substr(1));
     } else {
-        auto &player = wsConnPtr->getContextRef<Player>();
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-        roomManager->chat("EInvalid command.");
+        roomManager->publish(player._roomID, "EInvalid command.");
     }
 }
 
