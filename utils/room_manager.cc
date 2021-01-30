@@ -14,6 +14,36 @@ void tech::utils::RoomManager::publish(const std::string &roomID, const std::str
     topicPtr->publish(message);
 }
 
+void tech::utils::RoomManager::publish(const std::string &roomID, const std::string &message,
+                                       const SubscriberID &excludedID) const {
+    std::shared_ptr<tech::utils::Room> topicPtr;
+    {
+        std::shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            topicPtr = iter->second;
+        } else {
+            return;
+        }
+    }
+    topicPtr->publish(message, excludedID);
+}
+
+void tech::utils::RoomManager::tell(const std::string &roomID, const std::string &message,
+                                    const SubscriberID &targetID) const {
+    std::shared_ptr<tech::utils::Room> topicPtr;
+    {
+        std::shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            topicPtr = iter->second;
+        } else {
+            return;
+        }
+    }
+    topicPtr->tell(message, targetID);
+}
+
 SubscriberID tech::utils::RoomManager::subscribe(const std::string &roomID,
                                                  const RoomManager::MessageHandler &handler) {
     auto topicHandler = [roomID, handler](const std::string &message) {

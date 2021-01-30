@@ -20,6 +20,10 @@ namespace tech::utils {
 
         void publish(const std::string &roomID, const std::string &message) const;
 
+        void publish(const std::string &roomID, const std::string &message, const SubscriberID &excludedID) const;
+
+        void tell(const std::string &roomID, const std::string &message, const SubscriberID &targetID) const;
+
         SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler);
 
         SubscriberID subscribe(const std::string &roomID, MessageHandler &&handler);

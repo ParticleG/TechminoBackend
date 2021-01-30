@@ -11,6 +11,24 @@ void tech::utils::Room::publish(const std::string &message) const {
     }
 }
 
+void tech::utils::Room::publish(const std::string &message, const SubscriberID &excludedID) const {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    for (auto &pair : _handlersMap) {
+        if (pair.first != excludedID) {
+            pair.second(message);
+        }
+    }
+}
+
+void tech::utils::Room::tell(const std::string &message, const SubscriberID &targetID) const {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    for (auto &pair : _handlersMap) {
+        if (pair.first == targetID) {
+            pair.second(message);
+        }
+    }
+}
+
 SubscriberID tech::utils::Room::subscribe(const tech::utils::Room::MessageHandler &handler) {
     std::unique_lock<SharedMutex> lock(_sharedMutex);
     _handlersMap[++_count] = handler;
