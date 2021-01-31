@@ -76,6 +76,18 @@ void VersusManager::publish(const std::string &roomID, const std::string &messag
     _roomManager.publish(roomID, message);
 }
 
+void VersusManager::publish(const std::string &roomID,
+                            const std::string &message,
+                            const SubscriberID &excludedID) const {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    _roomManager.publish(roomID, message, excludedID);
+}
+
+void VersusManager::tell(const std::string &roomID, const std::string &message, const SubscriberID &targetID) const {
+    std::shared_lock<SharedMutex> lock(_sharedMutex);
+    _roomManager.tell(roomID, message, targetID);
+}
+
 void VersusManager::chat(const std::string &message) {
     _chattingRoom.publish(message);
 }

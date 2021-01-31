@@ -1,8 +1,14 @@
 #pragma once
 
 #include <drogon/HttpController.h>
+#include <models/App.h>
+#include <models/Auth.h>
+#include <models/Data.h>
+#include <models/Message.h>
+#include <models/Users.h>
 
 using namespace drogon;
+using namespace drogon_model;
 namespace tech::api::v1 {
     struct JsonResponse {
         HttpStatusCode code;
@@ -52,7 +58,9 @@ namespace tech::api::v1 {
                              std::string userId);
 
     private:
-        static bool _validate(JsonResponse &jsonResponse, const std::string &email, const std::string &authToken);
+        static bool
+        _validate(JsonResponse &jsonResponse, orm::Mapper<Techmino::Auth> &authMapper, const std::string &email,
+                  const std::string &authToken);
     };
 
     class Auth : public drogon::HttpController<Auth> {
