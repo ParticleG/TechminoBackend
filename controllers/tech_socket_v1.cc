@@ -24,9 +24,9 @@ void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
 void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
     WSCloser wsCloser;
     Player player;
-    player._email = req->getParameter("email");
-    player._accessToken = req->getParameter("access_token");
-    player._roomID = "room_chatting";
+    player.email = req->getParameter("email");
+    player.accessToken = req->getParameter("access_token");
+    player.roomID = "room_chatting";
     if (!authorization(wsCloser, player)) {
         wsConnPtr->send(wsCloser._reason);
         wsCloser.close(wsConnPtr);
@@ -36,7 +36,7 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
 
     try {
-        player._subscriberID = roomManager->joinChat([wsConnPtr](const std::string &message) {
+        player.subscriberID = roomManager->joinChat([wsConnPtr](const std::string &message) {
             wsConnPtr->send(message);
         });
     } catch (std::range_error &e) {
@@ -54,7 +54,7 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         wsCloser.close(wsConnPtr);
         return;
     }
-    roomManager->chat("J" + player._name +
+    roomManager->chat("J" + player.username +
                       ":" + std::to_string(player._id) +
                       ":" + std::to_string(roomManager->chatCount()));
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
@@ -64,8 +64,8 @@ void Chat::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
         auto &player = wsConnPtr->getContextRef<Player>();
-        roomManager->quitChat(player._subscriberID);
-        roomManager->chat("L" + player._name +
+        roomManager->quitChat(player.subscriberID);
+        roomManager->chat("L" + player.username +
                           ":" + std::to_string(player._id) +
                           ":" + std::to_string(roomManager->chatCount()));
     }
@@ -80,7 +80,7 @@ void Chat::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::s
     } else if (commandType == 'T') {
         auto &player = wsConnPtr->getContextRef<Player>();
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
-        roomManager->chat("T" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->chat("T" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
     } else {
         auto &player = wsConnPtr->getContextRef<Player>();
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
@@ -106,10 +106,10 @@ void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
 void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
     WSCloser wsCloser;
     Player player;
-    player._email = req->getParameter("email");
-    player._accessToken = req->getParameter("access_token");
-    player._roomID = req->getParameter("id");
-    player._roomPassword = req->getParameter("password");
+    player.email = req->getParameter("email");
+    player.accessToken = req->getParameter("access_token");
+    player.roomID = req->getParameter("id");
+    player.roomPassword = req->getParameter("password");
     if (!authorization(wsCloser, player)) {
         wsConnPtr->send(wsCloser._reason);
         wsCloser.close(wsConnPtr);
@@ -119,7 +119,7 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
 
     try {
-        if (!roomManager->checkPassword(player._roomID, player._roomPassword)) {
+        if (!roomManager->checkPassword(player.roomID, player.roomPassword)) {
             wsCloser._code = CloseCode::kInvalidMessage;
             wsCloser._reason = "Password is incorrect";
             wsConnPtr->send(wsCloser._reason);
@@ -136,8 +136,8 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     }
 
     try {
-        player._subscriberID = roomManager->subscribe(
-                player._roomID,
+        player.subscriberID = roomManager->subscribe(
+                player.roomID,
                 [wsConnPtr](const std::string &topic, const std::string &message) {
                     wsConnPtr->send(message);
                 }
@@ -157,10 +157,10 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         wsCloser.close(wsConnPtr);
         return;
     }
-    roomManager->publish(player._roomID, "J" + player._name +
-                                         ":" + std::to_string(player._id));
+    roomManager->publish(player.roomID, "J" + player.username +
+                                        ":" + std::to_string(player._id));
 #ifdef DEBUG_MODE
-    std::cout << "[SERVER#0]$J " << player._name + ":" + std::to_string(player._id) << std::endl;
+    std::cout << "[SERVER#0]$J " << player.username + ":" + std::to_string(player._id) << std::endl;
 #endif
 
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
@@ -170,11 +170,11 @@ void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
         auto &player = wsConnPtr->getContextRef<Player>();
-        roomManager->unsubscribe(player._roomID, player._subscriberID);
-        roomManager->publish(player._roomID, "L" + player._name +
-                                             ":" + std::to_string(player._id));
+        roomManager->unsubscribe(player.roomID, player.subscriberID);
+        roomManager->publish(player.roomID, "L" + player.username +
+                                            ":" + std::to_string(player._id));
 #ifdef DEBUG_MODE
-        std::cout << "[SERVER#0]$L " << player._name + ":" + std::to_string(player._id) << std::endl;
+        std::cout << "[SERVER#0]$L " << player.username + ":" + std::to_string(player._id) << std::endl;
 #endif
     }
 }
@@ -183,7 +183,7 @@ void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::s
     auto &player = wsConnPtr->getContextRef<Player>();
     auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
     char commandType = message[0];
-    std::cout << "[" << player._name << "#" << player._id << "]$" << commandType << " " << message.substr(1)
+    std::cout << "[" << player.username << "#" << player._id << "]$" << commandType << " " << message.substr(1)
               << std::endl;
     if (commandType == 'P') {
 #ifdef DEBUG_MODE
@@ -192,30 +192,21 @@ void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::s
         wsConnPtr->send("", WebSocketMessageType::Pong);
     } else if (commandType == 'Q') {
 #ifdef DEBUG_MODE
-        std::cout << "[SERVER#0]$Q " << player._name + ":" + std::to_string(player._id) << std::endl;
+        std::cout << "[SERVER#0]$Q " << player.username + ":" + std::to_string(player._id) << std::endl;
 #endif
         wsConnPtr->forceClose();
     } else if (commandType == 'B') {
-        roomManager->publish(player._roomID,
+        roomManager->publish(player.roomID,
                              "B");
     } else if (commandType == 'T') {
-        roomManager->publish(player._roomID,
-                             "T" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->publish(player.roomID,
+                             "T" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
     } else if (commandType == 'C') {
-        roomManager->publish(player._roomID,
-                             "C" + player._name + ":" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->publish(player.roomID,
+                             "C" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
     } else if (commandType == 'S') {
-        roomManager->publish(player._roomID, "S" + std::to_string(player._id) + ":" + message.substr(1));
+        roomManager->publish(player.roomID, "S" + std::to_string(player._id) + ":" + message.substr(1));
     } else {
-        roomManager->publish(player._roomID, "EInvalid command.");
+        roomManager->publish(player.roomID, "EInvalid command.");
     }
 }
-
-//std::string Play::_jsonToPlainText(const Json::Value &value) {
-//    Json::StreamWriterBuilder writerBuilder;
-//    writerBuilder.settings_["indentation"] = "";
-//    std::unique_ptr<Json::StreamWriter> jsonWriter(writerBuilder.newStreamWriter());
-//    std::ostringstream oss;
-//    jsonWriter->write(value, &oss);
-//    return oss.str();
-//}

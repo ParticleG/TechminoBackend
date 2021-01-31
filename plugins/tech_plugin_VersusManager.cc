@@ -80,7 +80,7 @@ void VersusManager::chat(const std::string &message) {
     _chattingRoom.publish(message);
 }
 
-size_t VersusManager::size() {
+[[maybe_unused]] size_t VersusManager::size() {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
     return _roomManager.size();
 }

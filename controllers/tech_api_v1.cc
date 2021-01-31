@@ -2,63 +2,54 @@
 #define EXPIRATION_ACCESS_TOKEN (30 * 60)
 
 #include <plugins/tech_plugin_VersusManager.h>
+#include <models/App.h>
+#include <models/Message.h>
 #include "tech_api_v1.h"
 
 using namespace tech::api::v1;
-
-bool tech::api::v1::authorization(JsonResponse &jsonResponse, const std::string &email, const std::string &authToken) {
-    if (email.empty() || authToken.empty()) {
-        jsonResponse.code = k400BadRequest;
-        jsonResponse.body["message"] = "Invalid parameters";
-        return false;
-    }
-    try {
-        auto clientPtr = app().getDbClient();
-        auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
-        if (matchedUsers.empty()) {
-            jsonResponse.code = k404NotFound;
-            jsonResponse.body["message"] = "User not found";
-            return false;
-        }
-        if (authToken != matchedUsers[0]["auth_token"].as<std::string>()) {
-            jsonResponse.code = k403Forbidden;
-            jsonResponse.body["message"] = "Auth_token is incorrect";
-            return false;
-        }
-        if (trantor::Date::now() >
-            trantor::Date::fromDbStringLocal(matchedUsers[0]["auth_token_expire_time"].as<std::string>())) {
-            jsonResponse.code = k401Unauthorized;
-            jsonResponse.body["message"] = "Auth_token is expired";
-            return false;
-        }
-        return true;
-    } catch (const orm::DrogonDbException &e) {
-        LOG_ERROR << "error:" << e.base().what();
-        jsonResponse.code = k500InternalServerError;
-        jsonResponse.body["message"] = "Internal error";
-        return false;
-    }
-}
+using namespace drogon_model;
+using namespace drogon;
 
 void App::info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     JsonResponse jsonResponse;
+    orm::Mapper<Techmino::App> appMapper(app().getDbClient());
+    orm::Mapper<Techmino::Message> messageMapper(app().getDbClient());
     try {
-        auto clientPtr = drogon::app().getDbClient();
-        auto matchedApps = clientPtr->execSqlSync("select * from app");
-        auto matchedContents = clientPtr->execSqlSync(
-                R"(select content from message where type = 'notice' order by id desc)");
+        auto matchedApps = appMapper.findAll();
+        auto matchedContent = messageMapper
+                .orderBy(Techmino::Message::Cols::_id, SortOrder::DESC)
+                .findBy(Criteria(Techmino::Message::Cols::_type, CompareOperator::EQ, "notice"));
+
         jsonResponse.code = k200OK;
         jsonResponse.body["message"] = "OK";
-        jsonResponse.body["version_code"] = matchedApps[matchedApps.size() - 1]["version_code"].as<int>();
-        jsonResponse.body["version_name"] = matchedApps[matchedApps.size() - 1]["version_name"].as<std::string>();
-        jsonResponse.body["version_content"] = matchedApps[matchedApps.size() - 1]["version_content"].as<std::string>();
-        jsonResponse.body["notice"] = matchedContents[0]["content"].as<std::string>();
+        jsonResponse.body["version_code"] = matchedApps[matchedApps.size() - 1].getValueOfVersionCode();
+        jsonResponse.body["version_name"] = matchedApps[matchedApps.size() - 1].getValueOfVersionName();
+        jsonResponse.body["version_content"] = matchedApps[matchedApps.size() - 1].getValueOfVersionContent();
+        jsonResponse.body["notice"] = matchedContent[0].getValueOfContent();
     } catch (const orm::DrogonDbException &e) {
         jsonResponse.code = k500InternalServerError;
         LOG_ERROR << "error:" << e.base().what();
         jsonResponse.body["message"] = "Internal error";
     }
     jsonResponse.send(callback);
+
+//    try {
+//        auto clientPtr = drogon::app().getDbClient();
+//        auto matchedApps = clientPtr->execSqlSync("select * from app");
+//        auto matchedContents = clientPtr->execSqlSync(
+//                R"(select content from message where type = 'notice' order by id desc)");
+//        jsonResponse.code = k200OK;
+//        jsonResponse.body["message"] = "OK";
+//        jsonResponse.body["version_code"] = matchedApps[matchedApps.size() - 1]["version_code"].as<int>();
+//        jsonResponse.body["version_name"] = matchedApps[matchedApps.size() - 1]["version_name"].as<std::string>();
+//        jsonResponse.body["version_content"] = matchedApps[matchedApps.size() - 1]["version_content"].as<std::string>();
+//        jsonResponse.body["notice"] = matchedContents[0]["content"].as<std::string>();
+//    } catch (const orm::DrogonDbException &e) {
+//        jsonResponse.code = k500InternalServerError;
+//        LOG_ERROR << "error:" << e.base().what();
+//        jsonResponse.body["message"] = "Internal error";
+//    }
+//    jsonResponse.send(callback);
 }
 
 //void Users::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
@@ -106,7 +97,7 @@ void Users::info(const HttpRequestPtr &req, std::function<void(const HttpRespons
     } else {
         std::string email = (*requestBody)["email"].asString(),
                 auth_token = (*requestBody)["auth_token"].asString();
-        if (authorization(jsonResponse, email, auth_token)) {
+        if (_validate(jsonResponse, email, auth_token)) {
             try {
                 auto clientPtr = app().getDbClient();
                 auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", email);
@@ -232,6 +223,40 @@ void Users::saveData(const HttpRequestPtr &req, std::function<void(const HttpRes
         }
     }
     jsonResponse.send(callback);
+}
+
+bool Users::_validate(JsonResponse &jsonResponse, const std::string &email, const std::string &authToken) {
+    if (email.empty() || authToken.empty()) {
+        jsonResponse.code = k400BadRequest;
+        jsonResponse.body["message"] = "Invalid parameters";
+        return false;
+    }
+    try {
+        auto clientPtr = app().getDbClient();
+        auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
+        if (matchedUsers.empty()) {
+            jsonResponse.code = k404NotFound;
+            jsonResponse.body["message"] = "User not found";
+            return false;
+        }
+        if (authToken != matchedUsers[0]["auth_token"].as<std::string>()) {
+            jsonResponse.code = k403Forbidden;
+            jsonResponse.body["message"] = "Auth_token is incorrect";
+            return false;
+        }
+        if (trantor::Date::now() >
+            trantor::Date::fromDbStringLocal(matchedUsers[0]["auth_token_expire_time"].as<std::string>())) {
+            jsonResponse.code = k401Unauthorized;
+            jsonResponse.body["message"] = "Auth_token is expired";
+            return false;
+        }
+        return true;
+    } catch (const orm::DrogonDbException &e) {
+        LOG_ERROR << "error:" << e.base().what();
+        jsonResponse.code = k500InternalServerError;
+        jsonResponse.body["message"] = "Internal error";
+        return false;
+    }
 }
 
 void Auth::login(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
@@ -430,7 +455,7 @@ void online::Rooms::list(const HttpRequestPtr &req, std::function<void(const Htt
     } else {
         std::string email = (*requestBody)["email"].asString(),
                 accessToken = (*requestBody)["access_token"].asString();
-        if (authorization(jsonResponse, email, accessToken)) {
+        if (_validate(jsonResponse, email, accessToken)) {
             try {
                 auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
                 auto roomList = roomManager->getRoomList();
@@ -457,7 +482,7 @@ void online::Rooms::info(const HttpRequestPtr &req, std::function<void(const Htt
     } else {
         std::string email = (*requestBody)["email"].asString(),
                 accessToken = (*requestBody)["access_token"].asString();
-        if (authorization(jsonResponse, email, accessToken)) {
+        if (_validate(jsonResponse, email, accessToken)) {
             try {
                 auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
                 auto roomList = roomManager->getRoomList(roomType);
@@ -486,7 +511,7 @@ void online::Rooms::create(const HttpRequestPtr &req, std::function<void(const H
                 accessToken = (*requestBody)["access_token"].asString(),
                 roomName = (*requestBody)["room_name"].asString(),
                 roomPassword = (*requestBody)["room_password"].asString();
-        if (authorization(jsonResponse, email, accessToken)) {
+        if (_validate(jsonResponse, email, accessToken)) {
             try {
                 auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
                 auto tempRoom = roomManager->createRoom("room_" + drogon::utils::getUuid(), roomName, roomPassword,
@@ -505,7 +530,7 @@ void online::Rooms::create(const HttpRequestPtr &req, std::function<void(const H
 }
 
 bool
-online::Rooms::authorization(JsonResponse &jsonResponse, const std::string &email, const std::string &accessToken) {
+online::Rooms::_validate(JsonResponse &jsonResponse, const std::string &email, const std::string &accessToken) {
     try {
         auto clientPtr = app().getDbClient();
         auto matchedUsers = clientPtr->execSqlSync("select * from auth where email = $1", email);
