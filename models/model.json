@@ -4,25 +4,26 @@
     //filename: sqlite3 db file name
     //"filename":"",
     //host: server address,localhost by default;
-    "host": "127.0.0.1",
+    "host": "hdustea.3322.org",
     //port: server port, 5432 by default;
-    "port": 5432,
+    "port": 15432,
     //dbname: Database name;
-    "dbname": "",
+    "dbname": "Techmino",
     //schema: valid for postgreSQL, "public" by default;
     "schema": "public",
     //user: User name
-    "user": "",
+    "user": "Particle_G",
     //password or passwd: Password
-    "password": "",
+    "password": "114514",
     //client_encoding: The character set used by drogon_ctl. it is empty string by default which 
     //means use the default character set.
-    //"client_encoding": "",
+    "client_encoding": "UTF-8",
     //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
     "tables": [],
     "relationships": {
         "enabled": false,
-        "items": [{
+        "items": [
+            {
                 "type": "has one",
                 "original_table_name": "products",
                 "original_table_alias": "product",

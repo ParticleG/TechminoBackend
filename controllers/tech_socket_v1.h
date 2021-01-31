@@ -45,7 +45,7 @@ namespace tech::socket::v1 {
                 return false;
             }
             auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", player._email);
-            player._id = matchedUsers[0]["_id"].as<int>();
+            player._id = matchedUsers[0]["_id"].as<Json::Int64>();
             player._name = matchedUsers[0]["username"].as<std::string>();
             return true;
         } catch (const orm::DrogonDbException &e) {
