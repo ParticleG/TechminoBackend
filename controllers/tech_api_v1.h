@@ -15,8 +15,6 @@ namespace tech::api::v1 {
         }
     };
 
-    bool authorization(JsonResponse &jsonResponse, const std::string &email, const std::string &authToken);
-
     class App : public drogon::HttpController<App> {
     public:
         METHOD_LIST_BEGIN
@@ -53,6 +51,8 @@ namespace tech::api::v1 {
         static void saveData(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                              std::string userId);
 
+    private:
+        static bool _validate(JsonResponse &jsonResponse, const std::string &email, const std::string &authToken);
     };
 
     class Auth : public drogon::HttpController<Auth> {
@@ -101,7 +101,7 @@ namespace tech::api::v1 {
 
         private:
             static bool
-            authorization(JsonResponse &jsonResponse, const std::string &email, const std::string &accessToken);
+            _validate(JsonResponse &jsonResponse, const std::string &email, const std::string &accessToken);
         };
     }
 }

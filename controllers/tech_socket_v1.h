@@ -6,8 +6,10 @@
 using namespace drogon;
 namespace tech::socket::v1 {
     struct Player {
-        std::string _email{}, _accessToken{}, _name{}, _roomID{}, _roomPassword{}, _settings{};
-        drogon::SubscriberID _id{}, _subscriberID{};
+        Json::Int64 _id{};
+        std::string email{}, username{}, motto{}, avatar{};
+        std::string accessToken{}, roomID{}, roomPassword{}, settings{};
+        drogon::SubscriberID subscriberID{};
     };
 
     struct WSCloser {
@@ -20,20 +22,20 @@ namespace tech::socket::v1 {
     };
 
     bool authorization(WSCloser &wsCloser, Player &player) {
-        if (player._email.empty() || player._accessToken.empty() || player._roomID.empty()) {
+        if (player.email.empty() || player.accessToken.empty() || player.roomID.empty()) {
             wsCloser._code = CloseCode::kInvalidMessage;
             wsCloser._reason = "Invalid parameters";
             return false;
         }
         try {
             auto clientPtr = app().getDbClient();
-            auto matchedAuths = clientPtr->execSqlSync("select * from auth where email = $1", player._email);
+            auto matchedAuths = clientPtr->execSqlSync("select * from auth where email = $1", player.email);
             if (matchedAuths.empty()) {
                 wsCloser._code = CloseCode::kInvalidMessage;
                 wsCloser._reason = "User not found";
                 return false;
             }
-            if (player._accessToken != matchedAuths[0]["access_token"].as<std::string>()) {
+            if (player.accessToken != matchedAuths[0]["access_token"].as<std::string>()) {
                 wsCloser._code = CloseCode::kInvalidMessage;
                 wsCloser._reason = "Access_token is incorrect";
                 return false;
@@ -44,9 +46,11 @@ namespace tech::socket::v1 {
                 wsCloser._reason = "Access_token is expired";
                 return false;
             }
-            auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", player._email);
+            auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", player.email);
             player._id = matchedUsers[0]["_id"].as<Json::Int64>();
-            player._name = matchedUsers[0]["username"].as<std::string>();
+            player.username = matchedUsers[0]["username"].as<std::string>();
+            player.motto = matchedUsers[0]["motto"].as<std::string>();
+            player.avatar = matchedUsers[0]["avatar"].as<std::string>();
             return true;
         } catch (const orm::DrogonDbException &e) {
             LOG_ERROR << "error:" << e.base().what();

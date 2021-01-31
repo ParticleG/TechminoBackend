@@ -14,10 +14,14 @@ else ()
     set(CMAKE_CXX_STANDARD 14)
 endif ()
 
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif ()
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(${PROJECT_NAME} main.cc)
+add_executable(${PROJECT_NAME} main.cc utils/utils.cpp utils/utils.h)
 
 ##########
 # If you include the drogon source code locally in your project, use this method to add drogon

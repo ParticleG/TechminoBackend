@@ -53,7 +53,7 @@ namespace tech {
 
             void chat(const std::string &message);
 
-            size_t size();
+            [[maybe_unused]] size_t size();
 
             uint64_t chatCount();
 
