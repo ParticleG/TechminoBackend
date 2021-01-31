@@ -10,6 +10,7 @@
 #include <utils/communication_manager.h>
 #include <utils/room_manager.h>
 #include <utils/room.h>
+#include <utils/utils.h>
 
 using namespace drogon;
 using namespace trantor;
@@ -50,6 +51,10 @@ namespace tech {
             bool checkPassword(const std::string &roomID, const std::string &password);
 
             void publish(const std::string &roomID, const std::string &message);
+
+            void publish(const std::string &roomID, const std::string &message, const SubscriberID &excludedID) const;
+
+            void tell(const std::string &roomID, const std::string &message, const SubscriberID &targetID) const;
 
             void chat(const std::string &message);
 

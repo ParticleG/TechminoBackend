@@ -183,30 +183,46 @@ void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::s
     auto &player = wsConnPtr->getContextRef<Player>();
     auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
     char commandType = message[0];
+    auto seed = utils::utils::uniform_random();
+#ifdef DEBUG_MODE
     std::cout << "[" << player.username << "#" << player._id << "]$" << commandType << " " << message.substr(1)
               << std::endl;
-    if (commandType == 'P') {
-#ifdef DEBUG_MODE
-        std::cout << "[SERVER#0]$P" << std::endl;
 #endif
-        wsConnPtr->send("", WebSocketMessageType::Pong);
-    } else if (commandType == 'Q') {
+    switch (commandType) {
+        case 'P':
 #ifdef DEBUG_MODE
-        std::cout << "[SERVER#0]$Q " << player.username + ":" + std::to_string(player._id) << std::endl;
+            std::cout << "[SERVER#0]$P" << std::endl;
 #endif
-        wsConnPtr->forceClose();
-    } else if (commandType == 'B') {
-        roomManager->publish(player.roomID,
-                             "B");
-    } else if (commandType == 'T') {
-        roomManager->publish(player.roomID,
-                             "T" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
-    } else if (commandType == 'C') {
-        roomManager->publish(player.roomID,
-                             "C" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
-    } else if (commandType == 'S') {
-        roomManager->publish(player.roomID, "S" + std::to_string(player._id) + ":" + message.substr(1));
-    } else {
-        roomManager->publish(player.roomID, "EInvalid command.");
+            wsConnPtr->send("", WebSocketMessageType::Pong);
+            break;
+        case 'Q':
+#ifdef DEBUG_MODE
+            std::cout << "[SERVER#0]$Q " << player.username + ":" + std::to_string(player._id) << std::endl;
+#endif
+            wsConnPtr->forceClose();
+            break;
+        case 'B':
+#ifdef DEBUG_MODE
+            std::cout << "[SERVER#0]$B " << seed << std::endl;
+#endif
+            roomManager->publish(player.roomID, "B" + std::to_string(seed));
+            break;
+        case 'T':
+            roomManager->publish(player.roomID,
+                                 "T" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
+            break;
+        case 'C':
+            roomManager->publish(player.roomID,
+                                 "C" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1),
+                                 player.subscriberID);
+            break;
+        case 'S':
+            roomManager->publish(player.roomID,
+                                 "S" + std::to_string(player._id) + ":" + message.substr(1),
+                                 player.subscriberID);
+            break;
+        default:
+            roomManager->publish(player.roomID, "EInvalid command.");
+            break;
     }
 }
