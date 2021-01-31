@@ -32,10 +32,10 @@
 *.App
 
 # Folders
-cmake-build-debug-msvc_x86
 cmake-build-debug-msvc_x64
 cmake-build-debug-wsl
-cmake-build-release-msvc_x86
 cmake-build-release-msvc_x64
 cmake-build-release-wsl
 .idea
+/cmake-build-debug-msvc_x86/
+/cmake-build-release-msvc_x86/
