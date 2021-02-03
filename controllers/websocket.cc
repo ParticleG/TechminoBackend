@@ -1,7 +1,7 @@
 #include <plugins/tech_plugin_VersusManager.h>
-#include "tech_socket_v1.h"
+#include "websocket.h"
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 using namespace tech::socket::v1;
 
