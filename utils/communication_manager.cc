@@ -1,4 +1,4 @@
-#include <plugins/tech_plugin_VersusManager.h>
+#include <plugins/Configurator.h>
 
 using namespace tech::utils;
 
@@ -19,7 +19,7 @@ void CommunicationManager::initAndStart(const uint16_t &port, const std::string 
         buffer->retrieveAll();
         _split(message, parameters, '&');
         if (player->_email.empty() && _authorization(player, parameters, response)) {
-            auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+            auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
             try {
                 if (!roomManager->checkPassword(player->_roomID, player->_roomPassword)) {
                     response = "Password is incorrect";
@@ -66,7 +66,7 @@ void CommunicationManager::initAndStart(const uint16_t &port, const std::string 
         } else if (connectionPtr->disconnected()) {
             auto player = connectionPtr->getContext<Player>();
             if (player->_subscriberID != -1) {
-                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+                auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
                 roomManager->unsubscribe(player->_roomID, player->_subscriberID);
             }
             connectionPtr->clearContext();

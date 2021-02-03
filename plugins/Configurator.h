@@ -18,7 +18,7 @@ using namespace trantor;
 namespace tech {
     namespace plugin {
 
-        class VersusManager : public drogon::Plugin<VersusManager> {
+        class Configurator : public drogon::Plugin<Configurator> {
         public:
 #if __cplusplus >= 201703L | defined _WIN32
             using SharedMutex = std::shared_mutex;
@@ -26,7 +26,7 @@ namespace tech {
             using SharedMutex = std::shared_timed_mutex;
 #endif
 
-            VersusManager() {}
+            Configurator() {}
 
             /// This method must be called by drogon to initialize and start the plugin.
             /// It must be implemented by the user.
@@ -35,6 +35,10 @@ namespace tech {
             /// This method must be called by drogon to shutdown the plugin.
             /// It must be implemented by the user.
             virtual void shutdown() override;
+
+            int getAuthExpire();
+
+            int getAccessExpire();
 
             Json::Value createRoom(const std::string &roomID, const std::string &name, const std::string &password,
                                    const std::string &roomType);
@@ -67,6 +71,7 @@ namespace tech {
             Json::Value getRoomList(const std::string &roomType);
 
         private:
+            uint64_t _authTokenExpireTime, _accessTokenExpireTime;
             std::unordered_map<std::string, uint64_t> _roomTypes;
             tech::utils::CommunicationManager _communicationManager;
             tech::utils::RoomManager _roomManager;
