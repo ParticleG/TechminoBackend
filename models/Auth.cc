@@ -917,7 +917,7 @@ bool Auth::validateJsonForUpdate(const Json::Value &pJson, std::string &err) {
         if (!validJsonOfField(0, "_id", pJson["_id"], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the json object for update";
+        err = "The value of primary key must be set in the json object for modify";
         return false;
     }
     if (pJson.isMember("email")) {
@@ -962,7 +962,7 @@ bool Auth::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         if (!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the json object for update";
+        err = "The value of primary key must be set in the json object for modify";
         return false;
     }
     if (!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1])) {
