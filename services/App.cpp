@@ -4,15 +4,11 @@
 
 #include <services/App.h>
 
-using namespace drogon_model;
-
 void tech::services::App::info(HttpStatusCode &code, Json::Value &body) {
-    orm::Mapper<Techmino::App> appMapper(app().getDbClient());
-    orm::Mapper<Techmino::Message> messageMapper(app().getDbClient());
+
     try {
-        auto matchedApps = appMapper.findAll();
-        auto matchedContent = messageMapper
-                .orderBy(Techmino::Message::Cols::_id, SortOrder::DESC)
+        auto matchedApps = appMapper->findAll();
+        auto matchedContent = messageMapper->orderBy(Techmino::Message::Cols::_id, SortOrder::DESC)
                 .findBy(Criteria(Techmino::Message::Cols::_type, CompareOperator::EQ, "notice"));
 
         code = k200OK;
@@ -26,4 +22,9 @@ void tech::services::App::info(HttpStatusCode &code, Json::Value &body) {
         LOG_ERROR << "error:" << e.base().what();
         body["message"] = "Internal error";
     }
+}
+
+tech::services::App::App() {
+    appMapper = make_shared<orm::Mapper<Techmino::App>>(app().getDbClient());
+    messageMapper = make_shared<orm::Mapper<Techmino::Message>>(app().getDbClient());
 }

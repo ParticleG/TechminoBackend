@@ -7,7 +7,6 @@
 void tech::api::v1::User::create(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
     Json::Value body;
-
     _service.create(req, code, body);
     utils::httpResponse::json(code, body, callback);
 }
@@ -15,23 +14,20 @@ void tech::api::v1::User::create(const HttpRequestPtr &req, function<void(const 
 void tech::api::v1::User::info(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
     Json::Value body;
-
-
+    _service.info(req, code, body);
     utils::httpResponse::json(code, body, callback);
 }
 
 void tech::api::v1::User::modify(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
     Json::Value body;
-
-
+    _service.modify(req, code, body);
     utils::httpResponse::json(code, body, callback);
 }
 
 void tech::api::v1::User::erase(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
     Json::Value body;
-
-
+    _service.erase(req, code, body);
     utils::httpResponse::json(code, body, callback);
 }

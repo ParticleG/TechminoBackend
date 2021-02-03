@@ -27,13 +27,13 @@ bool tech::utils::authorizer::authToken(
         }
         if (authToken != matchedUsers[0].getValueOfAuthToken()) {
             code = k403Forbidden;
-            body["message"] = "Auth_token is incorrect";
+            body["message"] = "Auth Token is incorrect";
             return false;
         }
         if (trantor::Date::now() >
             trantor::Date::fromDbStringLocal(matchedUsers[0].getValueOfAuthTokenExpireTime())) {
             code = k401Unauthorized;
-            body["message"] = "Auth_token is expired";
+            body["message"] = "Auth Token is expired";
             return false;
         }
         return true;
