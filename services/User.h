@@ -9,7 +9,6 @@
 #include <models/Auth.h>
 #include <models/User.h>
 
-using namespace tech::utils;
 using namespace drogon_model;
 
 namespace tech::services {

@@ -227,12 +227,16 @@
     "plugins": [
         {
             //name: The class name of the plugin
-            "name": "tech::plugin::VersusManager",
+            "name": "tech::plugin::Configurator",
             //dependencies: Plugins that the plugin depends on. It can be commented out
             "dependencies": [],
             //config: The configuration of the plugin. This json object is the parameter to initialize the plugin.
             //It can be commented out
             "config": {
+                "auth": {
+                    "auth_token_expire_time": 432000,
+                    "access_token_expire_time": 1800
+                },
                 "port": 10027,
                 "room_types": [
                     {

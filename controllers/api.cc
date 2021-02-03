@@ -1,7 +1,7 @@
 #define EXPIRATION_AUTH_TOKEN (4 * 24 * 3600)
 #define EXPIRATION_ACCESS_TOKEN (30 * 60)
 
-#include <plugins/tech_plugin_VersusManager.h>
+#include <plugins/Configurator.h>
 #include "api.h"
 
 
@@ -195,7 +195,7 @@ void online::Rooms::list(const HttpRequestPtr &req, std::function<void(const Htt
                 accessToken = (*requestBody)["access_token"].asString();
         if (_validate(jsonResponse, email, accessToken)) {
             try {
-                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+                auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
                 auto roomList = roomManager->getRoomList();
                 jsonResponse.code = k200OK;
                 jsonResponse.body["message"] = "OK";
@@ -222,7 +222,7 @@ void online::Rooms::info(const HttpRequestPtr &req, std::function<void(const Htt
                 accessToken = (*requestBody)["access_token"].asString();
         if (_validate(jsonResponse, email, accessToken)) {
             try {
-                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+                auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
                 auto roomList = roomManager->getRoomList(roomType);
                 jsonResponse.code = k200OK;
                 jsonResponse.body["message"] = "OK";
@@ -251,7 +251,7 @@ void online::Rooms::create(const HttpRequestPtr &req, std::function<void(const H
                 roomPassword = (*requestBody)["room_password"].asString();
         if (_validate(jsonResponse, email, accessToken)) {
             try {
-                auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+                auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
                 auto tempRoom = roomManager->createRoom("room_" + drogon::utils::getUuid(), roomName, roomPassword,
                                                         roomType);
                 jsonResponse.code = k200OK;

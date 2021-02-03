@@ -39,7 +39,6 @@ void User::info(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &re
                 authToken = requestBody["authToken"].asString();
         if (authorizer::authToken(email, authToken, code, responseBody)) {
             try {
-
                 auto matchedUsers = userMapper->findBy(
                         Criteria(Techmino::User::Cols::_email, CompareOperator::EQ, email)
                 );
@@ -73,14 +72,11 @@ void User::modify(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &
         if (authorizer::authToken(email, authToken, code, responseBody)) {
             try {
                 Techmino::User user;
-
                 user.setEmail(email);
                 user.setUsername(username);
                 user.setMotto(motto);
                 user.setAvatar(avatar);
-
                 userMapper->update(user);
-
                 code = k200OK;
                 responseBody["message"] = "OK";
             } catch (const orm::DrogonDbException &e) {

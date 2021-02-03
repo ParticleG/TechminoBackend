@@ -1,4 +1,4 @@
-#include <plugins/tech_plugin_VersusManager.h>
+#include <plugins/Configurator.h>
 #include "websocket.h"
 
 //#define DEBUG_MODE
@@ -33,7 +33,7 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         return;
     }
 
-    auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+    auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
 
     try {
         player.subscriberID = roomManager->joinChat([wsConnPtr](const std::string &message) {
@@ -62,7 +62,7 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
 
 void Chat::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+        auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
         auto &player = wsConnPtr->getContextRef<Player>();
         roomManager->quitChat(player.subscriberID);
         roomManager->chat("L" + player.username +
@@ -79,11 +79,11 @@ void Chat::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::s
         wsConnPtr->forceClose();
     } else if (commandType == 'T') {
         auto &player = wsConnPtr->getContextRef<Player>();
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+        auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
         roomManager->chat("T" + player.username + ":" + std::to_string(player._id) + ":" + message.substr(1));
     } else {
         auto &player = wsConnPtr->getContextRef<Player>();
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+        auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
         roomManager->chat("EInvalid command.");
     }
 }
@@ -116,7 +116,7 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         return;
     }
 
-    auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+    auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
 
     try {
         if (!roomManager->checkPassword(player.roomID, player.roomPassword)) {
@@ -168,7 +168,7 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
 
 void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
-        auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+        auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
         auto &player = wsConnPtr->getContextRef<Player>();
         roomManager->unsubscribe(player.roomID, player.subscriberID);
         roomManager->publish(player.roomID, "L" + player.username +
@@ -181,7 +181,7 @@ void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
 
 void Play::_messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message) {
     auto &player = wsConnPtr->getContextRef<Player>();
-    auto *roomManager = app().getPlugin<tech::plugin::VersusManager>();
+    auto *roomManager = app().getPlugin<tech::plugin::Configurator>();
     char commandType = message[0];
     auto seed = utils::utils::uniform_random();
 #ifdef DEBUG_MODE
