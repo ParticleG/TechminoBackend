@@ -72,7 +72,7 @@ namespace tech::socket::v1 {
         virtual void handleConnectionClosed(const WebSocketConnectionPtr &) override;
 
         WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/chat_room");
+            WS_PATH_ADD("/tech/socket/v1/online/chat");
         WS_PATH_LIST_END
 
     private:
@@ -91,7 +91,7 @@ namespace tech::socket::v1 {
         virtual void handleConnectionClosed(const WebSocketConnectionPtr &) override;
 
         WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/play_room");
+            WS_PATH_ADD("/tech/socket/v1/online/play");
         WS_PATH_LIST_END
 
     private:
