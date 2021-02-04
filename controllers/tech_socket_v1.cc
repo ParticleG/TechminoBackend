@@ -54,6 +54,7 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
         wsCloser.close(wsConnPtr);
         return;
     }
+    std::cout << "[" + player.username + "#" + std::to_string(player._id) + "]" + std::to_string(player.subscriberID) << std::endl;
     roomManager->chat("J" + player.username +
                       ":" + std::to_string(player._id) +
                       ":" + std::to_string(roomManager->chatCount()));
@@ -161,6 +162,7 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
                                         ":" + std::to_string(player._id));
 #ifdef DEBUG_MODE
     std::cout << "[SERVER#0]$J " << player.username + ":" + std::to_string(player._id) << std::endl;
+    std::cout << "[" + player.username + "#" + std::to_string(player._id) + "]SubID: " + std::to_string(player.subscriberID) << std::endl;
 #endif
 
     wsConnPtr->setContext(std::make_shared<Player>(std::move(player)));
