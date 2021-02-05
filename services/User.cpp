@@ -12,7 +12,7 @@ using namespace drogon;
 using namespace std;
 
 User::User() {
-    userMapper = make_shared<orm::Mapper<Techmino::User>>(app().getDbClient());
+    userMapper = make_shared<orm::Mapper<Techmino::Info>>(app().getDbClient());
 }
 
 void User::create(
@@ -33,7 +33,7 @@ void User::info(
     if (Authorizer::authToken(email, authToken, code, responseBody)) {
         try {
             auto matchedUsers = userMapper->findBy(
-                    Criteria(Techmino::User::Cols::_email, CompareOperator::EQ, email)
+                    Criteria(Techmino::Info::Cols::_email, CompareOperator::EQ, email)
             );
             code = k200OK;
             responseBody["message"] = "OK";
@@ -59,7 +59,7 @@ void User::modify(
 ) {
     if (Authorizer::authToken(email, authToken, code, responseBody)) {
         try {
-            Techmino::User user;
+            Techmino::Info user;
             user.setEmail(email);
             user.setUsername(username);
             user.setMotto(motto);

@@ -20,13 +20,13 @@ const std::string Auth::Cols::_access_token = "access_token";
 const std::string Auth::Cols::_auth_token_expire_time = "auth_token_expire_time";
 const std::string Auth::Cols::_access_token_expire_time = "access_token_expire_time";
 const std::string Auth::Cols::_qq = "qq";
-const std::string Auth::primaryKeyName = "_id";
+const std::string Auth::primaryKeyName = "email";
 const bool Auth::hasPrimaryKey = true;
 const std::string Auth::tableName = "auth";
 
 const std::vector<typename Auth::MetaData> Auth::metaData_={
-{"_id","int64_t","bigint",8,1,1,1},
-{"email","std::string","text",0,0,0,1},
+{"_id","int64_t","bigint",8,1,0,1},
+{"email","std::string","text",0,0,1,1},
 {"password","std::string","text",0,0,0,1},
 {"auth_token","std::string","text",0,0,0,0},
 {"access_token","std::string","text",0,0,0,0},
@@ -287,7 +287,6 @@ void Auth::updateByMasqueradedJson(const Json::Value &pJson,
     }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
-        dirtyFlag_[1] = true;
         if(!pJson[pMasqueradingVector[1]].isNull())
         {
             email_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
@@ -354,7 +353,6 @@ void Auth::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("email"))
     {
-        dirtyFlag_[1] = true;
         if(!pJson["email"].isNull())
         {
             email_=std::make_shared<std::string>(pJson["email"].asString());
@@ -429,11 +427,6 @@ void Auth::setId(const int64_t &pId) noexcept
 
 
 
-const typename Auth::PrimaryKeyType & Auth::getPrimaryKey() const
-{
-    assert(Id_);
-    return *Id_;
-}
 
 const std::string &Auth::getValueOfEmail() const noexcept
 {
@@ -459,6 +452,11 @@ void Auth::setEmail(std::string &&pEmail) noexcept
 
 
 
+const typename Auth::PrimaryKeyType & Auth::getPrimaryKey() const
+{
+    assert(email_);
+    return *email_;
+}
 
 const std::string &Auth::getValueOfPassword() const noexcept
 {
@@ -1208,15 +1206,15 @@ bool Auth::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(0, "_id", pJson["_id"], err, false))
             return false;
     }
-    else
-    {
-        err = "The value of primary key must be set in the json object for update";
-        return false;
-    }
     if(pJson.isMember("email"))
     {
         if(!validJsonOfField(1, "email", pJson["email"], err, false))
             return false;
+    }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
     }
     if(pJson.isMember("password"))
     {
@@ -1264,15 +1262,15 @@ bool Auth::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
             return false;
     }
-    else
-    {
-        err = "The value of primary key must be set in the json object for update";
-        return false;
-    }
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
             return false;
+    }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
     }
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
@@ -1324,7 +1322,12 @@ bool Auth::validJsonOfField(size_t index,
             {
                 err="The automatic primary key cannot be set";
                 return false;
-            }        
+            }
+            else
+            {
+                err="The automatic primary key cannot be update";
+                return false;
+            }
             if(!pJson.isInt64())
             {
                 err="Type error in the "+fieldName+" field";

@@ -33,7 +33,7 @@ void User::info(const HttpRequestPtr &req, function<void(const HttpResponsePtr &
         code = k400BadRequest;
     } else {
         std::string email = requestBody["email"].asString(),
-                authToken = requestBody["authToken"].asString();
+                authToken = requestBody["auth_token"].asString();
         _service.info(email, authToken, code, responseBody);
     }
     Http::fromJson(code, responseBody, callback);
@@ -52,7 +52,7 @@ void User::modify(const HttpRequestPtr &req, function<void(const HttpResponsePtr
                 authToken = requestBody["auth_token"].asString(),
                 username = requestBody["username"].asString(),
                 motto = requestBody["motto"].asString(),
-                avatar = requestBody["motto"].asString();
+                avatar = requestBody["avatar"].asString();
         _service.modify(email, authToken, username, motto, avatar, code, responseBody);
     }
     Http::fromJson(code, responseBody, callback);
