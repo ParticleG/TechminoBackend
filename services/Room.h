@@ -8,7 +8,7 @@
 #include <drogon/PubSubService.h>
 #include <json/json.h>
 
-#include "crypto.h"
+#include "Crypto.h"
 
 using namespace drogon;
 
@@ -47,7 +47,7 @@ namespace tech::utils {
 
         bool checkPassword(const std::string &password);
 
-        bool changePassword(const std::string &password, const std::string &newPassword);
+        bool changePassword(const std::string &oldPassword, const std::string &newPassword);
 
         bool empty() const;
 

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <utils/httpResponse.h>
+#include <utils/Http.h>
 #include <models/App.h>
 #include <models/Message.h>
 

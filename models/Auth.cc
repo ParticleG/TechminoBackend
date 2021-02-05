@@ -12,7 +12,7 @@
 using namespace drogon;
 using namespace drogon_model::Techmino;
 
-const std::string Auth::Cols::__id = "_id";
+const std::string Auth::Cols::__id = "_roomID";
 const std::string Auth::Cols::_email = "email";
 const std::string Auth::Cols::_password = "password";
 const std::string Auth::Cols::_auth_token = "auth_token";
@@ -20,12 +20,12 @@ const std::string Auth::Cols::_access_token = "access_token";
 const std::string Auth::Cols::_auth_token_expire_time = "auth_token_expire_time";
 const std::string Auth::Cols::_access_token_expire_time = "access_token_expire_time";
 const std::string Auth::Cols::_qq = "qq";
-const std::string Auth::primaryKeyName = "_id";
+const std::string Auth::primaryKeyName = "_roomID";
 const bool Auth::hasPrimaryKey = true;
 const std::string Auth::tableName = "auth";
 
 const std::vector<typename Auth::MetaData> Auth::metaData_ = {
-        {"_id",                      "int64_t",     "bigint", 8, 1, 1, 1},
+        {"_roomID",                      "int64_t",     "bigint", 8, 1, 1, 1},
         {"email",                    "std::string", "text",   0, 0, 0, 1},
         {"password",                 "std::string", "text",   0, 0, 0, 1},
         {"auth_token",               "std::string", "text",   0, 0, 0, 0},
@@ -42,8 +42,8 @@ const std::string &Auth::getColumnName(size_t index) noexcept(false) {
 
 Auth::Auth(const Row &r, const ssize_t indexOffset) noexcept {
     if (indexOffset < 0) {
-        if (!r["_id"].isNull()) {
-            Id_ = std::make_shared<int64_t>(r["_id"].as<int64_t>());
+        if (!r["_roomID"].isNull()) {
+            Id_ = std::make_shared<int64_t>(r["_roomID"].as<int64_t>());
         }
         if (!r["email"].isNull()) {
             email_ = std::make_shared<std::string>(r["email"].as<std::string>());
@@ -165,10 +165,10 @@ Auth::Auth(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
 }
 
 Auth::Auth(const Json::Value &pJson) noexcept(false) {
-    if (pJson.isMember("_id")) {
+    if (pJson.isMember("_roomID")) {
         dirtyFlag_[0] = true;
-        if (!pJson["_id"].isNull()) {
-            Id_ = std::make_shared<int64_t>((int64_t) pJson["_id"].asInt64());
+        if (!pJson["_roomID"].isNull()) {
+            Id_ = std::make_shared<int64_t>((int64_t) pJson["_roomID"].asInt64());
         }
     }
     if (pJson.isMember("email")) {
@@ -271,9 +271,9 @@ void Auth::updateByMasqueradedJson(const Json::Value &pJson,
 }
 
 void Auth::updateByJson(const Json::Value &pJson) noexcept(false) {
-    if (pJson.isMember("_id")) {
-        if (!pJson["_id"].isNull()) {
-            Id_ = std::make_shared<int64_t>((int64_t) pJson["_id"].asInt64());
+    if (pJson.isMember("_roomID")) {
+        if (!pJson["_roomID"].isNull()) {
+            Id_ = std::make_shared<int64_t>((int64_t) pJson["_roomID"].asInt64());
         }
     }
     if (pJson.isMember("email")) {
@@ -664,9 +664,9 @@ void Auth::updateArgs(drogon::orm::internal::SqlBinder &binder) const {
 Json::Value Auth::toJson() const {
     Json::Value ret;
     if (getId()) {
-        ret["_id"] = (Json::Int64) getValueOfId();
+        ret["_roomID"] = (Json::Int64) getValueOfId();
     } else {
-        ret["_id"] = Json::Value();
+        ret["_roomID"] = Json::Value();
     }
     if (getEmail()) {
         ret["email"] = getValueOfEmail();
@@ -770,9 +770,9 @@ Json::Value Auth::toMasqueradedJson(
     }
     LOG_ERROR << "Masquerade failed";
     if (getId()) {
-        ret["_id"] = (Json::Int64) getValueOfId();
+        ret["_roomID"] = (Json::Int64) getValueOfId();
     } else {
-        ret["_id"] = Json::Value();
+        ret["_roomID"] = Json::Value();
     }
     if (getEmail()) {
         ret["email"] = getValueOfEmail();
@@ -813,8 +813,8 @@ Json::Value Auth::toMasqueradedJson(
 }
 
 bool Auth::validateJsonForCreation(const Json::Value &pJson, std::string &err) {
-    if (pJson.isMember("_id")) {
-        if (!validJsonOfField(0, "_id", pJson["_id"], err, true))
+    if (pJson.isMember("_roomID")) {
+        if (!validJsonOfField(0, "_roomID", pJson["_roomID"], err, true))
             return false;
     }
     if (pJson.isMember("email")) {
@@ -913,11 +913,11 @@ bool Auth::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 
 bool Auth::validateJsonForUpdate(const Json::Value &pJson, std::string &err) {
-    if (pJson.isMember("_id")) {
-        if (!validJsonOfField(0, "_id", pJson["_id"], err, false))
+    if (pJson.isMember("_roomID")) {
+        if (!validJsonOfField(0, "_roomID", pJson["_roomID"], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the json object for update";
+        err = "The value of primary key must be set in the fromJson object for update";
         return false;
     }
     if (pJson.isMember("email")) {
@@ -962,7 +962,7 @@ bool Auth::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         if (!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the json object for update";
+        err = "The value of primary key must be set in the fromJson object for update";
         return false;
     }
     if (!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1])) {

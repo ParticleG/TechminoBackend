@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <utils/httpRequest.h>
-#include <utils/httpResponse.h>
+#include <utils/Http.h>
 #include <models/Auth.h>
 
 using namespace drogon_model;

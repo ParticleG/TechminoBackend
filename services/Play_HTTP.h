@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <plugins/Configurator.h>
+#include <plugins/PlayManager.h>
 
 namespace tech::services {
     class Play {
     public:
-        Play() : _configurator(app().getPlugin<tech::plugin::Configurator>()) {};
+        Play() : _playManager(app().getPlugin<tech::plugin::PlayManager>()) {};
 
         void list(
                 const std::string &email,
@@ -37,6 +37,6 @@ namespace tech::services {
         );
 
     private:
-        shared_ptr<tech::plugin::Configurator> _configurator;
+        std::shared_ptr<tech::plugin::PlayManager> _playManager;
     };
 }

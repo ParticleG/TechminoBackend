@@ -12,5 +12,5 @@ void api::v1::App::info(const HttpRequestPtr &req, std::function<void(const Http
 
     _service.info(code, body);
 
-    utils::httpResponse::json(code, body, callback);
+    utils::Http::fromJson(code, body, callback);
 }
