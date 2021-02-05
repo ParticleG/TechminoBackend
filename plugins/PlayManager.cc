@@ -18,6 +18,7 @@ void PlayManager::initAndStart(const Json::Value &config) {
             LOG_ERROR << "You must set at least one roomType";
             abort();
         }
+        _roomManager = make_unique<RoomManager>();
     } else {
         LOG_ERROR << R"(Requires array value "room_types" in plugin PlayManager's config')";
         abort();
@@ -29,59 +30,59 @@ void PlayManager::shutdown() {}
 Json::Value PlayManager::createRoom(const string &roomID, const string &name, const string &password,
                                     const string &roomType) {
     unique_lock<shared_mutex> lock(_sharedMutex);
-    _roomManager.createRoom(roomID, name, password, roomType, _roomTypes.at(roomType));
-    return _roomManager.getRoomJson(roomID);
+    _roomManager->createRoom(roomID, name, password, roomType, _roomTypes.at(roomType));
+    return _roomManager->getRoomJson(roomID);
 }
 
 SubscriberID PlayManager::subscribe(const string &roomID,
                                     const RoomManager::MessageHandler &handler) {
     unique_lock<shared_mutex> lock(_sharedMutex);
-    return _roomManager.subscribe(roomID, handler);
+    return _roomManager->subscribe(roomID, handler);
 }
 
 void PlayManager::unsubscribe(const string &roomID, const SubscriberID &playerID) {
     unique_lock<shared_mutex> lock(_sharedMutex);
-    _roomManager.unsubscribe(roomID, playerID);
+    _roomManager->unsubscribe(roomID, playerID);
 }
 
 bool PlayManager::checkPassword(const string &roomID, const string &password) {
     shared_lock<shared_mutex> lock(_sharedMutex);
-    return _roomManager.checkPassword(roomID, password);
+    return _roomManager->checkPassword(roomID, password);
 }
 
 void PlayManager::publish(const string &roomID, const string &message) {
     shared_lock<shared_mutex> lock(_sharedMutex);
-    _roomManager.publish(roomID, message);
+    _roomManager->publish(roomID, message);
 }
 
 void PlayManager::publish(const string &roomID,
                           const string &message,
                           const SubscriberID &excludedID) const {
     shared_lock<shared_mutex> lock(_sharedMutex);
-    _roomManager.publish(roomID, message, excludedID);
+    _roomManager->publish(roomID, message, excludedID);
 }
 
 void PlayManager::tell(const string &roomID, const string &message, const SubscriberID &targetID) const {
     shared_lock<shared_mutex> lock(_sharedMutex);
-    _roomManager.tell(roomID, message, targetID);
+    _roomManager->tell(roomID, message, targetID);
 }
 
 
 [[maybe_unused]] size_t PlayManager::size() {
     shared_lock<shared_mutex> lock(_sharedMutex);
-    return _roomManager.size();
+    return _roomManager->size();
 }
 
 Json::Value PlayManager::getRoomList() {
     shared_lock<shared_mutex> lock(_sharedMutex);
-    return _roomManager.getRoomList();
+    return _roomManager->getRoomList();
 }
 
 Json::Value PlayManager::getRoomList(const string &roomType) {
     shared_lock<shared_mutex> lock(_sharedMutex);
     auto iter = _roomTypes.find(roomType);
     if (iter != _roomTypes.end()) {
-        return _roomManager.getRoomList(roomType);
+        return _roomManager->getRoomList(roomType);
     }
     throw out_of_range("Unsupported room type");
 }
