@@ -2,11 +2,15 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include "Authorizer.h"
+#include <models/Auth.h>
+#include <utils/Authorizer.h>
 
+using namespace tech::utils;
 using namespace drogon_model;
+using namespace drogon;
+using namespace std;
 
-bool tech::utils::Authorizer::accessToken(const std::string &email, const std::string &accessToken, CloseCode &code, std::string &reason) {
+bool Authorizer::accessToken(const string &email, const string &accessToken, CloseCode &code, string &reason) {
     if (email.empty() || accessToken.empty()) {
         code = CloseCode::kInvalidMessage;
         reason = "Invalid parameters";
@@ -40,9 +44,9 @@ bool tech::utils::Authorizer::accessToken(const std::string &email, const std::s
     }
 }
 
-bool tech::utils::Authorizer::accessToken(
-        const std::string &email,
-        const std::string &accessToken,
+bool Authorizer::accessToken(
+        const string &email,
+        const string &accessToken,
         HttpStatusCode &code, Json::Value &body
 ) {
     if (email.empty() || accessToken.empty()) {
@@ -78,9 +82,9 @@ bool tech::utils::Authorizer::accessToken(
     }
 }
 
-bool tech::utils::Authorizer::authToken(
-        const std::string &email,
-        const std::string &authToken,
+bool Authorizer::authToken(
+        const string &email,
+        const string &authToken,
         HttpStatusCode &code,
         Json::Value &body
 ) {
@@ -117,7 +121,7 @@ bool tech::utils::Authorizer::authToken(
     }
 }
 
-bool tech::utils::Authorizer::password(const std::string &email, const std::string &password, HttpStatusCode &code, Json::Value &body) {
+bool Authorizer::password(const string &email, const string &password, HttpStatusCode &code, Json::Value &body) {
     if (email.empty() || password.empty()) {
         code = k400BadRequest;
         body["message"] = "Invalid parameters";

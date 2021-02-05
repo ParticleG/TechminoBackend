@@ -5,13 +5,9 @@
 #pragma once
 
 #include <drogon/plugins/Plugin.h>
-#include <.unused/communication_manager.h>
-#include <services/RoomManager.h>
 #include <services/Room.h>
+#include <services/RoomManager.h>
 #include <utils/Utils.h>
-
-using namespace drogon;
-using namespace trantor;
 
 namespace tech::plugin {
     class PlayManager : public drogon::Plugin<PlayManager> {
@@ -25,18 +21,17 @@ namespace tech::plugin {
         Json::Value createRoom(const std::string &roomID, const std::string &name, const std::string &password,
                                const std::string &roomType);
 
-        SubscriberID
-        subscribe(const std::string &roomID, const tech::utils::RoomManager::MessageHandler &handler);
+        drogon::SubscriberID subscribe(const std::string &roomID, const tech::services::RoomManager::MessageHandler &handler);
 
-        void unsubscribe(const std::string &roomID, const SubscriberID &playerID);
+        void unsubscribe(const std::string &roomID, const drogon::SubscriberID &playerID);
 
         bool checkPassword(const std::string &roomID, const std::string &password);
 
         void publish(const std::string &roomID, const std::string &message);
 
-        void publish(const std::string &roomID, const std::string &message, const SubscriberID &excludedID) const;
+        void publish(const std::string &roomID, const std::string &message, const drogon::SubscriberID &excludedID) const;
 
-        void tell(const std::string &roomID, const std::string &message, const SubscriberID &targetID) const;
+        void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
 
         [[maybe_unused]] size_t size();
 
@@ -46,7 +41,7 @@ namespace tech::plugin {
 
     private:
         std::unordered_map<std::string, uint64_t> _roomTypes;
-        tech::utils::RoomManager _roomManager;
+        tech::services::RoomManager _roomManager;
         mutable std::shared_mutex _sharedMutex;
     };
 }

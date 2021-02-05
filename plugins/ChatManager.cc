@@ -1,20 +1,18 @@
-/**
- *
- *  tech_plugin_ChatManager.cc
- *
- */
+//
+// Created by Parti on 2021/2/4.
+//
 
-#include "ChatManager.h"
+#include <plugins/ChatManager.h>
 
-#include <memory>
-
-using namespace drogon;
 using namespace tech::plugin;
+using namespace tech::services;
+using namespace drogon;
+using namespace std;
 
 void ChatManager::initAndStart(const Json::Value &config) {
     if (config.isMember("id") && config["id"].isString()) {
         _roomID = config["id"].asString();
-        _chattingRoom = std::make_unique<tech::utils::Room>(
+        _chattingRoom = make_unique<Room>(
                 config["id"].asString(),
                 config["name"].asString(),
                 "",
@@ -31,21 +29,21 @@ void ChatManager::shutdown() {
     /// Shutdown the plugin
 }
 
-std::string ChatManager::getID() const {
+string ChatManager::getID() const {
     return _roomID;
 }
 
-SubscriberID ChatManager::joinChat(const tech::utils::Room::MessageHandler &handler) {
-    std::unique_lock<std::shared_mutex> lock(_sharedMutex);
+SubscriberID ChatManager::joinChat(const Room::MessageHandler &handler) {
+    unique_lock<shared_mutex> lock(_sharedMutex);
     return _chattingRoom->subscribe(handler);
 }
 
 void ChatManager::quitChat(SubscriberID playerID) {
-    std::unique_lock<std::shared_mutex> lock(_sharedMutex);
+    unique_lock<shared_mutex> lock(_sharedMutex);
     _chattingRoom->unsubscribe(playerID);
 }
 
-void ChatManager::chat(const std::string &message) {
+void ChatManager::chat(const string &message) {
     _chattingRoom->publish(message);
 }
 

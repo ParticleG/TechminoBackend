@@ -5,12 +5,6 @@
 #pragma once
 
 #include <drogon/plugins/Plugin.h>
-#include <services/RoomManager.h>
-#include <services/Room.h>
-#include <utils/Utils.h>
-
-using namespace drogon;
-using namespace trantor;
 
 namespace tech::plugin {
     class Configurator : public drogon::Plugin<Configurator> {

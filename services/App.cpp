@@ -4,13 +4,16 @@
 
 #include <services/App.h>
 
-void tech::services::App::info(HttpStatusCode &code, Json::Value &body) {
+using namespace tech::services;
+using namespace drogon_model;
+using namespace drogon;
+using namespace std;
 
+void App::info(HttpStatusCode &code, Json::Value &body) {
     try {
         auto matchedApps = appMapper->findAll();
         auto matchedContent = messageMapper->orderBy(Techmino::Message::Cols::_id, SortOrder::DESC)
                 .findBy(Criteria(Techmino::Message::Cols::_type, CompareOperator::EQ, "notice"));
-
         code = k200OK;
         body["message"] = "OK";
         body["version_code"] = matchedApps[matchedApps.size() - 1].getValueOfVersionCode();
@@ -24,7 +27,7 @@ void tech::services::App::info(HttpStatusCode &code, Json::Value &body) {
     }
 }
 
-tech::services::App::App() {
+App::App() {
     appMapper = make_shared<orm::Mapper<Techmino::App>>(app().getDbClient());
     messageMapper = make_shared<orm::Mapper<Techmino::Message>>(app().getDbClient());
 }

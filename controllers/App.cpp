@@ -4,13 +4,16 @@
 
 #include <controllers/App.h>
 
-using namespace tech;
+using namespace tech::api::v1;
+using namespace tech::utils;
+using namespace drogon;
+using namespace std;
 
-void api::v1::App::info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
+void App::info(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
     Json::Value body;
 
     _service.info(code, body);
 
-    utils::Http::fromJson(code, body, callback);
+    Http::fromJson(code, body, callback);
 }

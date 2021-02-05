@@ -5,11 +5,13 @@
 #include "Chat_WS.h"
 #include <utils/WebSocket.h>
 
+using namespace tech::plugin;
 using namespace tech::socket::v1;
 using namespace tech::utils;
-using namespace tech::plugin;
+using namespace drogon;
+using namespace std;
 
-void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
+void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, string &&message,
                             const WebSocketMessageType &type) {
     if (type == WebSocketMessageType::Ping) {
         LOG_DEBUG << "Received a PING";
@@ -26,9 +28,9 @@ void Chat::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
 
 void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
     CloseCode code;
-    std::string reason;
+    string reason;
 
-    std::string email = req->getParameter("email"),
+    string email = req->getParameter("email"),
             accessToken = req->getParameter("access_token"),
             roomID = app().getPlugin<ChatManager>()->getID();
 

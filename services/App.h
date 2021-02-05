@@ -4,20 +4,19 @@
 
 #pragma once
 
-#include <utils/Http.h>
 #include <models/App.h>
 #include <models/Message.h>
-
-using namespace drogon_model;
+#include <utils/Http.h>
 
 namespace tech::services {
     class App {
     public:
         App();
 
-        void info(HttpStatusCode &code, Json::Value &body);
+        void info(drogon::HttpStatusCode &code, Json::Value &body);
+
     private:
-        shared_ptr<orm::Mapper<Techmino::App>> appMapper;
-        shared_ptr<orm::Mapper<Techmino::Message>> messageMapper;
+        std::shared_ptr<drogon::orm::Mapper<drogon_model::Techmino::App>> appMapper;
+        std::shared_ptr<drogon::orm::Mapper<drogon_model::Techmino::Message>> messageMapper;
     };
 }
