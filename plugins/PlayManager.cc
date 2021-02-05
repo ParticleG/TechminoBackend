@@ -19,7 +19,7 @@ void PlayManager::initAndStart(const Json::Value &config) {
             abort();
         }
     } else {
-        LOG_ERROR << R"(Requires "room_types" in plugin's config')";
+        LOG_ERROR << R"(Requires array value "room_types" in plugin PlayManager's config')";
         abort();
     }
 }

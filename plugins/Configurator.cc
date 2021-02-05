@@ -10,11 +10,16 @@ using namespace tech::plugin;
 using namespace tech::utils;
 
 void Configurator::initAndStart(const Json::Value &config) {
-    if (config.isMember("auth") && config["auth"].isObject()) {
-        _authTokenExpireTime = config["auth"]["auth_token_expire_time"].asUInt();
-        _accessTokenExpireTime = config["auth"]["access_token_expire_time"].asUInt();
+    if (config.isMember("auth_token_expire_time") && config["access_token_expire_time"].isUInt()) {
+        _authTokenExpireTime = config["auth_token_expire_time"].asUInt();
     } else {
-        LOG_ERROR << R"(Requires "auth" in plugin's config')";
+        LOG_ERROR << R"(Requires unsigned int value "auth_token_expire_time" in plugin Configurator's config')";
+        abort();
+    }
+    if (config.isMember("access_token_expire_time") && config["access_token_expire_time"].isUInt()) {
+        _accessTokenExpireTime = config["access_token_expire_time"].asUInt();
+    } else {
+        LOG_ERROR << R"(Requires unsigned int value "access_token_expire_time" in plugin Configurator's config')";
         abort();
     }
 }

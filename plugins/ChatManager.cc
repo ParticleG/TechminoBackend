@@ -22,7 +22,7 @@ void ChatManager::initAndStart(const Json::Value &config) {
                 2147483647
         );
     } else {
-        LOG_ERROR << R"(Requires "id" in plugin's config')";
+        LOG_ERROR << R"(Requires string value "id" in plugin ChatManager's config')";
         abort();
     }
 }
