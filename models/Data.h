@@ -44,7 +44,7 @@ namespace drogon_model {
             const static std::string tableName;
             const static bool hasPrimaryKey;
             const static std::string primaryKeyName;
-            using PrimaryKeyType = int64_t;
+            using PrimaryKeyType = std::string;
 
             const PrimaryKeyType &getPrimaryKey() const;
 
@@ -157,12 +157,12 @@ namespace drogon_model {
             bool dirtyFlag_[2] = {false};
         public:
             static const std::string &sqlForFindingByPrimaryKey() {
-                static const std::string sql = "select * from " + tableName + " where _id = $1";
+                static const std::string sql = "select * from " + tableName + " where email = $1";
                 return sql;
             }
 
             static const std::string &sqlForDeletingByPrimaryKey() {
-                static const std::string sql = "delete from " + tableName + " where _id = $1";
+                static const std::string sql = "delete from " + tableName + " where email = $1";
                 return sql;
             }
 

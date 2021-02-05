@@ -14,13 +14,13 @@ using namespace drogon_model::Techmino;
 
 const std::string Data::Cols::__id = "_id";
 const std::string Data::Cols::_email = "email";
-const std::string Data::primaryKeyName = "_id";
+const std::string Data::primaryKeyName = "email";
 const bool Data::hasPrimaryKey = true;
 const std::string Data::tableName = "data";
 
 const std::vector<typename Data::MetaData> Data::metaData_ = {
-        {"_id",   "int64_t",     "bigint", 8, 1, 1, 1},
-        {"email", "std::string", "text",   0, 0, 0, 1}
+        {"_id",   "int64_t",     "bigint", 8, 1, 0, 1},
+        {"email", "std::string", "text",   0, 0, 1, 1}
 };
 
 const std::string &Data::getColumnName(size_t index) noexcept(false) {
@@ -101,7 +101,6 @@ void Data::updateByMasqueradedJson(const Json::Value &pJson,
         }
     }
     if (!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1])) {
-        dirtyFlag_[1] = true;
         if (!pJson[pMasqueradingVector[1]].isNull()) {
             email_ = std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
@@ -115,7 +114,6 @@ void Data::updateByJson(const Json::Value &pJson) noexcept(false) {
         }
     }
     if (pJson.isMember("email")) {
-        dirtyFlag_[1] = true;
         if (!pJson["email"].isNull()) {
             email_ = std::make_shared<std::string>(pJson["email"].asString());
         }
@@ -139,11 +137,6 @@ void Data::setId(const int64_t &pId) noexcept {
 }
 
 
-const typename Data::PrimaryKeyType &Data::getPrimaryKey() const {
-    assert(Id_);
-    return *Id_;
-}
-
 const std::string &Data::getValueOfEmail() const noexcept {
     const static std::string defaultValue = std::string();
     if (email_)
@@ -165,6 +158,11 @@ void Data::setEmail(std::string &&pEmail) noexcept {
     dirtyFlag_[1] = true;
 }
 
+
+const typename Data::PrimaryKeyType &Data::getPrimaryKey() const {
+    assert(email_);
+    return *email_;
+}
 
 void Data::updateId(const uint64_t id) {
 }
@@ -297,13 +295,13 @@ bool Data::validateJsonForUpdate(const Json::Value &pJson, std::string &err) {
     if (pJson.isMember("_id")) {
         if (!validJsonOfField(0, "_id", pJson["_id"], err, false))
             return false;
-    } else {
-        err = "The value of primary key must be set in the json object for update";
-        return false;
     }
     if (pJson.isMember("email")) {
         if (!validJsonOfField(1, "email", pJson["email"], err, false))
             return false;
+    } else {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
     }
     return true;
 }
@@ -318,13 +316,13 @@ bool Data::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
     if (!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0])) {
         if (!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
             return false;
-    } else {
-        err = "The value of primary key must be set in the json object for update";
-        return false;
     }
     if (!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1])) {
         if (!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
             return false;
+    } else {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
     }
     return true;
 }
@@ -342,6 +340,9 @@ bool Data::validJsonOfField(size_t index,
             }
             if (isForCreation) {
                 err = "The automatic primary key cannot be set";
+                return false;
+            } else {
+                err = "The automatic primary key cannot be update";
                 return false;
             }
             if (!pJson.isInt64()) {
