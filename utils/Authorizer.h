@@ -4,26 +4,36 @@
 
 #pragma once
 
+#include <drogon/WebSocketController.h>
 #include <drogon/HttpController.h>
 #include <models/Auth.h>
 
 using namespace drogon;
 
 namespace tech::utils {
-    class authorizer {
+    class Authorizer {
     public:
+        static bool accessToken(
+                const std::string &email,
+                const std::string &accessToken,
+                CloseCode &code,
+                std::string &reason
+        );
+
         static bool accessToken(
                 const std::string &email,
                 const std::string &accessToken,
                 HttpStatusCode &code,
                 Json::Value &body
         );
+
         static bool authToken(
                 const std::string &email,
                 const std::string &authToken,
                 HttpStatusCode &code,
                 Json::Value &body
         );
+
         static bool password(
                 const std::string &email,
                 const std::string &password,

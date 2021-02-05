@@ -1,4 +1,4 @@
-#include "room_manager.h"
+#include "RoomManager.h"
 
 void tech::utils::RoomManager::publish(const std::string &roomID, const std::string &message) const {
     std::shared_ptr<tech::utils::Room> topicPtr;
@@ -91,7 +91,7 @@ bool tech::utils::RoomManager::full(const std::string &roomID) {
     if (iter != _roomIDMap.end()) {
         return iter->second->full();
     }
-    throw std::out_of_range("tech::utils::Room not found");
+    throw std::out_of_range("Room not found");
 }
 
 bool tech::utils::RoomManager::empty(const std::string &roomID) {
@@ -100,7 +100,7 @@ bool tech::utils::RoomManager::empty(const std::string &roomID) {
     if (iter != _roomIDMap.end()) {
         return iter->second->empty();
     }
-    throw std::out_of_range("tech::utils::Room not found");
+    throw std::out_of_range("Room not found");
 }
 
 void tech::utils::RoomManager::clear() {
@@ -136,7 +136,7 @@ bool tech::utils::RoomManager::checkPassword(const std::string &roomID, const st
     if (iter != _roomIDMap.end()) {
         return iter->second->checkPassword(password);
     }
-    throw std::out_of_range("tech::utils::Room not found");
+    throw std::out_of_range("Room not found");
 }
 
 Json::Value tech::utils::RoomManager::getRoomJson(const std::string &roomID) {
@@ -152,7 +152,7 @@ Json::Value tech::utils::RoomManager::getRoomJson(const std::string &roomID) {
     if (iter != _roomIDMap.end()) {
         return iter->second->toJson();
     }
-    throw std::out_of_range("tech::utils::Room not found");
+    throw std::out_of_range("Room not found");
 }
 
 Json::Value tech::utils::RoomManager::getRoomList() {
@@ -194,5 +194,5 @@ SubscriberID tech::utils::RoomManager::_subscribeToRoom(const std::string &roomI
     if (iter != _roomIDMap.end()) {
         return iter->second->subscribe(std::move(handler));
     }
-    throw std::out_of_range("tech::utils::Room not found");
+    throw std::out_of_range("Room not found");
 }

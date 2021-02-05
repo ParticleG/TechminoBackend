@@ -11,31 +11,36 @@ using namespace std;
 using namespace drogon;
 
 namespace tech::utils {
-    class httpResponse {
+    class Http {
     public:
-        static void json(
+        static void fromJson(
                 const HttpStatusCode &code,
                 const Json::Value &body,
                 const function<void(const HttpResponsePtr &)> &callback
         );
 
-        static void plain(
+        static void fromPlain(
                 const HttpStatusCode &code,
                 const string &body,
                 const function<void(const HttpResponsePtr &)> &callback
         );
 
-        static void html(
+        static void fromHtml(
                 const HttpStatusCode &code,
                 const string &body,
                 const function<void(const HttpResponsePtr &)> &callback
         );
 
-        static void normal(
+        static void from(
                 const HttpStatusCode &code,
                 const ContentType &type,
                 const string &body,
                 const function<void(const HttpResponsePtr &)> &callback
+        );
+
+        static string toJson(
+                const HttpRequestPtr &req,
+                Json::Value &result
         );
     };
 }

@@ -2,9 +2,8 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include <services/Play.h>
-#include <utils/authorizer.h>
-#include <utils/crypto.h>
+#include <services/Play_HTTP.h>
+#include <utils/Authorizer.h>
 
 using namespace tech::services;
 using namespace tech::utils;
@@ -15,9 +14,9 @@ void Play::list(
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (authorizer::accessToken(email, accessToken, code, responseBody)) {
+    if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
-            auto roomList = _configurator->getRoomList();
+            auto roomList = _playManager->getRoomList();
             code = k200OK;
             responseBody["message"] = "OK";
             responseBody["room_list"] = roomList;
@@ -36,9 +35,9 @@ void Play::info(
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (authorizer::accessToken(email, accessToken, code, responseBody)) {
+    if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
-            auto roomList = _configurator->getRoomList(roomType);
+            auto roomList = _playManager->getRoomList(roomType);
             code = k200OK;
             responseBody["message"] = "OK";
             responseBody["room_list"] = roomList;
@@ -59,10 +58,10 @@ void Play::create(
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (authorizer::accessToken(email, accessToken, code, responseBody)) {
+    if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
             std::string roomID = Crypto::blake2b("room_" + drogon::utils::getUuid());
-            auto tempRoom = _configurator->createRoom(roomID, roomName, roomPassword, roomType);
+            auto tempRoom = _playManager->createRoom(roomID, roomName, roomPassword, roomType);
             code = k200OK;
             responseBody["message"] = "OK";
             responseBody["room"] = tempRoom;

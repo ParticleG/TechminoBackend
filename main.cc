@@ -28,7 +28,7 @@ const std::string SPLASH_TEXT = /* NOLINT */R"(
 
 int main() {
     std::cout << SPLASH_TEXT << std::endl;
-    drogon::app().loadConfigFile("config.json");
+    drogon::app().loadConfigFile("config.fromJson");
     drogon::app().run();
     return 0;
 }

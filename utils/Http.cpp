@@ -2,9 +2,11 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include "httpResponse.h"
+#include "Http.h"
 
-void tech::utils::httpResponse::json(
+using namespace tech::utils;
+
+void Http::fromJson(
         const HttpStatusCode &code,
         const Json::Value &body,
         const function<void(const HttpResponsePtr &)> &callback
@@ -14,18 +16,18 @@ void tech::utils::httpResponse::json(
     callback(httpJsonResponse);
 }
 
-void tech::utils::httpResponse::plain(
+void Http::fromPlain(
         const HttpStatusCode &code, const string &body,
         const function<void(const HttpResponsePtr &)> &callback
-) { normal(code, CT_TEXT_PLAIN, body, callback); }
+) { from(code, CT_TEXT_PLAIN, body, callback); }
 
-void tech::utils::httpResponse::html(
+void Http::fromHtml(
         const HttpStatusCode &code,
         const string &body,
         const function<void(const HttpResponsePtr &)> &callback
-) { normal(code, CT_TEXT_HTML, body, callback); }
+) { from(code, CT_TEXT_HTML, body, callback); }
 
-void tech::utils::httpResponse::normal(
+void Http::from(
         const HttpStatusCode &code,
         const ContentType &type,
         const string &body,
@@ -36,4 +38,12 @@ void tech::utils::httpResponse::normal(
     httpResponse->setContentTypeCode(type);
     httpResponse->setBody(body);
     callback(httpResponse);
+}
+
+string Http::toJson(
+        const HttpRequestPtr &req,
+        Json::Value &result
+) {
+    result = *req->getJsonObject();
+    return req->getJsonError();
 }

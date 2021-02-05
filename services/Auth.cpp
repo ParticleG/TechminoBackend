@@ -3,8 +3,8 @@
 //
 
 #include <services/Auth.h>
-#include <utils/authorizer.h>
-#include <utils/crypto.h>
+#include <utils/Authorizer.h>
+#include <utils/Crypto.h>
 #include <plugins/Configurator.h>
 
 using namespace tech::services;
@@ -16,7 +16,7 @@ Auth::Auth() {
 
 void Auth::updateAuthToken(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -24,7 +24,7 @@ void Auth::updateAuthToken(const HttpRequestPtr &req, HttpStatusCode &code, Json
     } else {
         std::string email = requestBody["email"].asString(),
                 authToken = requestBody["auth_token"].asString();
-        if (authorizer::authToken(email, authToken, code, responseBody)) {
+        if (Authorizer::authToken(email, authToken, code, responseBody)) {
             try {
                 auto *configurator = app().getPlugin<tech::plugin::Configurator>();
                 Techmino::Auth auth;
@@ -44,7 +44,7 @@ void Auth::updateAuthToken(const HttpRequestPtr &req, HttpStatusCode &code, Json
 
 void Auth::getAuthToken(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -52,7 +52,7 @@ void Auth::getAuthToken(const HttpRequestPtr &req, HttpStatusCode &code, Json::V
     } else {
         std::string email = requestBody["email"].asString(),
                 password = requestBody["password"].asString();
-        if (authorizer::password(email, password, code, responseBody)) {
+        if (Authorizer::password(email, password, code, responseBody)) {
             try {
                 auto *configurator = app().getPlugin<tech::plugin::Configurator>();
                 Techmino::Auth auth;
@@ -75,7 +75,7 @@ void Auth::getAuthToken(const HttpRequestPtr &req, HttpStatusCode &code, Json::V
 
 void Auth::updateAccessToken(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -83,7 +83,7 @@ void Auth::updateAccessToken(const HttpRequestPtr &req, HttpStatusCode &code, Js
     } else {
         std::string email = requestBody["email"].asString(),
                 accessToken = requestBody["access_token"].asString();
-        if (authorizer::accessToken(email, accessToken, code, responseBody)) {
+        if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
             try {
                 auto *configurator = app().getPlugin<tech::plugin::Configurator>();
                 Techmino::Auth auth;
@@ -103,7 +103,7 @@ void Auth::updateAccessToken(const HttpRequestPtr &req, HttpStatusCode &code, Js
 
 void Auth::getAccessToken(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -111,7 +111,7 @@ void Auth::getAccessToken(const HttpRequestPtr &req, HttpStatusCode &code, Json:
     } else {
         std::string email = requestBody["email"].asString(),
                 authToken = requestBody["auth_token"].asString();
-        if (authorizer::authToken(email, authToken, code, responseBody)) {
+        if (Authorizer::authToken(email, authToken, code, responseBody)) {
             try {
                 auto *configurator = app().getPlugin<tech::plugin::Configurator>();
                 Techmino::Auth auth;

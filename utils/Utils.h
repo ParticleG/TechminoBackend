@@ -11,7 +11,7 @@
 #include <json/json.h>
 
 namespace tech::utils {
-    class utils {
+    class Utils {
     public:
         static std::string jsonToPlainText(const Json::Value &value);
 

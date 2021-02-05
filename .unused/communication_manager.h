@@ -6,7 +6,7 @@
 #include <drogon/PubSubService.h>
 #include <json/json.h>
 
-#include "crypto.h"
+#include "Crypto.h"
 
 using namespace trantor;
 

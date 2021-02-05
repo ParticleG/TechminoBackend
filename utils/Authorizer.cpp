@@ -2,11 +2,45 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include "authorizer.h"
+#include "Authorizer.h"
 
 using namespace drogon_model;
 
-bool tech::utils::authorizer::accessToken(
+bool tech::utils::Authorizer::accessToken(const std::string &email, const std::string &accessToken, CloseCode &code, std::string &reason) {
+    if (email.empty() || accessToken.empty()) {
+        code = CloseCode::kInvalidMessage;
+        reason = "Invalid parameters";
+        return false;
+    }
+    try {
+        orm::Mapper<Techmino::Auth> authMapper(app().getDbClient());
+        auto matchedUsers = authMapper.findBy(Criteria(Techmino::Auth::Cols::_email, CompareOperator::EQ, email));
+        if (matchedUsers.empty()) {
+            code = CloseCode::kInvalidMessage;
+            reason = "User not found";
+            return false;
+        }
+        if (accessToken != matchedUsers[0].getValueOfAccessToken()) {
+            code = CloseCode::kInvalidMessage;
+            reason = "Access Token is incorrect";
+            return false;
+        }
+        if (trantor::Date::now() >
+            trantor::Date::fromDbStringLocal(matchedUsers[0].getValueOfAccessTokenExpireTime())) {
+            code = CloseCode::kInvalidMessage;
+            reason = "Access Token is expired";
+            return false;
+        }
+        return true;
+    } catch (const orm::DrogonDbException &e) {
+        LOG_ERROR << "error:" << e.base().what();
+        code = CloseCode::kUnexpectedCondition;
+        reason = "Internal error";
+        return false;
+    }
+}
+
+bool tech::utils::Authorizer::accessToken(
         const std::string &email,
         const std::string &accessToken,
         HttpStatusCode &code, Json::Value &body
@@ -44,7 +78,7 @@ bool tech::utils::authorizer::accessToken(
     }
 }
 
-bool tech::utils::authorizer::authToken(
+bool tech::utils::Authorizer::authToken(
         const std::string &email,
         const std::string &authToken,
         HttpStatusCode &code,
@@ -83,7 +117,7 @@ bool tech::utils::authorizer::authToken(
     }
 }
 
-bool tech::utils::authorizer::password(const std::string &email, const std::string &password, HttpStatusCode &code, Json::Value &body) {
+bool tech::utils::Authorizer::password(const std::string &email, const std::string &password, HttpStatusCode &code, Json::Value &body) {
     if (email.empty() || password.empty()) {
         code = k400BadRequest;
         body["message"] = "Invalid parameters";

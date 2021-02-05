@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <utils/room.h>
+#include <services/Room.h>
 
 using namespace drogon;
 

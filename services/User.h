@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include <utils/httpRequest.h>
-#include <utils/httpResponse.h>
-#include <models/Auth.h>
+#include <utils/Http.h>
 #include <models/User.h>
 
 using namespace drogon_model;
@@ -25,6 +23,6 @@ namespace tech::services {
         void erase(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody);
 
     private:
-        shared_ptr<orm::Mapper<Techmino::User>> userMapper;
+        shared_ptr<Mapper<Techmino::User>> userMapper;
     };
 }

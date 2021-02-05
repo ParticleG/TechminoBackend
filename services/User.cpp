@@ -3,8 +3,7 @@
 //
 
 #include <services/User.h>
-#include <utils/authorizer.h>
-#include <utils/crypto.h>
+#include <utils/Authorizer.h>
 
 using namespace tech::services;
 using namespace tech::utils;
@@ -15,7 +14,7 @@ User::User() {
 
 void User::create(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -29,7 +28,7 @@ void User::create(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &
 
 void User::info(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -37,7 +36,7 @@ void User::info(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &re
     } else {
         std::string email = requestBody["email"].asString(),
                 authToken = requestBody["authToken"].asString();
-        if (authorizer::authToken(email, authToken, code, responseBody)) {
+        if (Authorizer::authToken(email, authToken, code, responseBody)) {
             try {
                 auto matchedUsers = userMapper->findBy(
                         Criteria(Techmino::User::Cols::_email, CompareOperator::EQ, email)
@@ -58,7 +57,7 @@ void User::info(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &re
 
 void User::modify(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -69,7 +68,7 @@ void User::modify(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &
                 username = requestBody["username"].asString(),
                 motto = requestBody["motto"].asString(),
                 avatar = requestBody["motto"].asString();
-        if (authorizer::authToken(email, authToken, code, responseBody)) {
+        if (Authorizer::authToken(email, authToken, code, responseBody)) {
             try {
                 Techmino::User user;
                 user.setEmail(email);
@@ -90,7 +89,7 @@ void User::modify(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &
 
 void User::erase(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody) {
     Json::Value requestBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         code = k400BadRequest;
         responseBody["message"] = "Wrong format.";

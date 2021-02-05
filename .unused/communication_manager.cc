@@ -1,4 +1,4 @@
-#include <plugins/Configurator.h>
+#include <.unused/communication_manager.h>
 
 using namespace tech::utils;
 
@@ -114,7 +114,7 @@ bool CommunicationManager::_authorization(const std::shared_ptr<Player> &player,
             return false;
         }
         auto matchedUsers = clientPtr->execSqlSync("select * from users where email = $1", player->_email);
-        player->_id = matchedUsers[0]["_id"].as<int>();
+        player->_id = matchedUsers[0]["_roomID"].as<int>();
         player->_name = matchedUsers[0]["username"].as<std::string>();
         return true;
     } catch (const orm::DrogonDbException &e) {

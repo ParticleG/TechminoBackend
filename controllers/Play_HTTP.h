@@ -5,7 +5,7 @@
 #pragma once
 
 #include <drogon/HttpController.h>
-#include <services/Play.h>
+#include <services/Play_HTTP.h>
 
 namespace tech::api::v1::online {
     class Play : public drogon::HttpController<Play> {

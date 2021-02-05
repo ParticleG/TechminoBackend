@@ -12,17 +12,17 @@
 using namespace drogon;
 using namespace drogon_model::Techmino;
 
-const std::string Users::Cols::__id = "_id";
+const std::string Users::Cols::__id = "_roomID";
 const std::string Users::Cols::_email = "email";
 const std::string Users::Cols::_username = "username";
 const std::string Users::Cols::_motto = "motto";
 const std::string Users::Cols::_avatar = "avatar";
-const std::string Users::primaryKeyName = "_id";
+const std::string Users::primaryKeyName = "_roomID";
 const bool Users::hasPrimaryKey = true;
 const std::string Users::tableName = "users";
 
 const std::vector<typename Users::MetaData> Users::metaData_ = {
-        {"_id",      "int64_t",     "bigint", 8, 1, 1, 1},
+        {"_roomID",      "int64_t",     "bigint", 8, 1, 1, 1},
         {"email",    "std::string", "text",   0, 0, 0, 1},
         {"username", "std::string", "text",   0, 0, 0, 1},
         {"motto",    "std::string", "text",   0, 0, 0, 0},
@@ -36,8 +36,8 @@ const std::string &Users::getColumnName(size_t index) noexcept(false) {
 
 Users::Users(const Row &r, const ssize_t indexOffset) noexcept {
     if (indexOffset < 0) {
-        if (!r["_id"].isNull()) {
-            Id_ = std::make_shared<int64_t>(r["_id"].as<int64_t>());
+        if (!r["_roomID"].isNull()) {
+            Id_ = std::make_shared<int64_t>(r["_roomID"].as<int64_t>());
         }
         if (!r["email"].isNull()) {
             email_ = std::make_shared<std::string>(r["email"].as<std::string>());
@@ -120,10 +120,10 @@ Users::Users(const Json::Value &pJson, const std::vector<std::string> &pMasquera
 }
 
 Users::Users(const Json::Value &pJson) noexcept(false) {
-    if (pJson.isMember("_id")) {
+    if (pJson.isMember("_roomID")) {
         dirtyFlag_[0] = true;
-        if (!pJson["_id"].isNull()) {
-            Id_ = std::make_shared<int64_t>((int64_t) pJson["_id"].asInt64());
+        if (!pJson["_roomID"].isNull()) {
+            Id_ = std::make_shared<int64_t>((int64_t) pJson["_roomID"].asInt64());
         }
     }
     if (pJson.isMember("email")) {
@@ -190,9 +190,9 @@ void Users::updateByMasqueradedJson(const Json::Value &pJson,
 }
 
 void Users::updateByJson(const Json::Value &pJson) noexcept(false) {
-    if (pJson.isMember("_id")) {
-        if (!pJson["_id"].isNull()) {
-            Id_ = std::make_shared<int64_t>((int64_t) pJson["_id"].asInt64());
+    if (pJson.isMember("_roomID")) {
+        if (!pJson["_roomID"].isNull()) {
+            Id_ = std::make_shared<int64_t>((int64_t) pJson["_roomID"].asInt64());
         }
     }
     if (pJson.isMember("email")) {
@@ -438,9 +438,9 @@ void Users::updateArgs(drogon::orm::internal::SqlBinder &binder) const {
 Json::Value Users::toJson() const {
     Json::Value ret;
     if (getId()) {
-        ret["_id"] = (Json::Int64) getValueOfId();
+        ret["_roomID"] = (Json::Int64) getValueOfId();
     } else {
-        ret["_id"] = Json::Value();
+        ret["_roomID"] = Json::Value();
     }
     if (getEmail()) {
         ret["email"] = getValueOfEmail();
@@ -508,9 +508,9 @@ Json::Value Users::toMasqueradedJson(
     }
     LOG_ERROR << "Masquerade failed";
     if (getId()) {
-        ret["_id"] = (Json::Int64) getValueOfId();
+        ret["_roomID"] = (Json::Int64) getValueOfId();
     } else {
-        ret["_id"] = Json::Value();
+        ret["_roomID"] = Json::Value();
     }
     if (getEmail()) {
         ret["email"] = getValueOfEmail();
@@ -536,8 +536,8 @@ Json::Value Users::toMasqueradedJson(
 }
 
 bool Users::validateJsonForCreation(const Json::Value &pJson, std::string &err) {
-    if (pJson.isMember("_id")) {
-        if (!validJsonOfField(0, "_id", pJson["_id"], err, true))
+    if (pJson.isMember("_roomID")) {
+        if (!validJsonOfField(0, "_roomID", pJson["_roomID"], err, true))
             return false;
     }
     if (pJson.isMember("email")) {
@@ -612,11 +612,11 @@ bool Users::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 
 bool Users::validateJsonForUpdate(const Json::Value &pJson, std::string &err) {
-    if (pJson.isMember("_id")) {
-        if (!validJsonOfField(0, "_id", pJson["_id"], err, false))
+    if (pJson.isMember("_roomID")) {
+        if (!validJsonOfField(0, "_roomID", pJson["_roomID"], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the json object for update";
+        err = "The value of primary key must be set in the fromJson object for update";
         return false;
     }
     if (pJson.isMember("email")) {
@@ -649,7 +649,7 @@ bool Users::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         if (!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the json object for update";
+        err = "The value of primary key must be set in the fromJson object for update";
         return false;
     }
     if (!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1])) {

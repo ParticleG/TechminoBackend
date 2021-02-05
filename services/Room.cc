@@ -2,7 +2,7 @@
 // Created by Parti on 2020/12/7.
 //
 
-#include "room.h"
+#include "Room.h"
 
 void tech::utils::Room::publish(const std::string &message) const {
     std::shared_lock<SharedMutex> lock(_sharedMutex);
@@ -55,9 +55,9 @@ bool tech::utils::Room::checkPassword(const std::string &password) {
     return Crypto::blake2b(password, 1) == _password;
 }
 
-bool tech::utils::Room::changePassword(const std::string &password, const std::string &newPassword) {
+bool tech::utils::Room::changePassword(const std::string &oldPassword, const std::string &newPassword) {
     std::unique_lock<SharedMutex> lock(_sharedMutex);
-    if (Crypto::blake2b(password, 1) == _password) {
+    if (Crypto::blake2b(oldPassword, 1) == _password) {
         _password = Crypto::blake2b(newPassword, 1);
         return true;
     }

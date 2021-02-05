@@ -2,9 +2,8 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include <utils/httpRequest.h>
-#include <utils/httpResponse.h>
-#include <controllers/Play.h>
+#include <utils/Http.h>
+#include <controllers/Play_HTTP.h>
 
 using namespace tech::api::v1;
 using namespace tech::utils;
@@ -12,7 +11,7 @@ using namespace tech::utils;
 void online::Play::list(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
     Json::Value requestBody, responseBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -22,14 +21,14 @@ void online::Play::list(const HttpRequestPtr &req, std::function<void(const Http
                 accessToken = requestBody["access_token"].asString();
         _service.list(email, accessToken, code, responseBody);
     }
-    utils::httpResponse::json(code, responseBody, callback);
+    utils::Http::fromJson(code, responseBody, callback);
 }
 
 void online::Play::info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                         const std::string &roomType) {
     HttpStatusCode code;
     Json::Value requestBody, responseBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -39,14 +38,14 @@ void online::Play::info(const HttpRequestPtr &req, std::function<void(const Http
                 accessToken = requestBody["access_token"].asString();
         _service.info(email, accessToken, roomType, code, responseBody);
     }
-    utils::httpResponse::json(code, responseBody, callback);
+    utils::Http::fromJson(code, responseBody, callback);
 }
 
 void online::Play::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
                           const std::string &roomType) {
     HttpStatusCode code;
     Json::Value requestBody, responseBody;
-    string parseError = httpRequest::toJson(req, requestBody);
+    string parseError = Http::toJson(req, requestBody);
     if (!parseError.empty()) {
         responseBody["message"] = "Wrong format.";
         responseBody["reason"] = parseError;
@@ -58,5 +57,5 @@ void online::Play::create(const HttpRequestPtr &req, std::function<void(const Ht
                 roomPassword = requestBody["room_password"].asString();
         _service.create(email, accessToken, roomType, roomName, roomPassword, code, responseBody);
     }
-    utils::httpResponse::json(code, responseBody, callback);
+    utils::Http::fromJson(code, responseBody, callback);
 }
