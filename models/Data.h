@@ -44,7 +44,7 @@ namespace drogon_model {
             const static std::string tableName;
             const static bool hasPrimaryKey;
             const static std::string primaryKeyName;
-            using PrimaryKeyType = int64_t;
+            using PrimaryKeyType = std::string;
 
             const PrimaryKeyType &getPrimaryKey() const;
 
@@ -60,13 +60,13 @@ namespace drogon_model {
 
             /**
              * @brief constructor
-             * @param pJson The fromJson object to construct a new instance.
+             * @param pJson The json object to construct a new instance.
              */
             explicit Data(const Json::Value &pJson) noexcept(false);
 
             /**
              * @brief constructor
-             * @param pJson The fromJson object to construct a new instance.
+             * @param pJson The json object to construct a new instance.
              * @param pMasqueradingVector The aliases of table columns.
              */
             Data(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false);
@@ -96,14 +96,14 @@ namespace drogon_model {
                                          std::string &err,
                                          bool isForCreation);
 
-            /**  For column _roomID  */
-            ///Get the value of the column _roomID, returns the default value if the column is null
+            /**  For column _id  */
+            ///Get the value of the column _id, returns the default value if the column is null
             const int64_t &getValueOfId() const noexcept;
 
             ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
             const std::shared_ptr<int64_t> &getId() const noexcept;
 
-            ///Set the value of the column _roomID
+            ///Set the value of the column _id
             void setId(const int64_t &pId) noexcept;
 
 
@@ -157,12 +157,12 @@ namespace drogon_model {
             bool dirtyFlag_[2] = {false};
         public:
             static const std::string &sqlForFindingByPrimaryKey() {
-                static const std::string sql = "select * from " + tableName + " where _roomID = $1";
+                static const std::string sql = "select * from " + tableName + " where email = $1";
                 return sql;
             }
 
             static const std::string &sqlForDeletingByPrimaryKey() {
-                static const std::string sql = "delete from " + tableName + " where _roomID = $1";
+                static const std::string sql = "delete from " + tableName + " where email = $1";
                 return sql;
             }
 
@@ -170,7 +170,7 @@ namespace drogon_model {
                 std::string sql = "insert into " + tableName + " (";
                 size_t parametersCount = 0;
                 needSelection = false;
-                sql += "_roomID,";
+                sql += "_id,";
                 ++parametersCount;
                 if (dirtyFlag_[1]) {
                     sql += "email,";

@@ -61,13 +61,13 @@ namespace drogon_model {
 
             /**
              * @brief constructor
-             * @param pJson The fromJson object to construct a new instance.
+             * @param pJson The json object to construct a new instance.
              */
             explicit App(const Json::Value &pJson) noexcept(false);
 
             /**
              * @brief constructor
-             * @param pJson The fromJson object to construct a new instance.
+             * @param pJson The json object to construct a new instance.
              * @param pMasqueradingVector The aliases of table columns.
              */
             App(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false);

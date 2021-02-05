@@ -428,7 +428,7 @@ bool App::validateJsonForUpdate(const Json::Value &pJson, std::string &err) {
         if (!validJsonOfField(0, "version_code", pJson["version_code"], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the fromJson object for update";
+        err = "The value of primary key must be set in the json object for update";
         return false;
     }
     if (pJson.isMember("version_name")) {
@@ -453,7 +453,7 @@ bool App::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         if (!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
             return false;
     } else {
-        err = "The value of primary key must be set in the fromJson object for update";
+        err = "The value of primary key must be set in the json object for update";
         return false;
     }
     if (!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1])) {

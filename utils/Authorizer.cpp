@@ -136,7 +136,7 @@ bool Authorizer::password(const string &email, const string &password, HttpStatu
         );
         if (matchedUsers.empty()) {
             code = k403Forbidden;
-            body["message"] = "Email-password pair is incorrect.";
+            body["message"] = "Email:Password pair is incorrect.";
             return false;
         }
         return true;

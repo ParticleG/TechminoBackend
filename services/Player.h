@@ -5,7 +5,7 @@
 #pragma once
 
 #include <drogon/PubSubService.h>
-#include <models/User.h>
+#include <models/Info.h>
 #include <string>
 
 namespace tech::services {
@@ -19,7 +19,7 @@ namespace tech::services {
 
         void subscribe(drogon::SubscriberID subscriberID);
 
-        drogon_model::Techmino::User getUser();
+        drogon_model::Techmino::Info getUser();
 
         std::string getRoomID() const;
 
@@ -28,7 +28,7 @@ namespace tech::services {
         drogon::SubscriberID getSubscriberID() const;
 
     private:
-        drogon_model::Techmino::User _user;
+        drogon_model::Techmino::Info _user;
         std::string _roomID{}, _password{};
         drogon::SubscriberID _subID{};
     };

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <models/User.h>
+#include <models/Info.h>
 #include <utils/Http.h>
 
 namespace tech::services {
@@ -40,6 +40,6 @@ namespace tech::services {
         );
 
     private:
-        std::shared_ptr<Mapper<drogon_model::Techmino::User>> userMapper;
+        std::shared_ptr<Mapper<drogon_model::Techmino::Info>> userMapper;
     };
 }

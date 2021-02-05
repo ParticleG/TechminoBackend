@@ -41,7 +41,7 @@ namespace tech::plugin {
 
     private:
         std::unordered_map<std::string, uint64_t> _roomTypes;
-        tech::services::RoomManager _roomManager;
+        std::unique_ptr<tech::services::RoomManager> _roomManager;
         mutable std::shared_mutex _sharedMutex;
     };
 }

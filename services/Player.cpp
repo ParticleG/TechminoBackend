@@ -15,15 +15,15 @@ Player::Player(
         string roomID,
         string roomPassword
 ) : _roomID(move(roomID)), _password(move(roomPassword)) {
-    Mapper<Techmino::User> userMapper(app().getDbClient());
-    _user = userMapper.findOne(Criteria(Techmino::User::Cols::_email, CompareOperator::EQ, email));
+    Mapper<Techmino::Info> userMapper(app().getDbClient());
+    _user = userMapper.findOne(Criteria(Techmino::Info::Cols::_email, CompareOperator::EQ, email));
 }
 
 void Player::subscribe(SubscriberID subscriberID) {
     _subID = subscriberID;
 }
 
-Techmino::User Player::getUser() {
+Techmino::Info Player::getUser() {
     return _user;
 }
 

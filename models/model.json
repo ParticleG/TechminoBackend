@@ -17,7 +17,7 @@
     "password": "114514",
     //client_encoding: The character set used by drogon_ctl. it is empty string by default which 
     //means use the default character set.
-    "client_encoding": "UTF-8",
+    "client_encoding": "",
     //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
     "tables": [],
     "relationships": {
