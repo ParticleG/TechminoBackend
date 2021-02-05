@@ -2,11 +2,13 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include <utils/Http.h>
 #include <controllers/Play_HTTP.h>
+#include <utils/Http.h>
 
 using namespace tech::api::v1;
 using namespace tech::utils;
+using namespace drogon;
+using namespace std;
 
 void online::Play::list(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback) {
     HttpStatusCode code;
@@ -21,7 +23,7 @@ void online::Play::list(const HttpRequestPtr &req, std::function<void(const Http
                 accessToken = requestBody["access_token"].asString();
         _service.list(email, accessToken, code, responseBody);
     }
-    utils::Http::fromJson(code, responseBody, callback);
+    Http::fromJson(code, responseBody, callback);
 }
 
 void online::Play::info(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
@@ -38,7 +40,7 @@ void online::Play::info(const HttpRequestPtr &req, std::function<void(const Http
                 accessToken = requestBody["access_token"].asString();
         _service.info(email, accessToken, roomType, code, responseBody);
     }
-    utils::Http::fromJson(code, responseBody, callback);
+    Http::fromJson(code, responseBody, callback);
 }
 
 void online::Play::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback,
@@ -57,5 +59,5 @@ void online::Play::create(const HttpRequestPtr &req, std::function<void(const Ht
                 roomPassword = requestBody["room_password"].asString();
         _service.create(email, accessToken, roomType, roomName, roomPassword, code, responseBody);
     }
-    utils::Http::fromJson(code, responseBody, callback);
+    Http::fromJson(code, responseBody, callback);
 }

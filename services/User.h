@@ -4,25 +4,42 @@
 
 #pragma once
 
-#include <utils/Http.h>
 #include <models/User.h>
-
-using namespace drogon_model;
+#include <utils/Http.h>
 
 namespace tech::services {
     class User {
     public:
         User();
 
-        void create(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody);
+        void create(
+                drogon::HttpStatusCode &code,
+                Json::Value &responseBody
+        );
 
-        void info(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody);
+        void info(
+                const std::string &email,
+                const std::string &authToken,
+                drogon::HttpStatusCode &code,
+                Json::Value &responseBody
+        );
 
-        void modify(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody);
+        void modify(
+                const std::string &email,
+                const std::string &authToken,
+                const std::string &username,
+                const std::string &motto,
+                const std::string &avatar,
+                drogon::HttpStatusCode &code,
+                Json::Value &responseBody
+        );
 
-        void erase(const HttpRequestPtr &req, HttpStatusCode &code, Json::Value &responseBody);
+        void erase(
+                drogon::HttpStatusCode &code,
+                Json::Value &responseBody
+        );
 
     private:
-        shared_ptr<Mapper<Techmino::User>> userMapper;
+        std::shared_ptr<Mapper<drogon_model::Techmino::User>> userMapper;
     };
 }

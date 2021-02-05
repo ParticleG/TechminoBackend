@@ -6,9 +6,7 @@
 
 #include <services/Room.h>
 
-using namespace drogon;
-
-namespace tech::utils {
+namespace tech::services {
     class RoomManager : public trantor::NonCopyable {
     public:
         using MessageHandler = std::function<void(const std::string &, const std::string &)>;
@@ -20,15 +18,15 @@ namespace tech::utils {
 
         void publish(const std::string &roomID, const std::string &message) const;
 
-        void publish(const std::string &roomID, const std::string &message, const SubscriberID &excludedID) const;
+        void publish(const std::string &roomID, const std::string &message, const drogon::SubscriberID &excludedID) const;
 
-        void tell(const std::string &roomID, const std::string &message, const SubscriberID &targetID) const;
+        void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
 
-        SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler);
+        drogon::SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler);
 
-        SubscriberID subscribe(const std::string &roomID, MessageHandler &&handler);
+        drogon::SubscriberID subscribe(const std::string &roomID, MessageHandler &&handler);
 
-        void unsubscribe(const std::string &roomID, SubscriberID id);
+        void unsubscribe(const std::string &roomID, drogon::SubscriberID id);
 
         size_t size() const;
 
@@ -55,8 +53,7 @@ namespace tech::utils {
         std::unordered_map<std::string, std::shared_ptr<Room>> _roomIDMap;
         mutable SharedMutex _sharedMutex;
 
-        SubscriberID
-        _subscribeToRoom(const std::string &roomID, typename Room::MessageHandler &&handler);
+        drogon::SubscriberID _subscribeToRoom(const std::string &roomID, typename Room::MessageHandler &&handler);
     };
 }
 

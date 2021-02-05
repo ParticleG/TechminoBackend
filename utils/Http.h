@@ -7,39 +7,36 @@
 #include <drogon/HttpController.h>
 #include <json/json.h>
 
-using namespace std;
-using namespace drogon;
-
 namespace tech::utils {
     class Http {
     public:
         static void fromJson(
-                const HttpStatusCode &code,
+                const drogon::HttpStatusCode &code,
                 const Json::Value &body,
-                const function<void(const HttpResponsePtr &)> &callback
+                const std::function<void(const drogon::HttpResponsePtr &)> &callback
         );
 
         static void fromPlain(
-                const HttpStatusCode &code,
-                const string &body,
-                const function<void(const HttpResponsePtr &)> &callback
+                const drogon::HttpStatusCode &code,
+                const std::string &body,
+                const std::function<void(const drogon::HttpResponsePtr &)> &callback
         );
 
         static void fromHtml(
-                const HttpStatusCode &code,
-                const string &body,
-                const function<void(const HttpResponsePtr &)> &callback
+                const drogon::HttpStatusCode &code,
+                const std::string &body,
+                const std::function<void(const drogon::HttpResponsePtr &)> &callback
         );
 
         static void from(
-                const HttpStatusCode &code,
-                const ContentType &type,
-                const string &body,
-                const function<void(const HttpResponsePtr &)> &callback
+                const drogon::HttpStatusCode &code,
+                const drogon::ContentType &type,
+                const std::string &body,
+                const std::function<void(const drogon::HttpResponsePtr &)> &callback
         );
 
-        static string toJson(
-                const HttpRequestPtr &req,
+        static std::string toJson(
+                const drogon::HttpRequestPtr &req,
                 Json::Value &result
         );
     };

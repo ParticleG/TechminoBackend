@@ -4,15 +4,10 @@
 
 #pragma once
 
-#include <drogon/drogon.h>
 #include <drogon/PubSubService.h>
 #include <json/json.h>
 
-#include "Crypto.h"
-
-using namespace drogon;
-
-namespace tech::utils {
+namespace tech::services {
     class Room : public trantor::NonCopyable {
     public:
         using MessageHandler = std::function<void(const std::string &)>;
@@ -22,28 +17,25 @@ namespace tech::utils {
         using SharedMutex = std::shared_timed_mutex;
 #endif
 
-        Room(const std::string &id, const std::string &name, const std::string &password, const std::string &roomType,
-             const uint64_t &capacity) {
-            std::unique_lock<SharedMutex> lock(_sharedMutex);
-            _id = id;
-            _name = name;
-            _password = Crypto::blake2b(password, 1);
-            _count = 0;
-            _type = roomType;
-            _capacity = capacity;
-        }
+        Room(
+                const std::string &id,
+                const std::string &name,
+                const std::string &password,
+                const std::string &roomType,
+                const uint64_t &capacity
+        );
 
         void publish(const std::string &message) const;
 
-        void publish(const std::string &message, const SubscriberID &excludedID) const;
+        void publish(const std::string &message, const drogon::SubscriberID &excludedID) const;
 
-        void tell(const std::string &message, const SubscriberID &targetID) const;
+        void tell(const std::string &message, const drogon::SubscriberID &targetID) const;
 
-        SubscriberID subscribe(const MessageHandler &handler);
+        drogon::SubscriberID subscribe(const MessageHandler &handler);
 
-        SubscriberID subscribe(MessageHandler &&handler);
+        drogon::SubscriberID subscribe(MessageHandler &&handler);
 
-        void unsubscribe(SubscriberID id);
+        void unsubscribe(drogon::SubscriberID id);
 
         bool checkPassword(const std::string &password);
 
@@ -55,18 +47,16 @@ namespace tech::utils {
 
         uint64_t count() const;
 
+        std::string getType() const;
+
         void clear();
 
         Json::Value toJson();
 
-        std::string getType() {
-            return _type;
-        }
-
     private:
         std::string _id, _name, _password, _type;
         uint64_t _count, _capacity;
-        std::unordered_map<SubscriberID, MessageHandler> _handlersMap;
+        std::unordered_map<drogon::SubscriberID, MessageHandler> _handlersMap;
         mutable SharedMutex _sharedMutex;
     };
 }

@@ -2,13 +2,15 @@
 // Created by Parti on 2021/2/5.
 //
 
-#include "Play_WS.h"
+#include <controllers/Play_WS.h>
 #include <utils/WebSocket.h>
 
 using namespace tech::socket::v1;
 using namespace tech::utils;
+using namespace drogon;
+using namespace std;
 
-void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string &&message,
+void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, string &&message,
                             const WebSocketMessageType &type) {
     if (type == WebSocketMessageType::Ping) {
         LOG_DEBUG << "Received a PING";
@@ -25,9 +27,9 @@ void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, std::string
 
 void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
     CloseCode code;
-    std::string reason;
+    string reason;
 
-    std::string email = req->getParameter("email"),
+    string email = req->getParameter("email"),
             accessToken = req->getParameter("access_token"),
             roomID = req->getParameter("id"),
             password = req->getParameter("password");

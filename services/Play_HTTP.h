@@ -4,17 +4,18 @@
 
 #pragma once
 
+#include <drogon/drogon.h>
 #include <plugins/PlayManager.h>
 
 namespace tech::services {
     class Play {
     public:
-        Play() : _playManager(app().getPlugin<tech::plugin::PlayManager>()) {};
+        Play() : _playManager(drogon::app().getPlugin<tech::plugin::PlayManager>()) {};
 
         void list(
                 const std::string &email,
                 const std::string &accessToken,
-                HttpStatusCode &code,
+                drogon::HttpStatusCode &code,
                 Json::Value &responseBody
         );
 
@@ -22,7 +23,7 @@ namespace tech::services {
                 const std::string &email,
                 const std::string &accessToken,
                 const std::string &roomType,
-                HttpStatusCode &code,
+                drogon::HttpStatusCode &code,
                 Json::Value &responseBody
         );
 
@@ -32,7 +33,7 @@ namespace tech::services {
                 const std::string &roomType,
                 const std::string &roomName,
                 const std::string &roomPassword,
-                HttpStatusCode &code,
+                drogon::HttpStatusCode &code,
                 Json::Value &responseBody
         );
 

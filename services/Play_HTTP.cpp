@@ -4,13 +4,16 @@
 
 #include <services/Play_HTTP.h>
 #include <utils/Authorizer.h>
+#include <utils/Crypto.h>
 
 using namespace tech::services;
 using namespace tech::utils;
+using namespace drogon;
+using namespace std;
 
 void Play::list(
-        const std::string &email,
-        const std::string &accessToken,
+        const string &email,
+        const string &accessToken,
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
@@ -20,7 +23,7 @@ void Play::list(
             code = k200OK;
             responseBody["message"] = "OK";
             responseBody["room_list"] = roomList;
-        } catch (const std::out_of_range &e) {
+        } catch (const out_of_range &e) {
             LOG_ERROR << "error:" << e.what();
             code = k416RequestedRangeNotSatisfiable;
             responseBody["message"] = "Unsupported room_type";
@@ -29,9 +32,9 @@ void Play::list(
 }
 
 void Play::info(
-        const std::string &email,
-        const std::string &accessToken,
-        const std::string &roomType,
+        const string &email,
+        const string &accessToken,
+        const string &roomType,
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
@@ -41,7 +44,7 @@ void Play::info(
             code = k200OK;
             responseBody["message"] = "OK";
             responseBody["room_list"] = roomList;
-        } catch (const std::out_of_range &e) {
+        } catch (const out_of_range &e) {
             LOG_ERROR << "error:" << e.what();
             code = k416RequestedRangeNotSatisfiable;
             responseBody["message"] = "Unsupported room_type";
@@ -50,22 +53,22 @@ void Play::info(
 }
 
 void Play::create(
-        const std::string &email,
-        const std::string &accessToken,
-        const std::string &roomType,
-        const std::string &roomName,
-        const std::string &roomPassword,
+        const string &email,
+        const string &accessToken,
+        const string &roomType,
+        const string &roomName,
+        const string &roomPassword,
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
     if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
-            std::string roomID = Crypto::blake2b("room_" + drogon::utils::getUuid());
+            string roomID = Crypto::blake2b("room_" + drogon::utils::getUuid());
             auto tempRoom = _playManager->createRoom(roomID, roomName, roomPassword, roomType);
             code = k200OK;
             responseBody["message"] = "OK";
             responseBody["room"] = tempRoom;
-        } catch (const std::out_of_range &e) {
+        } catch (const out_of_range &e) {
             LOG_ERROR << "error:" << e.what();
             code = k416RequestedRangeNotSatisfiable;
             responseBody["message"] = "Unsupported room_type";

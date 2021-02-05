@@ -4,33 +4,32 @@
 
 #pragma once
 
-#include <drogon/WebSocketController.h>
-#include <utils/Authorizer.h>
-#include <services/Player.h>
 #include <plugins/PlayManager.h>
+#include <services/Player.h>
+#include <utils/Authorizer.h>
 
 namespace tech::services {
     class Play {
     public:
         bool validate(
-                const WebSocketConnectionPtr &wsConnPtr,
+                const drogon::WebSocketConnectionPtr &wsConnPtr,
                 const std::string &email,
                 const std::string &accessToken,
                 const std::string &roomID,
                 const std::string &roomPassword,
-                CloseCode &code,
+                drogon::CloseCode &code,
                 std::string &reason
         );
 
         bool join(
-                const WebSocketConnectionPtr &wsConnPtr,
-                CloseCode &code,
+                const drogon::WebSocketConnectionPtr &wsConnPtr,
+                drogon::CloseCode &code,
                 std::string &reason
         );
 
-        void messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::string &message);
+        void messageHandler(const drogon::WebSocketConnectionPtr &wsConnPtr, const std::string &message);
 
-        void quit(const WebSocketConnectionPtr &wsConnPtr);
+        void quit(const drogon::WebSocketConnectionPtr &wsConnPtr);
 
     private:
         std::shared_ptr<Player> _player;

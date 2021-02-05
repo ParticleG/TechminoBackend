@@ -1,13 +1,10 @@
-/**
- *
- *  tech_RoomManager.cc
- *
- */
+//
+// Created by Parti on 2021/2/4.
+//
 
 #include "Configurator.h"
 
 using namespace tech::plugin;
-using namespace tech::utils;
 
 void Configurator::initAndStart(const Json::Value &config) {
     if (config.isMember("auth_token_expire_time") && config["access_token_expire_time"].isUInt()) {

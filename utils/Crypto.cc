@@ -2,32 +2,37 @@
 // Created by Parti on 2020/12/7.
 //
 
-#include "Crypto.h"
+#include <cryptopp/hex.h>
+#include <cryptopp/files.h>
+#include <cryptopp/blake2.h>
+#include <cryptopp/keccak.h>
+#include <sstream>
+#include <utils/Crypto.h>
 
 using namespace tech::utils;
+using namespace CryptoPP;
+using namespace std;
 
-std::string Crypto::blake2b(const std::string &source, const unsigned int &divider) {
-    using namespace CryptoPP;
-    std::stringstream tempStringStream;
+string Crypto::blake2b(const string &source, const unsigned int &divider) {
+    stringstream tempStringStream;
     HexEncoder encoder(new FileSink(tempStringStream));
-    std::string digest;
+    string digest;
     BLAKE2b hash;
-    hash.Update((const byte *) source.data(), source.size());
+    hash.Update(reinterpret_cast<const CryptoPP::byte *>(source.data()), source.size());
     digest.resize(hash.DigestSize() / divider);
-    hash.TruncatedFinal((byte *) &digest[0], digest.size());
+    hash.TruncatedFinal(reinterpret_cast<CryptoPP::byte *>(&digest[0]), digest.size());
     StringSource tempSource(digest, true, new Redirector(encoder));
     return tempStringStream.str();
 }
 
-std::string Crypto::keccak(const std::string &source, const unsigned int &divider) {
-    using namespace CryptoPP;
-    std::stringstream tempStringStream;
+string Crypto::keccak(const string &source, const unsigned int &divider) {
+    stringstream tempStringStream;
     HexEncoder encoder(new FileSink(tempStringStream));
-    std::string digest;
+    string digest;
     Keccak_512 hash;
-    hash.Update((const byte *) source.data(), source.size());
+    hash.Update(reinterpret_cast<const CryptoPP::byte *>(source.data()), source.size());
     digest.resize(hash.DigestSize() / divider);
-    hash.TruncatedFinal((byte *) &digest[0], digest.size());
+    hash.TruncatedFinal(reinterpret_cast<CryptoPP::byte *>(&digest[0]), digest.size());
     StringSource tempSource(digest, true, new Redirector(encoder));
     return tempStringStream.str();
 }
