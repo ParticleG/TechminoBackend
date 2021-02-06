@@ -55,7 +55,8 @@ bool Play::join(
         ));
         playManager->publish(_player->getRoomID(),
                              "J" + _player->getUser().getValueOfUsername() + ":" +
-                             to_string(_player->getUser().getValueOfId()));
+                             to_string(_player->getUser().getValueOfId()) + ":" +
+                             to_string(_player->getSubscriberID()));
         wsConnPtr->setContext(_player);
     } catch (range_error &e) {
         LOG_ERROR << "error:" << e.what();
@@ -106,6 +107,7 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
             playManager->publish(_player->getRoomID(),
                                  "C" + _player->getUser().getValueOfUsername() + ":" +
                                  to_string(_player->getUser().getValueOfId()) + ":" +
+                                 to_string(_player->getSubscriberID()) + ":" +
                                  message.substr(1),
                                  _player->getSubscriberID());
             break;
