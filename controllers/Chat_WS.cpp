@@ -31,10 +31,11 @@ void Chat::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     string reason;
 
     string email = req->getParameter("email"),
-            accessToken = req->getParameter("access_token"),
+            accessToken = req->getParameter("token"),
+            config = req->getParameter("conf"),
             roomID = app().getPlugin<ChatManager>()->getID();
 
-    if ((!_service.validate(wsConnPtr, email, accessToken, roomID, code, reason)) ||
+    if ((!_service.validate(wsConnPtr, email, accessToken, config, roomID, code, reason)) ||
         (!_service.join(wsConnPtr, code, reason))) {
         wsConnPtr->send(reason);
         WebSocket::close(wsConnPtr, code, reason);

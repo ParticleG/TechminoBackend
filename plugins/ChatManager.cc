@@ -33,14 +33,18 @@ string ChatManager::getID() const {
     return _roomID;
 }
 
-SubscriberID ChatManager::joinChat(const Room::MessageHandler &handler) {
+SubscriberID ChatManager::joinChat(const Room::MessageHandler &handler, const shared_ptr<tech::services::Player> &player) {
     unique_lock<shared_mutex> lock(_sharedMutex);
-    return _chattingRoom->subscribe(handler);
+    SubscriberID subscriberID = _chattingRoom->subscribe(handler);
+    player->subscribe(subscriberID);
+    _chattingRoom->join(subscriberID, player);
+    return subscriberID;
 }
 
 void ChatManager::quitChat(SubscriberID playerID) {
     unique_lock<shared_mutex> lock(_sharedMutex);
     _chattingRoom->unsubscribe(playerID);
+    _chattingRoom->quit(playerID);
 }
 
 void ChatManager::chat(const string &message) {

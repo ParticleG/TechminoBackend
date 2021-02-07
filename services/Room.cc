@@ -51,8 +51,41 @@ void Room::tell(const string &message, const SubscriberID &targetID) const {
     }
 }
 
+//void Room::setReadyState(const bool &isReady, const SubscriberID &targetID) {
+//    unique_lock<SharedMutex> lock(_sharedMutex);
+//    for (auto &pair : _playersMap) {
+//        if (pair.first == targetID) {
+//            pair.second.setReadyState(isReady);
+//        }
+//    }
+//}
+
+bool Room::checkReadyState() {
+    shared_lock<SharedMutex> lock(_sharedMutex);
+    bool isAllReady = true;
+    for (auto &pair : _playersMap) {
+        if (!pair.second->getReadyState()) {
+            isAllReady = false;
+            break;
+        }
+    }
+    return isAllReady;
+}
+
+string Room::getInfos() {
+    shared_lock<SharedMutex> lock(_sharedMutex);
+    string infos;
+    for (auto &pair : _playersMap) {
+        infos += pair.second->getInfo();
+    }
+    return infos;
+}
+
 SubscriberID Room::subscribe(const Room::MessageHandler &handler) {
     unique_lock<SharedMutex> lock(_sharedMutex);
+    if (_count == _capacity) {
+        throw range_error("Room is full");
+    }
     _handlersMap[++_count] = handler;
     return _count;
 }
@@ -66,10 +99,21 @@ SubscriberID Room::subscribe(Room::MessageHandler &&handler) {
     return _count;
 }
 
+void Room::join(drogon::SubscriberID id, const shared_ptr<Player> &player) {
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    _playersMap[id] = player;
+}
+
+
 void Room::unsubscribe(SubscriberID id) {
     unique_lock<SharedMutex> lock(_sharedMutex);
     _handlersMap.erase(id);
     --_count;
+}
+
+void Room::quit(SubscriberID id) {
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    _playersMap.erase(id);
 }
 
 bool Room::checkPassword(const string &password) {

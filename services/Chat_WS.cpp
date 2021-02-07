@@ -17,11 +17,11 @@ bool Chat::join(
     auto chatManager = app().getPlugin<tech::plugin::ChatManager>();
     try {
         _player = wsConnPtr->getContext<Player>();
-        _player->subscribe(chatManager->joinChat(
+        chatManager->joinChat(
                 [wsConnPtr](const std::string &message) {
                     wsConnPtr->send(message);
-                }
-        ));
+                }, _player
+        );
         chatManager->chat("J" + _player->getUser().getValueOfUsername() +
                           ":" + to_string(_player->getUser().getValueOfId()) +
                           ":" + to_string(chatManager->chatCount()));
@@ -62,13 +62,14 @@ bool Chat::validate(
         const WebSocketConnectionPtr &wsConnPtr,
         const string &email,
         const string &accessToken,
+        const string &config,
         const string &roomID,
         CloseCode &code, string &reason
 ) {
     if (!Authorizer::accessToken(email, accessToken, code, reason)) {
         return false;
     } else {
-        _player = make_shared<Player>(email, roomID);
+        _player = make_shared<Player>(email, config, roomID);
         wsConnPtr->setContext(_player);
     }
     return true;

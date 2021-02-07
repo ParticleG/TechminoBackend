@@ -21,7 +21,7 @@ namespace tech::plugin {
         Json::Value createRoom(const std::string &roomID, const std::string &name, const std::string &password,
                                const std::string &roomType);
 
-        drogon::SubscriberID subscribe(const std::string &roomID, const tech::services::RoomManager::MessageHandler &handler);
+        drogon::SubscriberID subscribe(const std::string &roomID, const tech::services::RoomManager::MessageHandler &handler, const std::shared_ptr<tech::services::Player> &player);
 
         void unsubscribe(const std::string &roomID, const drogon::SubscriberID &playerID);
 
@@ -32,6 +32,14 @@ namespace tech::plugin {
         void publish(const std::string &roomID, const std::string &message, const drogon::SubscriberID &excludedID) const;
 
         void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
+
+//        void setConfig(const std::string &roomID, const std::string &config, const drogon::SubscriberID &targetID);
+//
+//        void setReadyState(const std::string &roomID, const bool &isReady, const drogon::SubscriberID &targetID);
+
+        bool checkReadyState(const std::string &roomID);
+
+        std::string getInfos(const std::string &roomID);
 
         [[maybe_unused]] size_t size();
 

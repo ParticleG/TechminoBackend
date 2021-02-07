@@ -22,9 +22,15 @@ namespace tech::services {
 
         void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
 
-        drogon::SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler);
+//        void setReadyState(const std::string &roomID, const bool &isReady, const drogon::SubscriberID &targetID);
 
-        drogon::SubscriberID subscribe(const std::string &roomID, MessageHandler &&handler);
+        bool checkReadyState(const std::string &roomID);
+
+        std::string getInfos(const std::string &roomID);
+
+        drogon::SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler, const std::shared_ptr<tech::services::Player> &player);
+
+        drogon::SubscriberID subscribe(const std::string &roomID, MessageHandler &&handler, std::shared_ptr<tech::services::Player> &&player);
 
         void unsubscribe(const std::string &roomID, drogon::SubscriberID id);
 
@@ -53,7 +59,7 @@ namespace tech::services {
         std::unordered_map<std::string, std::shared_ptr<Room>> _roomIDMap;
         mutable SharedMutex _sharedMutex;
 
-        drogon::SubscriberID _subscribeToRoom(const std::string &roomID, typename Room::MessageHandler &&handler);
+        drogon::SubscriberID _subscribeToRoom(const std::string &roomID, typename Room::MessageHandler &&handler, const std::shared_ptr<tech::services::Player> &player);
     };
 }
 
