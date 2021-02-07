@@ -5,6 +5,7 @@
 #pragma once
 
 #include <drogon/plugins/Plugin.h>
+#include <services/Player.h>
 #include <services/Room.h>
 
 namespace tech ::plugin {
@@ -18,7 +19,7 @@ namespace tech ::plugin {
 
         std::string getID() const;
 
-        drogon::SubscriberID joinChat(const tech::services::Room::MessageHandler &handler);
+        drogon::SubscriberID joinChat(const tech::services::Room::MessageHandler &handler, const std::shared_ptr<tech::services::Player> &player);
 
         void quitChat(drogon::SubscriberID playerID);
 

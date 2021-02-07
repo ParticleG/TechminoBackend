@@ -1,67 +1,117 @@
 #include <services/RoomManager.h>
-#include <drogon/drogon.h>
 
 using namespace tech::services;
 using namespace drogon;
 using namespace std;
 
 void RoomManager::publish(const string &roomID, const string &message) const {
-    shared_ptr<Room> topicPtr;
+    shared_ptr<Room> roomPtr;
     {
         shared_lock<SharedMutex> lock(_sharedMutex);
         auto iter = _roomIDMap.find(roomID);
         if (iter != _roomIDMap.end()) {
-            topicPtr = iter->second;
+            roomPtr = iter->second;
         } else {
             return;
         }
     }
-    topicPtr->publish(message);
+    roomPtr->publish(message);
 }
 
 void RoomManager::publish(const string &roomID, const string &message,
                           const SubscriberID &excludedID) const {
-    shared_ptr<Room> topicPtr;
+    shared_ptr<Room> roomPtr;
     {
         shared_lock<SharedMutex> lock(_sharedMutex);
         auto iter = _roomIDMap.find(roomID);
         if (iter != _roomIDMap.end()) {
-            topicPtr = iter->second;
+            roomPtr = iter->second;
         } else {
             return;
         }
     }
-    topicPtr->publish(message, excludedID);
+    roomPtr->publish(message, excludedID);
 }
 
 void RoomManager::tell(const string &roomID, const string &message,
                        const SubscriberID &targetID) const {
-    shared_ptr<Room> topicPtr;
+    shared_ptr<Room> roomPtr;
     {
         shared_lock<SharedMutex> lock(_sharedMutex);
         auto iter = _roomIDMap.find(roomID);
         if (iter != _roomIDMap.end()) {
-            topicPtr = iter->second;
+            roomPtr = iter->second;
         } else {
             return;
         }
     }
-    topicPtr->tell(message, targetID);
+    roomPtr->tell(message, targetID);
 }
 
-SubscriberID RoomManager::subscribe(const string &roomID,
-                                    const RoomManager::MessageHandler &handler) {
+//void RoomManager::setReadyState(const string &roomID, const bool &isReady, const SubscriberID &targetID) {
+//    shared_ptr<Room> roomPtr;
+//    {
+//        shared_lock<SharedMutex> lock(_sharedMutex);
+//        auto iter = _roomIDMap.find(roomID);
+//        if (iter != _roomIDMap.end()) {
+//            roomPtr = iter->second;
+//        } else {
+//            return;
+//        }
+//    }
+//    roomPtr->setReadyState(isReady, targetID);
+//}
+
+bool RoomManager::checkReadyState(const string &roomID) {
+    shared_ptr<Room> roomPtr;
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            roomPtr = iter->second;
+        } else {
+            return false;
+        }
+    }
+    return roomPtr->checkReadyState();
+}
+
+std::string RoomManager::getInfos(const string &roomID) {
+    shared_ptr<Room> roomPtr;
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            roomPtr = iter->second;
+        } else {
+            return "";
+        }
+    }
+    return roomPtr->getInfos();
+}
+
+SubscriberID RoomManager::subscribe(const string &roomID, const RoomManager::MessageHandler &handler, const shared_ptr<tech::services::Player> &player) {
     auto topicHandler = [roomID, handler](const string &message) {
         handler(roomID, message);
     };
-    return _subscribeToRoom(roomID, move(topicHandler));
+    try {
+        return _subscribeToRoom(roomID, move(topicHandler), player);
+    } catch (range_error &error) {
+        LOG_WARN << error.what();
+        throw error;
+    }
 }
 
-SubscriberID RoomManager::subscribe(const string &roomID, RoomManager::MessageHandler &&handler) {
+SubscriberID RoomManager::subscribe(const string &roomID, RoomManager::MessageHandler &&handler, shared_ptr<tech::services::Player> &&player) {
     auto topicHandler = [roomID, handler = move(handler)](const string &message) {
         handler(roomID, message);
     };
-    return _subscribeToRoom(roomID, move(topicHandler));
+    try {
+        return _subscribeToRoom(roomID, move(topicHandler), player);
+    } catch (range_error &error) {
+        LOG_WARN << error.what();
+        throw error;
+    }
 }
 
 void RoomManager::unsubscribe(const string &roomID, SubscriberID id) {
@@ -72,6 +122,7 @@ void RoomManager::unsubscribe(const string &roomID, SubscriberID id) {
             return;
         }
         iter->second->unsubscribe(id);
+        iter->second->quit(id);
         if (!iter->second->empty())
             return;
     }
@@ -179,13 +230,16 @@ Json::Value RoomManager::getRoomList(const string &roomType) {
     return resultJson;
 }
 
-SubscriberID RoomManager::_subscribeToRoom(const string &roomID, typename Room::MessageHandler &&handler) {
+SubscriberID RoomManager::_subscribeToRoom(const string &roomID, typename Room::MessageHandler &&handler, const std::shared_ptr<tech::services::Player> &player) {
     {
         shared_lock<SharedMutex> lock(_sharedMutex);
         auto iter = _roomIDMap.find(roomID);
         if (iter != _roomIDMap.end()) {
             try {
-                return iter->second->subscribe(move(handler));
+                SubscriberID id = iter->second->subscribe(move(handler));
+                player->subscribe(id);
+                iter->second->join(id, player);
+                return id;
             } catch (range_error &error) {
                 LOG_WARN << error.what();
                 throw error;
@@ -195,7 +249,15 @@ SubscriberID RoomManager::_subscribeToRoom(const string &roomID, typename Room::
     unique_lock<SharedMutex> lock(_sharedMutex);
     auto iter = _roomIDMap.find(roomID);
     if (iter != _roomIDMap.end()) {
-        return iter->second->subscribe(move(handler));
+        try {
+            SubscriberID id = iter->second->subscribe(move(handler));
+            player->subscribe(id);
+            iter->second->join(id, player);
+            return id;
+        } catch (range_error &error) {
+            LOG_WARN << error.what();
+            throw error;
+        }
     }
     throw out_of_range("Room not found");
 }

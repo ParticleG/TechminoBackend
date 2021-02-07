@@ -15,6 +15,7 @@ namespace tech::services {
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
                 const std::string &email,
                 const std::string &accessToken,
+                const std::string &config,
                 const std::string &roomID,
                 const std::string &roomPassword,
                 drogon::CloseCode &code,

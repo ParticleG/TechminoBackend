@@ -30,11 +30,12 @@ void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
     string reason;
 
     string email = req->getParameter("email"),
-            accessToken = req->getParameter("access_token"),
+            accessToken = req->getParameter("token"),
             roomID = req->getParameter("id"),
-            password = req->getParameter("password");
+            password = req->getParameter("passwd"),
+            config = req->getParameter("conf");
 
-    if ((!_service.validate(wsConnPtr, email, accessToken, roomID, password, code, reason)) ||
+    if ((!_service.validate(wsConnPtr, email, accessToken, config, roomID, password, code, reason)) ||
         (!_service.join(wsConnPtr, code, reason))) {
         wsConnPtr->send(reason);
         WebSocket::close(wsConnPtr, code, reason);

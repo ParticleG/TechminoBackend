@@ -35,9 +35,9 @@ Json::Value PlayManager::createRoom(const string &roomID, const string &name, co
 }
 
 SubscriberID PlayManager::subscribe(const string &roomID,
-                                    const RoomManager::MessageHandler &handler) {
+                                    const RoomManager::MessageHandler &handler, const shared_ptr<tech::services::Player> &player) {
     unique_lock<shared_mutex> lock(_sharedMutex);
-    return _roomManager->subscribe(roomID, handler);
+    return _roomManager->subscribe(roomID, handler, player);
 }
 
 void PlayManager::unsubscribe(const string &roomID, const SubscriberID &playerID) {
@@ -67,6 +67,25 @@ void PlayManager::tell(const string &roomID, const string &message, const Subscr
     _roomManager->tell(roomID, message, targetID);
 }
 
+//void PlayManager::setConfig(const string &roomID, const std::string &config, const SubscriberID &targetID) {
+//    shared_lock<shared_mutex> lock(_sharedMutex); //TODO: Check if shared_lock is safe.
+//    _roomManager->setConfig(roomID, isReady, targetID);
+//}
+//
+//void PlayManager::setReadyState(const string &roomID, const bool &isReady, const SubscriberID &targetID) {
+//    shared_lock<shared_mutex> lock(_sharedMutex); //TODO: Check if shared_lock is safe.
+//    _roomManager->setReadyState(roomID, isReady, targetID);
+//}
+
+bool PlayManager::checkReadyState(const string &roomID) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    return _roomManager->checkReadyState(roomID);
+}
+
+std::string PlayManager::getInfos(const string &roomID) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    return _roomManager->getInfos(roomID);
+}
 
 [[maybe_unused]] size_t PlayManager::size() {
     shared_lock<shared_mutex> lock(_sharedMutex);

@@ -13,8 +13,9 @@ bool Play::validate(
         const WebSocketConnectionPtr &wsConnPtr,
         const string &email,
         const string &accessToken,
+        const string &config,
         const string &roomID,
-        const std::string &roomPassword,
+        const string &roomPassword,
         CloseCode &code, string &reason
 ) {
     if (!Authorizer::accessToken(email, accessToken, code, reason)) {
@@ -27,7 +28,7 @@ bool Play::validate(
                 reason = "Password is incorrect";
                 return false;
             }
-            _player = make_shared<Player>(email, roomID, roomPassword);
+            _player = make_shared<Player>(email, config, roomID, roomPassword);
             wsConnPtr->setContext(_player);
         } catch (out_of_range &e) {
             LOG_ERROR << "error:" << e.what();
@@ -47,16 +48,15 @@ bool Play::join(
     auto playManager = app().getPlugin<tech::plugin::PlayManager>();
     try {
         _player = wsConnPtr->getContext<Player>();
-        _player->subscribe(playManager->subscribe(
+        playManager->subscribe(
                 _player->getRoomID(),
                 [wsConnPtr](const string &topic, const string &message) {
                     wsConnPtr->send(message);
-                }
-        ));
+                }, _player
+        );
         playManager->publish(_player->getRoomID(),
-                             "J" + _player->getUser().getValueOfUsername() + ":" +
-                             to_string(_player->getUser().getValueOfId()) + ":" +
-                             to_string(_player->getSubscriberID()));
+                             "J" + _player->getInfo());
+        wsConnPtr->send("J" + playManager->getInfos(_player->getRoomID()));
         wsConnPtr->setContext(_player);
     } catch (range_error &e) {
         LOG_ERROR << "error:" << e.what();
@@ -93,6 +93,16 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
 #endif
             wsConnPtr->forceClose();
             break;
+        case 'R':
+//            playManager->setReadyState(_player->getRoomID(), true, _player->getSubscriberID());
+            _player->setReadyState(true);
+            playManager->publish(_player->getRoomID(),
+                                 "R" + to_string(_player->getSubscriberID()));
+            if (playManager->checkReadyState(_player->getRoomID())) {
+                this_thread::sleep_for(chrono::seconds(1)); //TODO: Check if effective.
+                playManager->publish(_player->getRoomID(),
+                                     "B" + to_string(utils::Utils::uniform_random()));
+            }
         case 'B':
             playManager->publish(_player->getRoomID(),
                                  "B" + to_string(utils::Utils::uniform_random()));
@@ -104,6 +114,7 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
                                  message.substr(1));
             break;
         case 'C':
+            _player->setConfig(message.substr(1));
             playManager->publish(_player->getRoomID(),
                                  "C" + _player->getUser().getValueOfUsername() + ":" +
                                  to_string(_player->getUser().getValueOfId()) + ":" +
