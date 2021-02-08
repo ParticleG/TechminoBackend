@@ -82,15 +82,9 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
 #endif
     switch (commandType) {
         case 'P':
-#ifdef DEBUG_MODE
-            std::cout << "[SERVER#0]$P" << std::endl;
-#endif
             wsConnPtr->send("", WebSocketMessageType::Pong);
             break;
         case 'Q':
-#ifdef DEBUG_MODE
-            std::cout << "[SERVER#0]$Q " << player.username + ":" + std::to_string(player._roomID) << std::endl;
-#endif
             wsConnPtr->forceClose();
             break;
         case 'R':
@@ -109,22 +103,22 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
             break;
         case 'T':
             playManager->publish(_player->getRoomID(),
-                                 "T" + _player->getUser().getValueOfUsername() + ":" +
-                                 to_string(_player->getUser().getValueOfId()) + ":" +
+                                 "T" + _player->getUser().getValueOfUsername() + ";" +
+                                 to_string(_player->getUser().getValueOfId()) + ";" +
                                  message.substr(1));
             break;
         case 'C':
             _player->setConfig(message.substr(1));
             playManager->publish(_player->getRoomID(),
-                                 "C" + _player->getUser().getValueOfUsername() + ":" +
-                                 to_string(_player->getUser().getValueOfId()) + ":" +
-                                 to_string(_player->getSubscriberID()) + ":" +
+                                 "C" + _player->getUser().getValueOfUsername() + ";" +
+                                 to_string(_player->getUser().getValueOfId()) + ";" +
+                                 to_string(_player->getSubscriberID()) + ";" +
                                  message.substr(1),
                                  _player->getSubscriberID());
             break;
         case 'S':
             playManager->publish(_player->getRoomID(),
-                                 "S" + to_string(_player->getUser().getValueOfId()) + ":" +
+                                 "S" + to_string(_player->getSubscriberID()) + ";" +
                                  message.substr(1),
                                  _player->getSubscriberID());
             break;
