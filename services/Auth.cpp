@@ -54,8 +54,10 @@ void Auth::getAuthToken(
             auth.setAuthToken(drogon::utils::getUuid());
             auth.setAuthTokenExpireTime(trantor::Date::now().after(configurator->getAuthExpire()).toDbStringLocal());
             authMapper->update(auth);
+            auto tempAuth = authMapper->findOne(Criteria(Techmino::Auth::Cols::_email, CompareOperator::EQ, email));
             code = k200OK;
             responseBody["message"] = "OK";
+            responseBody["id"] = tempAuth.getValueOfId();
             responseBody["email"] = email;
             responseBody["auth_token"] = auth.getValueOfAuthToken();
         } catch (const orm::DrogonDbException &e) {
