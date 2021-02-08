@@ -33,10 +33,6 @@ namespace tech::plugin {
 
         void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
 
-//        void setConfig(const std::string &roomID, const std::string &config, const drogon::SubscriberID &targetID);
-//
-//        void setReadyState(const std::string &roomID, const bool &isReady, const drogon::SubscriberID &targetID);
-
         bool checkReadyState(const std::string &roomID);
 
         std::string getInfos(const std::string &roomID);

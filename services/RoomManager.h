@@ -22,15 +22,11 @@ namespace tech::services {
 
         void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
 
-//        void setReadyState(const std::string &roomID, const bool &isReady, const drogon::SubscriberID &targetID);
-
         bool checkReadyState(const std::string &roomID);
 
         std::string getInfos(const std::string &roomID);
 
         drogon::SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler, const std::shared_ptr<tech::services::Player> &player);
-
-        drogon::SubscriberID subscribe(const std::string &roomID, MessageHandler &&handler, std::shared_ptr<tech::services::Player> &&player);
 
         void unsubscribe(const std::string &roomID, drogon::SubscriberID id);
 
