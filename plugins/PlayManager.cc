@@ -67,16 +67,6 @@ void PlayManager::tell(const string &roomID, const string &message, const Subscr
     _roomManager->tell(roomID, message, targetID);
 }
 
-//void PlayManager::setConfig(const string &roomID, const std::string &config, const SubscriberID &targetID) {
-//    shared_lock<shared_mutex> lock(_sharedMutex); //TODO: Check if shared_lock is safe.
-//    _roomManager->setConfig(roomID, isReady, targetID);
-//}
-//
-//void PlayManager::setReadyState(const string &roomID, const bool &isReady, const SubscriberID &targetID) {
-//    shared_lock<shared_mutex> lock(_sharedMutex); //TODO: Check if shared_lock is safe.
-//    _roomManager->setReadyState(roomID, isReady, targetID);
-//}
-
 bool PlayManager::checkReadyState(const string &roomID) {
     shared_lock<shared_mutex> lock(_sharedMutex);
     return _roomManager->checkReadyState(roomID);

@@ -18,10 +18,10 @@ namespace tech::services {
 #endif
 
         Room(
-                const std::string &id,
-                const std::string &name,
+                std::string id,
+                std::string name,
                 const std::string &password,
-                const std::string &roomType,
+                std::string roomType,
                 const uint64_t &capacity
         );
 
@@ -30,8 +30,6 @@ namespace tech::services {
         void publish(const std::string &message, const drogon::SubscriberID &excludedID) const;
 
         void tell(const std::string &message, const drogon::SubscriberID &targetID) const;
-
-//        void setReadyState(const bool &isReady, const drogon::SubscriberID &targetID);
 
         bool checkReadyState();
 
@@ -66,9 +64,12 @@ namespace tech::services {
     private:
         std::string _id, _name, _password, _type;
         uint64_t _count, _capacity;
+        drogon::SubscriberID _inner_id;
         std::unordered_map<drogon::SubscriberID, MessageHandler> _handlersMap;
         std::unordered_map<drogon::SubscriberID, std::shared_ptr<tech::services::Player>> _playersMap;
         mutable SharedMutex _sharedMutex;
+
+        drogon::SubscriberID _loop_inner_id();
     };
 }
 

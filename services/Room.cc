@@ -5,25 +5,22 @@
 #include <services/Room.h>
 #include <utils/Crypto.h>
 
+#include <utility>
+
 using namespace tech::services;
 using namespace tech::utils;
 using namespace drogon;
 using namespace std;
 
 Room::Room(
-        const string &id,
-        const string &name,
+        string id,
+        string name,
         const string &password,
-        const string &roomType,
+        string roomType,
         const uint64_t &capacity
-) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
-    _id = id;
-    _name = name;
-    _password = Crypto::blake2b(password, 1);
+) : _id(move(id)), _name(move(name)), _password(Crypto::blake2b(password, 1)), _type(move(roomType)), _capacity(capacity) {
     _count = 0;
-    _type = roomType;
-    _capacity = capacity;
+    _inner_id = 0;
 }
 
 void Room::publish(const string &message) const {
@@ -51,15 +48,6 @@ void Room::tell(const string &message, const SubscriberID &targetID) const {
     }
 }
 
-//void Room::setReadyState(const bool &isReady, const SubscriberID &targetID) {
-//    unique_lock<SharedMutex> lock(_sharedMutex);
-//    for (auto &pair : _playersMap) {
-//        if (pair.first == targetID) {
-//            pair.second.setReadyState(isReady);
-//        }
-//    }
-//}
-
 bool Room::checkReadyState() {
     shared_lock<SharedMutex> lock(_sharedMutex);
     bool isAllReady = true;
@@ -86,8 +74,10 @@ SubscriberID Room::subscribe(const Room::MessageHandler &handler) {
     if (_count == _capacity) {
         throw range_error("Room is full");
     }
-    _handlersMap[++_count] = handler;
-    return _count;
+    _count++;
+    auto tempID = _loop_inner_id();
+    _handlersMap[tempID] = handler;
+    return tempID;
 }
 
 SubscriberID Room::subscribe(Room::MessageHandler &&handler) {
@@ -95,8 +85,10 @@ SubscriberID Room::subscribe(Room::MessageHandler &&handler) {
     if (_count == _capacity) {
         throw range_error("Room is full");
     }
-    _handlersMap[++_count] = move(handler);
-    return _count;
+    _count++;
+    auto tempID = _loop_inner_id();
+    _handlersMap[tempID] = move(handler);
+    return tempID;
 }
 
 void Room::join(drogon::SubscriberID id, const shared_ptr<Player> &player) {
@@ -164,4 +156,13 @@ Json::Value Room::toJson() {
     tempJson["count"] = static_cast<Json::UInt64>(_count);
     tempJson["capacity"] = static_cast<Json::UInt64>(_capacity);
     return tempJson;
+}
+
+SubscriberID Room::_loop_inner_id() {
+    while (true) {
+        if (!_handlersMap.count(_inner_id)) {
+            return _inner_id;
+        }
+        _inner_id = _inner_id + 1 == _capacity ? 0 : _inner_id + 1;
+    }
 }

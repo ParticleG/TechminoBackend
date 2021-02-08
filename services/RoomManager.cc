@@ -48,20 +48,6 @@ void RoomManager::tell(const string &roomID, const string &message,
     roomPtr->tell(message, targetID);
 }
 
-//void RoomManager::setReadyState(const string &roomID, const bool &isReady, const SubscriberID &targetID) {
-//    shared_ptr<Room> roomPtr;
-//    {
-//        shared_lock<SharedMutex> lock(_sharedMutex);
-//        auto iter = _roomIDMap.find(roomID);
-//        if (iter != _roomIDMap.end()) {
-//            roomPtr = iter->second;
-//        } else {
-//            return;
-//        }
-//    }
-//    roomPtr->setReadyState(isReady, targetID);
-//}
-
 bool RoomManager::checkReadyState(const string &roomID) {
     shared_ptr<Room> roomPtr;
     {
@@ -92,18 +78,6 @@ std::string RoomManager::getInfos(const string &roomID) {
 
 SubscriberID RoomManager::subscribe(const string &roomID, const RoomManager::MessageHandler &handler, const shared_ptr<tech::services::Player> &player) {
     auto topicHandler = [roomID, handler](const string &message) {
-        handler(roomID, message);
-    };
-    try {
-        return _subscribeToRoom(roomID, move(topicHandler), player);
-    } catch (range_error &error) {
-        LOG_WARN << error.what();
-        throw error;
-    }
-}
-
-SubscriberID RoomManager::subscribe(const string &roomID, RoomManager::MessageHandler &&handler, shared_ptr<tech::services::Player> &&player) {
-    auto topicHandler = [roomID, handler = move(handler)](const string &message) {
         handler(roomID, message);
     };
     try {
