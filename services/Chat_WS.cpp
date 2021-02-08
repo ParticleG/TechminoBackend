@@ -23,8 +23,8 @@ bool Chat::join(
                 }, _player
         );
         chatManager->chat("J" + _player->getUser().getValueOfUsername() +
-                          ":" + to_string(_player->getUser().getValueOfId()) +
-                          ":" + to_string(chatManager->chatCount()));
+                          ";" + to_string(_player->getUser().getValueOfId()) +
+                          ";" + to_string(chatManager->chatCount()));
         wsConnPtr->setContext(_player);
     } catch (range_error &e) {
         LOG_ERROR << "error:" << e.what();
@@ -49,8 +49,8 @@ void Chat::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
     } else if (commandType == 'T') {
         _player = wsConnPtr->getContext<Player>();
         auto chatManager = app().getPlugin<tech::plugin::ChatManager>();
-        chatManager->chat("T" + _player->getUser().getValueOfUsername() + ":" +
-                          to_string(_player->getUser().getValueOfId()) + ":" +
+        chatManager->chat("T" + _player->getUser().getValueOfUsername() + ";" +
+                          to_string(_player->getUser().getValueOfId()) + ";" +
                           message.substr(1));
     } else {
         auto chatManager = app().getPlugin<tech::plugin::ChatManager>();
@@ -80,6 +80,6 @@ void Chat::quit(const WebSocketConnectionPtr &wsConnPtr) {
     _player = wsConnPtr->getContext<Player>();
     chatManager->quitChat(_player->getSubscriberID());
     chatManager->chat("L" + _player->getUser().getValueOfUsername() +
-                      ":" + to_string(_player->getUser().getValueOfId()) +
-                      ":" + to_string(chatManager->chatCount()));
+                      ";" + to_string(_player->getUser().getValueOfId()) +
+                      ";" + to_string(chatManager->chatCount()));
 }
