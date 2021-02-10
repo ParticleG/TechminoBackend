@@ -45,6 +45,14 @@ namespace tech::services {
 
         bool checkPassword(const std::string &roomID, const std::string &password);
 
+        void startGame(const std::string &roomID);
+
+        void changeGroup(const std::string &roomID, drogon::SubscriberID id, const unsigned int &group);
+
+        void setDead(const std::string &roomID, drogon::SubscriberID id);
+
+        unsigned int endGame(const std::string &roomID);
+
         Json::Value getRoomJson(const std::string &roomID);
 
         Json::Value getRoomList();

@@ -41,6 +41,16 @@ namespace tech::services {
 
         void join(drogon::SubscriberID id, const std::shared_ptr<tech::services::Player> &player);
 
+        void changeGroup(drogon::SubscriberID id, const unsigned int &group);
+
+        void startGame();
+
+        unsigned int getWiningGroup();
+
+        void endGame();
+
+        void setDead(drogon::SubscriberID id);
+
         void unsubscribe(drogon::SubscriberID id);
 
         void quit(drogon::SubscriberID id);
@@ -67,6 +77,7 @@ namespace tech::services {
         drogon::SubscriberID _inner_id;
         std::unordered_map<drogon::SubscriberID, MessageHandler> _handlersMap;
         std::unordered_map<drogon::SubscriberID, std::shared_ptr<tech::services::Player>> _playersMap;
+        std::unordered_map<unsigned int, unsigned int> _groupsMap{};
         mutable SharedMutex _sharedMutex;
 
         drogon::SubscriberID _loop_inner_id();

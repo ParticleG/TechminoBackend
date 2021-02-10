@@ -27,11 +27,19 @@ namespace tech::plugin {
 
         bool checkPassword(const std::string &roomID, const std::string &password);
 
+        void startGame(const std::string &roomID);
+
+        void changeGroup(const std::string &roomID, drogon::SubscriberID id, const unsigned int &group);
+
+        void setDead(const std::string &roomID, drogon::SubscriberID id);
+
+        unsigned int endGame(const std::string &roomID);
+
         void publish(const std::string &roomID, const std::string &message);
 
         void publish(const std::string &roomID, const std::string &message, const drogon::SubscriberID &excludedID) const;
 
-        void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
+        [[maybe_unused]] void tell(const std::string &roomID, const std::string &message, const drogon::SubscriberID &targetID) const;
 
         bool checkReadyState(const std::string &roomID);
 

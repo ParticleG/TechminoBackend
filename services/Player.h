@@ -38,10 +38,19 @@ namespace tech::services {
 
         bool getReadyState() const;
 
+        void setAliveState(const bool &isAlive);
+
+        bool getAliveState() const;
+
+        void setGroup(const unsigned int &group);
+
+        unsigned int getGroup() const;
+
     private:
         drogon_model::Techmino::Info _user;
         std::string _config, _roomID, _password;
         drogon::SubscriberID _subID{};
-        bool _isReady{};
+        bool _isReady{}, _isAlive{};
+        unsigned int _group{};
     };
 }

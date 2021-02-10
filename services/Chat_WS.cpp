@@ -53,6 +53,7 @@ void Chat::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
                           to_string(_player->getUser().getValueOfId()) + ";" +
                           message.substr(1));
     } else {
+        LOG_WARN << "Invalid WebSocket message in Chat: " << message;
         auto chatManager = app().getPlugin<tech::plugin::ChatManager>();
         chatManager->chat("EInvalid command.");
     }
