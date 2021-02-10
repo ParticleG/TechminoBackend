@@ -33,7 +33,7 @@ namespace tech::plugin {
 
         void setDead(const std::string &roomID, drogon::SubscriberID id);
 
-        unsigned int endGame(const std::string &roomID);
+        uint64_t endGame(const std::string &roomID);
 
         void publish(const std::string &roomID, const std::string &message);
 

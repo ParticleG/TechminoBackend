@@ -106,9 +106,6 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
         case 'D':
             try {
                 playManager->setDead(_player->getRoomID(), _player->getSubscriberID());
-                playManager->publish(_player->getRoomID(),
-                                     "D" + to_string(_player->getSubscriberID()));
-
                 auto winnerGroup = playManager->endGame(_player->getRoomID());
                 auto tempPlayer = *_player;
                 thread([tempPlayer, winnerGroup]() {

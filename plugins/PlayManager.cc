@@ -65,7 +65,7 @@ void PlayManager::setDead(const string &roomID, drogon::SubscriberID id) {
     _roomManager->setDead(roomID, id);
 }
 
-unsigned int PlayManager::endGame(const string &roomID) {
+uint64_t PlayManager::endGame(const string &roomID) {
     shared_lock<shared_mutex> lock(_sharedMutex);
     return _roomManager->endGame(roomID);
 }

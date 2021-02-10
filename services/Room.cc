@@ -24,14 +24,14 @@ Room::Room(
 }
 
 void Room::publish(const string &message) const {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     for (auto &pair : _handlersMap) {
         pair.second(message);
     }
 }
 
 void Room::publish(const string &message, const SubscriberID &excludedID) const {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     for (auto &pair : _handlersMap) {
         if (pair.first != excludedID) {
             pair.second(message);
@@ -40,7 +40,7 @@ void Room::publish(const string &message, const SubscriberID &excludedID) const 
 }
 
 void Room::tell(const string &message, const SubscriberID &targetID) const {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     for (auto &pair : _handlersMap) {
         if (pair.first == targetID) {
             pair.second(message);
@@ -49,7 +49,7 @@ void Room::tell(const string &message, const SubscriberID &targetID) const {
 }
 
 bool Room::checkReadyState() {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     bool isAllReady = true;
     for (auto &pair : _playersMap) {
         if (!pair.second->getReadyState()) {
@@ -61,7 +61,7 @@ bool Room::checkReadyState() {
 }
 
 string Room::getInfos() {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     string infos;
     for (auto &pair : _playersMap) {
         infos += pair.second->getInfo();
@@ -70,7 +70,7 @@ string Room::getInfos() {
 }
 
 SubscriberID Room::subscribe(const Room::MessageHandler &handler) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     if (_count == _capacity) {
         throw range_error("Room is full");
     }
@@ -81,7 +81,7 @@ SubscriberID Room::subscribe(const Room::MessageHandler &handler) {
 }
 
 SubscriberID Room::subscribe(Room::MessageHandler &&handler) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     if (_count == _capacity) {
         throw range_error("Room is full");
     }
@@ -91,44 +91,58 @@ SubscriberID Room::subscribe(Room::MessageHandler &&handler) {
     return tempID;
 }
 
-void Room::join(SubscriberID id, const shared_ptr<Player> &player) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+void Room::join(SubscriberID id, const shared_ptr <Player> &player) {
+    unique_lock <SharedMutex> lock(_sharedMutex);
     _playersMap[id] = player;
 }
 
 void Room::changeGroup(SubscriberID id, const unsigned int &group) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     auto player = _playersMap[id];
     player->setGroup(group);
 }
 
 void Room::startGame() {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     for (auto &pair : _playersMap) {
         pair.second->setAliveState(true);
         ++_groupsMap[pair.second->getGroup()];
     }
+    isIndividual = _groupsMap.size() == 1;
 }
 
-unsigned int Room::getWiningGroup() {
-    bool hasAliveGroup;
-    unsigned int group;
-    for (auto &pair : _groupsMap) {
-        if(pair.second != 0){
-            if(!hasAliveGroup){
-                hasAliveGroup = true;
-                group = pair.first;
+uint64_t Room::getWiningGroup() {
+    bool hasAlive = false;
+    uint64_t winner;
+    if (isIndividual) {
+        for (auto &pair : _playersMap) {
+            if (pair.second->getAliveState()) {
+                if (!hasAlive) {
+                    hasAlive = true;
+                    winner = pair.second->getSubscriberID();
+                } else {
+                    throw range_error("Game not finished yet");
+                }
             }
-            else {
-                throw range_error("Game not finished yet");
+        }
+    } else {
+        for (auto &pair : _groupsMap) {
+            if (pair.second != 0) {
+                if (!hasAlive) {
+                    hasAlive = true;
+                    winner = pair.first;
+                } else {
+                    throw range_error("Game not finished yet");
+                }
             }
         }
     }
-    return group;
+
+    return winner;
 }
 
 void Room::endGame() {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     for (auto &pair : _playersMap) {
         pair.second->setReadyState(false);
         pair.second->setAliveState(false);
@@ -143,23 +157,23 @@ void Room::setDead(SubscriberID id) {
 }
 
 void Room::unsubscribe(SubscriberID id) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     _handlersMap.erase(id);
     --_count;
 }
 
 void Room::quit(SubscriberID id) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     _playersMap.erase(id);
 }
 
 bool Room::checkPassword(const string &password) {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     return Crypto::blake2b(password, 1) == _password;
 }
 
 bool Room::changePassword(const string &oldPassword, const string &newPassword) {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     if (Crypto::blake2b(oldPassword, 1) == _password) {
         _password = Crypto::blake2b(newPassword, 1);
         return true;
@@ -168,17 +182,17 @@ bool Room::changePassword(const string &oldPassword, const string &newPassword) 
 }
 
 bool Room::empty() const {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     return _handlersMap.empty();
 }
 
 bool Room::full() const {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     return _count == _capacity;
 }
 
 uint64_t Room::count() const {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     return _count;
 }
 
@@ -187,12 +201,12 @@ string Room::getType() const {
 }
 
 void Room::clear() {
-    unique_lock<SharedMutex> lock(_sharedMutex);
+    unique_lock <SharedMutex> lock(_sharedMutex);
     _handlersMap.clear();
 }
 
 Json::Value Room::toJson() {
-    shared_lock<SharedMutex> lock(_sharedMutex);
+    shared_lock <SharedMutex> lock(_sharedMutex);
     Json::Value tempJson;
     tempJson["id"] = _id;
     tempJson["name"] = _name;

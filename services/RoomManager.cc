@@ -219,12 +219,12 @@ void RoomManager::setDead(const string &roomID, drogon::SubscriberID id) {
     }
 }
 
-unsigned int RoomManager::endGame(const string &roomID) {
+uint64_t RoomManager::endGame(const string &roomID) {
     {
         shared_lock<SharedMutex> lock(_sharedMutex);
         auto iter = _roomIDMap.find(roomID);
         if (iter != _roomIDMap.end()) {
-            unsigned int winnerGroup;
+            uint64_t winnerGroup;
             try {
                 winnerGroup = iter->second->getWiningGroup();
                 iter->second->endGame();
@@ -237,7 +237,7 @@ unsigned int RoomManager::endGame(const string &roomID) {
     unique_lock<SharedMutex> lock(_sharedMutex);
     auto iter = _roomIDMap.find(roomID);
     if (iter != _roomIDMap.end()) {
-        unsigned int winnerGroup;
+        uint64_t winnerGroup;
         try {
             winnerGroup = iter->second->getWiningGroup();
             iter->second->endGame();
@@ -246,6 +246,7 @@ unsigned int RoomManager::endGame(const string &roomID) {
             throw e;
         }
     }
+    throw range_error("Game not finished yet");
 }
 
 Json::Value RoomManager::getRoomJson(const string &roomID) {
