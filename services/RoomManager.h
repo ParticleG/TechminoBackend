@@ -51,7 +51,7 @@ namespace tech::services {
 
         void setDead(const std::string &roomID, drogon::SubscriberID id);
 
-        unsigned int endGame(const std::string &roomID);
+        uint64_t endGame(const std::string &roomID);
 
         Json::Value getRoomJson(const std::string &roomID);
 

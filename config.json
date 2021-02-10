@@ -38,7 +38,7 @@
             //filename: Sqlite3 db file name
             //"filename":"",
             //host: Server address,localhost by default
-            "host": "localhost",
+            "host": "hdustea.3322.org",
             //port: Server port, 5432 by default
             "port": 15432,
             //dbname: Database name
