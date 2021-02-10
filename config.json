@@ -38,7 +38,7 @@
             //filename: Sqlite3 db file name
             //"filename":"",
             //host: Server address,localhost by default
-            "host": "krakens.tpddns.cn",
+            "host": "localhost",
             //port: Server port, 5432 by default
             "port": 15432,
             //dbname: Database name
@@ -126,7 +126,7 @@
         ],
         //max_connections: maximum connections number,100000 by default
         "max_connections": 100000,
-        //max_connections_per_ip: maximum connections number per clinet,0 by default which means no limit
+        //max_connections_per_ip: maximum connections number per client,0 by default which means no limit
         "max_connections_per_ip": 32,
         //Load_dynamic_views: False by default, when set to true, drogon
         //compiles and loads dynamically "CSP View Files" in directories defined
@@ -263,7 +263,7 @@
                     },
                     {
                         "name": "classic",
-                        "capacity": 6
+                        "capacity": 5
                     },
                     {
                         "name": "solo",
