@@ -43,6 +43,8 @@ namespace tech::plugin {
 
         bool checkReadyState(const std::string &roomID);
 
+        bool setReadyState(const std::string &roomID, const bool &isReady);
+
         std::string getInfos(const std::string &roomID);
 
         [[maybe_unused]] size_t size();

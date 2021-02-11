@@ -92,6 +92,11 @@ bool PlayManager::checkReadyState(const string &roomID) {
     return _roomManager->checkReadyState(roomID);
 }
 
+bool PlayManager::setReadyState(const string &roomID, const bool &isReady) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    return _roomManager->setReadyState(roomID, isReady);
+}
+
 std::string PlayManager::getInfos(const string &roomID) {
     shared_lock<shared_mutex> lock(_sharedMutex);
     return _roomManager->getInfos(roomID);

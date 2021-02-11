@@ -93,14 +93,20 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
             playManager->publish(_player->getRoomID(),
                                  "R" + to_string(_player->getSubscriberID()));
             if (playManager->checkReadyState(_player->getRoomID())) {
-                auto tempPlayer = *_player;
-                thread([tempPlayer]() {
-                    this_thread::sleep_for(chrono::seconds(3));
-                    auto playManager = app().getPlugin<tech::plugin::PlayManager>();
-                    playManager->startGame(tempPlayer.getRoomID());
-                    playManager->publish(tempPlayer.getRoomID(),
-                                         "B" + to_string(utils::Utils::uniform_random()));
-                }).detach();
+                if (playManager->setReadyState(_player->getRoomID(), true)) {
+                    auto tempPlayer = *_player;
+                    thread([tempPlayer]() {
+                        this_thread::sleep_for(chrono::seconds(3));
+                        auto playManager = app().getPlugin<tech::plugin::PlayManager>();
+                        if (playManager->checkReadyState(tempPlayer.getRoomID())) {
+                            playManager->startGame(tempPlayer.getRoomID());
+                            playManager->publish(tempPlayer.getRoomID(),
+                                                 "B" + to_string(utils::Utils::uniform_random()));
+                        }
+                        this_thread::sleep_for(chrono::seconds(3));
+                        playManager->setReadyState(tempPlayer.getRoomID(), false);
+                    }).detach();
+                }
             }
             break;
         case 'D':

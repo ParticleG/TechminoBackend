@@ -20,6 +20,7 @@ void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, string &&me
         LOG_DEBUG << "Message is Pong";
     } else if (type == WebSocketMessageType::Close) {
         LOG_DEBUG << "Message is Close";
+        wsConnPtr->forceClose();
     } else if (type == WebSocketMessageType::Unknown) {
         LOG_DEBUG << "Message is Unknown";
     }

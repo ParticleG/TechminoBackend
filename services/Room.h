@@ -33,6 +33,8 @@ namespace tech::services {
 
         bool checkReadyState();
 
+        bool setReadyState(const bool &isReady);
+
         std::string getInfos();
 
         drogon::SubscriberID subscribe(const MessageHandler &handler);
@@ -78,7 +80,7 @@ namespace tech::services {
         std::unordered_map<drogon::SubscriberID, MessageHandler> _handlersMap;
         std::unordered_map<drogon::SubscriberID, std::shared_ptr<tech::services::Player>> _playersMap;
         std::unordered_map<unsigned int, unsigned int> _groupsMap{};
-        bool isIndividual{};
+        bool _isReady{}, _isIndividual{};
         mutable SharedMutex _sharedMutex;
 
         drogon::SubscriberID _loop_inner_id();
