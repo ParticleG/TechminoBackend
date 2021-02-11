@@ -62,6 +62,22 @@ bool Player::getReadyState() const {
     return _isReady;
 }
 
+void Player::setAliveState(const bool &isAlive) {
+    _isAlive = isAlive;
+}
+
+bool Player::getAliveState() const {
+    return _isAlive;
+}
+
 void Player::setConfig(string config) {
     _config = move(config);
+}
+
+void Player::setGroup(const unsigned int &group) {
+    _group = group;
+}
+
+unsigned int Player::getGroup() const {
+    return _group;
 }

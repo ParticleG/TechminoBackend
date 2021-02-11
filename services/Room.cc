@@ -60,6 +60,16 @@ bool Room::checkReadyState() {
     return isAllReady;
 }
 
+bool Room::setReadyState(const bool &isReady) {
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    if (_isReady == isReady) {
+        return false;
+    } else {
+        _isReady = isReady;
+        return true;
+    }
+}
+
 string Room::getInfos() {
     shared_lock<SharedMutex> lock(_sharedMutex);
     string infos;
@@ -74,7 +84,7 @@ SubscriberID Room::subscribe(const Room::MessageHandler &handler) {
     if (_count == _capacity) {
         throw range_error("Room is full");
     }
-    _count++;
+    ++_count;
     auto tempID = _loop_inner_id();
     _handlersMap[tempID] = handler;
     return tempID;
@@ -85,17 +95,77 @@ SubscriberID Room::subscribe(Room::MessageHandler &&handler) {
     if (_count == _capacity) {
         throw range_error("Room is full");
     }
-    _count++;
+    ++_count;
     auto tempID = _loop_inner_id();
     _handlersMap[tempID] = move(handler);
     return tempID;
 }
 
-void Room::join(drogon::SubscriberID id, const shared_ptr<Player> &player) {
+void Room::join(SubscriberID id, const shared_ptr<Player> &player) {
     unique_lock<SharedMutex> lock(_sharedMutex);
     _playersMap[id] = player;
 }
 
+void Room::changeGroup(SubscriberID id, const unsigned int &group) {
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    auto player = _playersMap[id];
+    player->setGroup(group);
+}
+
+void Room::startGame() {
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    for (auto &pair : _playersMap) {
+//        pair.second->setReadyState(false);
+        pair.second->setAliveState(true);
+        ++_groupsMap[pair.second->getGroup()];
+    }
+    _isIndividual = _groupsMap.size() == 1;
+}
+
+uint64_t Room::getWiningGroup() {
+    bool hasAlive = false;
+    uint64_t winner;
+    if (_isIndividual) {
+        for (auto &pair : _playersMap) {
+            if (pair.second->getAliveState()) {
+                if (!hasAlive) {
+                    hasAlive = true;
+                    winner = pair.second->getSubscriberID();
+                } else {
+                    throw range_error("Game not finished yet");
+                }
+            }
+        }
+    } else {
+        for (auto &pair : _groupsMap) {
+            if (pair.second != 0) {
+                if (!hasAlive) {
+                    hasAlive = true;
+                    winner = pair.first;
+                } else {
+                    throw range_error("Game not finished yet");
+                }
+            }
+        }
+    }
+
+    return winner;
+}
+
+void Room::endGame() {
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    for (auto &pair : _playersMap) {
+        pair.second->setReadyState(false);
+        pair.second->setAliveState(false);
+    }
+    _groupsMap.clear();
+}
+
+void Room::setDead(SubscriberID id) {
+    auto player = _playersMap[id];
+    player->setAliveState(false);
+    --_groupsMap[player->getGroup()];
+}
 
 void Room::unsubscribe(SubscriberID id) {
     unique_lock<SharedMutex> lock(_sharedMutex);
