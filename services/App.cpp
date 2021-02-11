@@ -11,14 +11,14 @@ using namespace std;
 
 void App::info(HttpStatusCode &code, Json::Value &body) {
     try {
-        auto matchedApps = appMapper->findAll();
+        auto matchedApps = appMapper->orderBy(Techmino::App::Cols::_version_code, SortOrder::DESC).limit(1).findAll();
         auto matchedContent = messageMapper->orderBy(Techmino::Message::Cols::_id, SortOrder::DESC)
                 .findBy(Criteria(Techmino::Message::Cols::_type, CompareOperator::EQ, "notice"));
         code = k200OK;
         body["message"] = "OK";
-        body["version_code"] = matchedApps[matchedApps.size() - 1].getValueOfVersionCode();
-        body["version_name"] = matchedApps[matchedApps.size() - 1].getValueOfVersionName();
-        body["version_content"] = matchedApps[matchedApps.size() - 1].getValueOfVersionContent();
+        body["version_code"] = matchedApps[0].getValueOfVersionCode();
+        body["version_name"] = matchedApps[0].getValueOfVersionName();
+        body["version_content"] = matchedApps[0].getValueOfVersionContent();
         body["notice"] = matchedContent[0].getValueOfContent();
     } catch (const orm::DrogonDbException &e) {
         code = k500InternalServerError;
