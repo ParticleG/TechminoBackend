@@ -62,6 +62,20 @@ bool RoomManager::checkReadyState(const string &roomID) {
     return roomPtr->checkReadyState();
 }
 
+bool RoomManager::setReadyState(const string &roomID, const bool &isReady) {
+    shared_ptr<Room> roomPtr;
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            roomPtr = iter->second;
+        } else {
+            return false;
+        }
+    }
+    return roomPtr->setReadyState(isReady);
+}
+
 std::string RoomManager::getInfos(const string &roomID) {
     shared_ptr<Room> roomPtr;
     {

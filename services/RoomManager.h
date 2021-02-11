@@ -24,6 +24,8 @@ namespace tech::services {
 
         bool checkReadyState(const std::string &roomID);
 
+        bool setReadyState(const std::string &roomID, const bool &isReady);
+
         std::string getInfos(const std::string &roomID);
 
         drogon::SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler, const std::shared_ptr<tech::services::Player> &player);
