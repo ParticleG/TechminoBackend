@@ -24,6 +24,8 @@ namespace tech::services {
 
         bool checkReadyState(const std::string &roomID);
 
+        bool setReadyState(const std::string &roomID, const bool &isReady);
+
         std::string getInfos(const std::string &roomID);
 
         drogon::SubscriberID subscribe(const std::string &roomID, const MessageHandler &handler, const std::shared_ptr<tech::services::Player> &player);
@@ -44,6 +46,14 @@ namespace tech::services {
         void removeRoom(const std::string &roomID);
 
         bool checkPassword(const std::string &roomID, const std::string &password);
+
+        void startGame(const std::string &roomID);
+
+        void changeGroup(const std::string &roomID, drogon::SubscriberID id, const unsigned int &group);
+
+        void setDead(const std::string &roomID, drogon::SubscriberID id);
+
+        uint64_t endGame(const std::string &roomID);
 
         Json::Value getRoomJson(const std::string &roomID);
 

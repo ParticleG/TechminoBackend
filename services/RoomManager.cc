@@ -62,6 +62,20 @@ bool RoomManager::checkReadyState(const string &roomID) {
     return roomPtr->checkReadyState();
 }
 
+bool RoomManager::setReadyState(const string &roomID, const bool &isReady) {
+    shared_ptr<Room> roomPtr;
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            roomPtr = iter->second;
+        } else {
+            return false;
+        }
+    }
+    return roomPtr->setReadyState(isReady);
+}
+
 std::string RoomManager::getInfos(const string &roomID) {
     shared_ptr<Room> roomPtr;
     {
@@ -166,6 +180,87 @@ bool RoomManager::checkPassword(const string &roomID, const string &password) {
         return iter->second->checkPassword(password);
     }
     throw out_of_range("Room not found");
+}
+
+void RoomManager::startGame(const string &roomID) {
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            iter->second->startGame();
+            return;
+        }
+    }
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    auto iter = _roomIDMap.find(roomID);
+    if (iter != _roomIDMap.end()) {
+        iter->second->startGame();
+        return;
+    }
+}
+
+void RoomManager::changeGroup(const string &roomID, drogon::SubscriberID id, const unsigned int &group) {
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            iter->second->changeGroup(id, group);
+            return;
+        }
+    }
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    auto iter = _roomIDMap.find(roomID);
+    if (iter != _roomIDMap.end()) {
+        iter->second->changeGroup(id, group);
+        return;
+    }
+}
+
+void RoomManager::setDead(const string &roomID, drogon::SubscriberID id) {
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            iter->second->setDead(id);
+            return;
+        }
+    }
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    auto iter = _roomIDMap.find(roomID);
+    if (iter != _roomIDMap.end()) {
+        iter->second->setDead(id);
+        return;
+    }
+}
+
+uint64_t RoomManager::endGame(const string &roomID) {
+    {
+        shared_lock<SharedMutex> lock(_sharedMutex);
+        auto iter = _roomIDMap.find(roomID);
+        if (iter != _roomIDMap.end()) {
+            uint64_t winnerGroup;
+            try {
+                winnerGroup = iter->second->getWiningGroup();
+                iter->second->endGame();
+                return winnerGroup;
+            } catch (range_error &e) {
+                throw e;
+            }
+        }
+    }
+    unique_lock<SharedMutex> lock(_sharedMutex);
+    auto iter = _roomIDMap.find(roomID);
+    if (iter != _roomIDMap.end()) {
+        uint64_t winnerGroup;
+        try {
+            winnerGroup = iter->second->getWiningGroup();
+            iter->second->endGame();
+            return winnerGroup;
+        } catch (range_error &e) {
+            throw e;
+        }
+    }
+    throw range_error("Game not finished yet");
 }
 
 Json::Value RoomManager::getRoomJson(const string &roomID) {

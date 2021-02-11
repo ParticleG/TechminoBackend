@@ -50,6 +50,26 @@ bool PlayManager::checkPassword(const string &roomID, const string &password) {
     return _roomManager->checkPassword(roomID, password);
 }
 
+void PlayManager::startGame(const string &roomID) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    _roomManager->startGame(roomID);
+}
+
+void PlayManager::changeGroup(const string &roomID, drogon::SubscriberID id, const unsigned int &group) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    _roomManager->changeGroup(roomID, id, group);
+}
+
+void PlayManager::setDead(const string &roomID, drogon::SubscriberID id) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    _roomManager->setDead(roomID, id);
+}
+
+uint64_t PlayManager::endGame(const string &roomID) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    return _roomManager->endGame(roomID);
+}
+
 void PlayManager::publish(const string &roomID, const string &message) {
     shared_lock<shared_mutex> lock(_sharedMutex);
     _roomManager->publish(roomID, message);
@@ -70,6 +90,11 @@ void PlayManager::tell(const string &roomID, const string &message, const Subscr
 bool PlayManager::checkReadyState(const string &roomID) {
     shared_lock<shared_mutex> lock(_sharedMutex);
     return _roomManager->checkReadyState(roomID);
+}
+
+bool PlayManager::setReadyState(const string &roomID, const bool &isReady) {
+    shared_lock<shared_mutex> lock(_sharedMutex);
+    return _roomManager->setReadyState(roomID, isReady);
 }
 
 std::string PlayManager::getInfos(const string &roomID) {

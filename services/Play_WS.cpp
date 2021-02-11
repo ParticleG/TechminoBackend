@@ -93,13 +93,34 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
             playManager->publish(_player->getRoomID(),
                                  "R" + to_string(_player->getSubscriberID()));
             if (playManager->checkReadyState(_player->getRoomID())) {
-                playManager->publish(_player->getRoomID(),
-                                     "B" + to_string(utils::Utils::uniform_random()));
+                if (playManager->setReadyState(_player->getRoomID(), true)) {
+                    auto tempPlayer = *_player;
+                    thread([tempPlayer]() {
+                        this_thread::sleep_for(chrono::seconds(3));
+                        auto playManager = app().getPlugin<tech::plugin::PlayManager>();
+                        if (playManager->checkReadyState(tempPlayer.getRoomID())) {
+                            playManager->startGame(tempPlayer.getRoomID());
+                            playManager->publish(tempPlayer.getRoomID(),
+                                                 "B" + to_string(utils::Utils::uniform_random()));
+                        }
+                        this_thread::sleep_for(chrono::seconds(3));
+                        playManager->setReadyState(tempPlayer.getRoomID(), false);
+                    }).detach();
+                }
             }
             break;
-        case 'B':
-            playManager->publish(_player->getRoomID(),
-                                 "B" + to_string(utils::Utils::uniform_random()));
+        case 'D':
+            try {
+                playManager->setDead(_player->getRoomID(), _player->getSubscriberID());
+                auto winnerGroup = playManager->endGame(_player->getRoomID());
+                auto tempPlayer = *_player;
+                thread([tempPlayer, winnerGroup]() {
+                    this_thread::sleep_for(chrono::seconds(3));
+                    auto playManager = app().getPlugin<tech::plugin::PlayManager>();
+                    playManager->publish(tempPlayer.getRoomID(),
+                                         "F" + to_string(winnerGroup));
+                }).detach();
+            } catch (...) {}
             break;
         case 'T':
             playManager->publish(_player->getRoomID(),
@@ -123,6 +144,7 @@ void Play::messageHandler(const WebSocketConnectionPtr &wsConnPtr, const std::st
                                  _player->getSubscriberID());
             break;
         default:
+            LOG_WARN << "Invalid WebSocket message in Play: " << message;
             playManager->publish(_player->getRoomID(), "EInvalid command.");
             break;
     }
