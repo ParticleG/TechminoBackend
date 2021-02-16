@@ -1,22 +1,25 @@
 //
-// Created by Parti on 2021/2/3.
+// Created by Parti on 2021/2/16.
 //
 
 #pragma once
 
-#include <drogon/HttpController.h>
 #include <services/App.h>
 
-namespace tech::api::v1 {
-    class App : public drogon::HttpController<App> {
+namespace tech::socket::v1 {
+    class App : public drogon::WebSocketController<App> {
     public:
-        METHOD_LIST_BEGIN
-            METHOD_ADD(App::info, "/info", drogon::Get);
-        METHOD_LIST_END
+        WS_PATH_LIST_BEGIN
+            WS_PATH_ADD("/tech/socket/v1/app");
+        WS_PATH_LIST_END
 
-        void info(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
+        virtual void handleNewMessage(const drogon::WebSocketConnectionPtr &, std::string &&, const drogon::WebSocketMessageType &) override;
+
+        virtual void handleNewConnection(const drogon::HttpRequestPtr &, const drogon::WebSocketConnectionPtr &) override;
+
+        virtual void handleConnectionClosed(const drogon::WebSocketConnectionPtr &) override;
 
     private:
-        services::App _service;
+        tech::services::App _service;
     };
 }
