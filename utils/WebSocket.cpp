@@ -8,6 +8,26 @@ using namespace tech::utils;
 using namespace drogon;
 using namespace std;
 
+string WebSocket::fromJson(const Json::Value &value) {
+    Json::StreamWriterBuilder writerBuilder;
+    writerBuilder.settings_["indentation"] = "";
+    unique_ptr<Json::StreamWriter> jsonWriter(writerBuilder.newStreamWriter());
+    ostringstream oss;
+    jsonWriter->write(value, &oss);
+    return oss.str();
+}
+
+string WebSocket::toJson(
+        const string &rawData,
+        Json::Value &result
+) {
+    string errorMessage;
+    auto charReader = Json::CharReaderBuilder().newCharReader();
+
+    charReader->parse(rawData.data(), rawData.data() + rawData.size(), &result, &errorMessage);
+    return errorMessage;
+}
+
 void WebSocket::close(
         const WebSocketConnectionPtr &webSocketConnectionPtr,
         CloseCode _code,
