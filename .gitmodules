@@ -4,3 +4,6 @@
 [submodule "lib_strategies"]
 	path = lib_strategies
 	url = https://github.com/26F-Studio/lib_strategies
+[submodule "lib_models"]
+	path = lib_models
+	url = https://github.com/26F-Studio/lib_models
