@@ -18,6 +18,11 @@ namespace tech::utils {
                 Json::Value &result
         );
 
+        static void initPing(
+                const drogon::WebSocketConnectionPtr &wsConnPtr,
+                const std::chrono::duration<long double> &interval
+        );
+
         static void close(
                 const drogon::WebSocketConnectionPtr &webSocketConnectionPtr,
                 drogon::CloseCode _code,
