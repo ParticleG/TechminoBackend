@@ -30,9 +30,10 @@ namespace tech::services {
                        const int &versionCode,
                        drogon::CloseCode &code, Json::Value &response);
 
-        void messageHandler(
+        drogon::CloseCode requestHandler(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
-                const Json::Value &response
+                const Json::Value &request,
+                Json::Value &response
         );
 
     private:

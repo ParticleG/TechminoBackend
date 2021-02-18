@@ -50,11 +50,23 @@ bool App::establish(
     }
 }
 
-void App::messageHandler(
+CloseCode App::requestHandler(
         const WebSocketConnectionPtr &wsConnPtr,
-        const Json::Value &response
+        const Json::Value &request,
+        Json::Value &response
 ) {
-
+    CloseCode closeCode{};
+    if (request.isMember("action")) {
+        std::byte type, operation;
+        {
+            auto action = static_cast<std::byte>(request["action"].asUInt());
+            type = action >> 4;
+            operation = action & std::byte(0x0f);
+        }
+    } else {
+        response["message"] = "No action";
+    }
+    return closeCode;
 }
 
 App::_App::_App(const int &versionCode) : _versionCode(versionCode) {}

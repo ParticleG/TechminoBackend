@@ -28,6 +28,14 @@ string WebSocket::toJson(
     return errorMessage;
 }
 
+void WebSocket::initPing(
+        const WebSocketConnectionPtr &wsConnPtr,
+        const chrono::duration<long double> &interval
+) {
+    wsConnPtr->send("", WebSocketMessageType::Ping);
+    wsConnPtr->setPingMessage("", interval);
+}
+
 void WebSocket::close(
         const WebSocketConnectionPtr &webSocketConnectionPtr,
         CloseCode _code,
