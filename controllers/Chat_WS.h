@@ -20,6 +20,6 @@ namespace tech::socket::v1 {
         virtual void handleConnectionClosed(const drogon::WebSocketConnectionPtr &) override;
 
     private:
-        tech::services::Chat _service;
+        tech::services::websocket::Chat _service;
     };
 }

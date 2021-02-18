@@ -4,7 +4,7 @@
 
 #include <services/Play_WS.h>
 
-using namespace tech::services;
+using namespace tech::services::websocket;
 using namespace tech::utils;
 using namespace drogon;
 using namespace std;

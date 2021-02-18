@@ -5,7 +5,7 @@
 #include <services/User.h>
 #include <utils/Authorizer.h>
 
-using namespace tech::services;
+using namespace tech::services::http;
 using namespace tech::utils;
 using namespace drogon_model;
 using namespace drogon;

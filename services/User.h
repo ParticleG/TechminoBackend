@@ -7,7 +7,7 @@
 #include <models/Info.h>
 #include <utils/Http.h>
 
-namespace tech::services {
+namespace tech::services::http {
     class User {
     public:
         User();

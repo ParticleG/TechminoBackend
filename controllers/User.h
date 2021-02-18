@@ -26,6 +26,6 @@ namespace tech::api::v1 {
         void erase(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
     private:
-        tech::services::User _service;
+        tech::services::http::User _service;
     };
 }

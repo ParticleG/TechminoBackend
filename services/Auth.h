@@ -7,7 +7,7 @@
 #include <models/Auth.h>
 #include <utils/Http.h>
 
-namespace tech::services {
+namespace tech::services::http {
     class Auth {
     public:
         Auth();

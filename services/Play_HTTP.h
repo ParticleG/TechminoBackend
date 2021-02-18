@@ -7,7 +7,7 @@
 #include <drogon/drogon.h>
 #include <plugins/PlayManager.h>
 
-namespace tech::services {
+namespace tech::services::http {
     class Play {
     public:
         Play() : _playManager(drogon::app().getPlugin<tech::plugin::PlayManager>()) {};

@@ -10,7 +10,7 @@
 #include <services/Player.h>
 #include <utils/Authorizer.h>
 
-namespace tech::services {
+namespace tech::services::websocket {
     class App {
     public:
         class _App {

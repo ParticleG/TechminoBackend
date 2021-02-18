@@ -8,7 +8,7 @@
 #include <services/Player.h>
 #include <utils/Authorizer.h>
 
-namespace tech::services {
+namespace tech::services::websocket {
     class Play {
     public:
         bool validate(

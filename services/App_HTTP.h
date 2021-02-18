@@ -8,7 +8,7 @@
 #include <models/Message.h>
 #include <utils/Http.h>
 
-namespace tech::services {
+namespace tech::services::http {
     class App {
     public:
         App();

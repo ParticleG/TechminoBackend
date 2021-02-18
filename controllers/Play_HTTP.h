@@ -25,6 +25,6 @@ namespace tech::api::v1::online {
                     const std::string &roomType);
 
     private:
-        tech::services::Play _service;
+        tech::services::http::Play _service;
     };
 }
