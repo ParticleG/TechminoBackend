@@ -17,6 +17,6 @@ namespace tech::api::v1 {
         void info(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
     private:
-        services::App _service;
+        services::http::App _service;
     };
 }

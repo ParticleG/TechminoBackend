@@ -26,6 +26,6 @@ namespace tech::api::v1 {
         void getAccessToken(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
     private:
-        tech::services::Auth _service;
+        tech::services::http::Auth _service;
     };
 }

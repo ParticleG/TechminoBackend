@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <services/App.h>
+#include <services/App_WS.h>
 
 namespace tech::socket::v1 {
     class App : public drogon::WebSocketController<App> {
@@ -20,6 +20,6 @@ namespace tech::socket::v1 {
         virtual void handleConnectionClosed(const drogon::WebSocketConnectionPtr &) override;
 
     private:
-        tech::services::App _service;
+        tech::services::websocket::App _service;
     };
 }

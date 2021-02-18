@@ -6,7 +6,7 @@
 #include <utils/Authorizer.h>
 #include <utils/Crypto.h>
 
-using namespace tech::services;
+using namespace tech::services::http;
 using namespace tech::utils;
 using namespace drogon;
 using namespace std;
