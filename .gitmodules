@@ -10,3 +10,9 @@
 [submodule "lib_plugins"]
 	path = lib_plugins
 	url = https://github.com/26F-Studio/lib_plugins
+[submodule "lib_models"]
+	path = lib_models
+	url = https://github.com/26F-Studio/lib_models
+[submodule "lib_strategies"]
+	path = lib_strategies
+	url = https://github.com/26F-Studio/lib_strategies
