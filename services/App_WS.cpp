@@ -56,16 +56,7 @@ CloseCode App::requestHandler(
         Json::Value &response
 ) {
     CloseCode closeCode{};
-    if (request.isMember("action")) {
-        std::byte type, operation;
-        {
-            auto action = static_cast<std::byte>(request["action"].asUInt());
-            type = action >> 4;
-            operation = action & std::byte(0x0f);
-        }
-    } else {
-        response["message"] = "No action";
-    }
+
     return closeCode;
 }
 
