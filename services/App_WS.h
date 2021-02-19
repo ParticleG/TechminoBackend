@@ -7,22 +7,11 @@
 #include <drogon/WebSocketController.h>
 #include <models/App.h>
 #include <models/Message.h>
-#include <services/Player.h>
+#include <structures/Player.h>
 #include <utils/Authorizer.h>
 
 namespace tech::services::websocket {
     class App {
-    public:
-        class _App {
-        public:
-            _App(const int &versionCode);
-
-        private:
-            int _versionCode;
-            int64_t _id{};
-            std::string authToken{}, accessToken{};
-        };
-
     public:
         App();
 
