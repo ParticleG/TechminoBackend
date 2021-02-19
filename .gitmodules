@@ -1,12 +1,6 @@
 [submodule "drogon"]
 	path = drogon
 	url = https://github.com/an-tao/drogon
-[submodule "lib_strategies"]
-	path = lib_strategies
-	url = https://github.com/26F-Studio/lib_strategies
-[submodule "lib_models"]
-	path = lib_models
-	url = https://github.com/26F-Studio/lib_models
 [submodule "lib_utils"]
 	path = lib_utils
 	url = https://github.com/26F-Studio/lib_utils
