@@ -14,8 +14,8 @@ void App::info(HttpStatusCode &code, Json::Value &body) {
         auto matchedApps = appMapper->orderBy(Techmino::App::Cols::_version_code, SortOrder::DESC).limit(1).findAll();
         auto matchedContent = messageMapper->orderBy(Techmino::Message::Cols::_id, SortOrder::DESC)
                 .findBy(Criteria(Techmino::Message::Cols::_type, CompareOperator::EQ, "notice"));
-        code = k200OK;
-        body["message"] = "OK";
+        code = k410Gone;
+        body["message"] = "Outdated API";
         body["version_code"] = matchedApps[0].getValueOfVersionCode();
         body["version_name"] = matchedApps[0].getValueOfVersionName();
         body["version_content"] = matchedApps[0].getValueOfVersionContent();
