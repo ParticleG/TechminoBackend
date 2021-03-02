@@ -23,26 +23,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT_NAME} main.cc)
 
-##########
-# If you include the drogon source code locally in your project, use this method to add drogon
-# add_subdirectory(drogon)
-# target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
-##########
-
-#find_package(Drogon CONFIG REQUIRED)
-#target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
-
-#if (CMAKE_CXX_STANDARD LESS 17)
-#    #With C++14, use boost to support any and string_view
-#    message(STATUS "use c++14")
-#    find_package(Boost 1.61.0 REQUIRED)
-#    target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
-#elseif (CMAKE_CXX_STANDARD LESS 20)
-#    message(STATUS "use c++17")
-#else ()
-#    message(STATUS "use c++20")
-#endif ()
-
 add_subdirectory(./lib_strategies)
 
 aux_source_directory(controllers CTL_SRC)
@@ -63,15 +43,7 @@ foreach (cspFile ${SCP_LIST})
     set(VIEWSRC ${VIEWSRC} ${classname}.cc)
 endforeach ()
 
-find_package(OpenSSL REQUIRED)
-find_package(cryptopp CONFIG REQUIRED)
-
-
-
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        OpenSSL::SSL
-        OpenSSL::Crypto
-        cryptopp-static
         STRATEGIES_LIB)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
