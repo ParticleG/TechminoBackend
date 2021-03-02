@@ -4,15 +4,14 @@
 
 #pragma once
 
-#include <drogon/WebSocketController.h>
-#include <plugins/HandlerManager.h>
 #include <services/Base_WS.h>
-#include <structures/App.h>
+#include <structures/User.h>
+#include <utils/Authorizer.h>
 
 namespace tech::services::websocket {
-    class App : public Base {
+    class User : public Base {
     public:
-        App();
+        User();
 
         void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
@@ -20,6 +19,6 @@ namespace tech::services::websocket {
         );
 
     private:
-        std::shared_ptr<tech::structures::App> _app;
+        std::shared_ptr<tech::structures::User> _user;
     };
 }
