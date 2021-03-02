@@ -221,7 +221,7 @@
         "client_max_memory_body_size": "64K",
         //client_max_websocket_message_size: Set the maximum size of messages sent by WebSocket client. The default value is "128K".
         //One can set it to "1024", "1k", "10M", "1G", etc. Setting it to "" means no limit.
-        "client_max_websocket_message_size": "128K"
+        "client_max_websocket_message_size": "1M"
     },
     //plugins: Define all plugins running in the application
     "plugins": [
@@ -233,13 +233,30 @@
             }
         },
         {
-            "name": "tech::plugin::ChatManager",
+            "name": "tech::plugin::HandlerManager",
+            "config": {
+                "App": 0,
+                "User": 1,
+                "Chat": 2,
+                "Play": 3,
+                "Stream": 4
+            },
             "dependencies": [
                 "tech::plugin::Configurator"
+            ]
+        },
+        {
+            "name": "tech::plugin::ChatManager",
+            "dependencies": [
+                "tech::plugin::HandlerManager"
             ],
             "config": {
-                "id": "room_chat",
-                "name": "Chat room"
+                "channels": [
+                    {
+                        "id": "global",
+                        "capacity": 1024
+                    }
+                ]
             }
         },
         {
