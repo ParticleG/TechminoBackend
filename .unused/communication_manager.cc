@@ -108,8 +108,8 @@ bool CommunicationManager::_authorization(const std::shared_ptr<Player> &player,
             response = "Access_token is incorrect";
             return false;
         }
-        if (trantor::Date::now() >
-            trantor::Date::fromDbStringLocal(matchedAuths[0]["access_token_expire_time"].as<std::string>())) {
+        if (Utils::toDate() >
+                Utils::toDate(matchedAuths[0]["access_token_expire_time"].as<std::string>())) {
             response = "Access_token is expired";
             return false;
         }
