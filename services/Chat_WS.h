@@ -4,35 +4,21 @@
 
 #pragma once
 
-#include <drogon/WebSocketController.h>
-#include <plugins/ChatManager.h>
-#include <services/Player.h>
+#include <services/Base_WS.h>
+#include <structures/Chat.h>
 #include <utils/Authorizer.h>
 
 namespace tech::services::websocket {
-    class Chat {
+    class Chat : public Base {
     public:
-        bool validate(
+        Chat();
+
+        void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
-                const std::string &email,
-                const std::string &accessToken,
-                const std::string &config,
-                const std::string &roomID,
-                drogon::CloseCode &code,
-                std::string &reason
+                const drogon::Attributes &attributes
         );
-
-        bool join(
-                const drogon::WebSocketConnectionPtr &wsConnPtr,
-                drogon::CloseCode &code,
-                std::string &reason
-        );
-
-        void messageHandler(const drogon::WebSocketConnectionPtr &wsConnPtr, const std::string &message);
-
-        void quit(const drogon::WebSocketConnectionPtr &wsConnPtr);
 
     private:
-        std::shared_ptr<Player> _player;
+        std::shared_ptr<tech::structures::Chat> _chat;
     };
 }

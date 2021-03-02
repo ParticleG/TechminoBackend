@@ -5,30 +5,23 @@
 #include <services/App_WS.h>
 
 using namespace tech::services::websocket;
-using namespace drogon_model;
+using namespace tech::plugins;
+using namespace tech::utils;
 using namespace drogon;
 using namespace std;
 
-App::App() {
-    appMapper = make_shared<orm::Mapper<Techmino::App>>(app().getDbClient());
-    messageMapper = make_shared<orm::Mapper<Techmino::Message>>(app().getDbClient());
-}
+App::App() : Base(WebSocket::Type::App) {}
 
-bool App::establish(
+void App::establish(
         const WebSocketConnectionPtr &wsConnPtr,
-        const int &versionCode,
-        CloseCode &code,
-        Json::Value &response
+        const Attributes &attributes
 ) {
+    auto data = attributes.get<Json::Value>("data");
+    _app = make_shared<structures::App>(data["versionCode"].asInt());
+    wsConnPtr->setContext(_app);
 
-}
+    auto content = attributes.get<Json::Value>("content");
+    content["message"] = "Connected";
 
-CloseCode App::requestHandler(
-        const WebSocketConnectionPtr &wsConnPtr,
-        const Json::Value &request,
-        Json::Value &response
-) {
-    CloseCode closeCode{};
-
-    return closeCode;
+    WebSocket::initPing(wsConnPtr, content, chrono::seconds(26));
 }
