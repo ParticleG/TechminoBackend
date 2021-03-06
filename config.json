@@ -233,17 +233,31 @@
             }
         },
         {
-            "name": "tech::plugins::HandlerManager",
+            "name": "tech::plugins::ChatManager",
+            "dependencies": [
+                "tech::plugins::Configurator"
+            ],
             "config": {
-                "App": 0,
-                "User": 1,
-                "Chat": 2,
-                "Play": 3,
-                "Stream": 4
+                "actions": {
+                    "getRoomList": 0,
+                    "joinRoom": 1,
+                    "leaveRoom": 2,
+                    "publish": 3
+                },
+                "channels": [
+                    {
+                        "id": "global",
+                        "capacity": 1024,
+                        "historyCount": 256
+                    }
+                ]
             }
         },
         {
             "name": "tech::plugins::PlayManager",
+            "dependencies": [
+                "tech::plugins::Configurator"
+            ],
             "config": {
                 "typeList": [
                     {
@@ -270,26 +284,24 @@
             }
         },
         {
-            "name": "tech::plugins::ChatManager",
-            "config": {
-                "actions": {
-                    "getRoomList": 0,
-                    "joinRoom": 1,
-                    "leaveRoom": 2,
-                    "publish": 3
-                },
-                "channels": [
-                    {
-                        "id": "global",
-                        "capacity": 1024,
-                        "historyCount": 256
-                    }
-                ]
-            }
+            "name": "tech::plugins::StreamManager",
+            "dependencies": [
+                "tech::plugins::PlayManager"
+            ],
+            "config": {}
         },
         {
-            "name": "tech::plugins::StreamManager",
-            "config": {}
+            "name": "tech::plugins::HandlerManager",
+            "dependencies": [
+                "tech::plugins::StreamManager"
+            ],
+            "config": {
+                "App": 0,
+                "User": 1,
+                "Chat": 2,
+                "Play": 3,
+                "Stream": 4
+            }
         }
     ],
     //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
