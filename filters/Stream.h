@@ -1,5 +1,5 @@
 //
-// Created by Particle_G on 2021/2/23.
+// Created by Particle_G on 2021/3/06.
 //
 
 #pragma once
@@ -8,9 +8,9 @@
 
 using namespace drogon;
 namespace tech::filters {
-    class App : public HttpFilter<App> {
+    class Stream : public HttpFilter<Stream> {
     public:
-        App() {}
+        Stream() {}
 
         virtual void doFilter(
                 const HttpRequestPtr &req,

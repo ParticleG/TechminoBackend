@@ -3,11 +3,14 @@
 //
 
 #include <filters/User.h>
+#include <plugins/Configurator.h>
 #include <utils/Authorizer.h>
 #include <utils/Http.h>
+#include <utils/Utils.h>
 
 using namespace drogon;
 using namespace tech::filters;
+using namespace tech::plugins;
 using namespace tech::utils;
 using namespace std;
 
@@ -43,6 +46,7 @@ void User::doFilter(
             return;
         }
         auto attributes = req->getAttributes();
+        auto configurator = app().getPlugin<Configurator>();
         /**
          * data["id"] = newAuth.getValueOfId();
          * type = Authorizer::Type::GetAuthToken;
@@ -50,6 +54,7 @@ void User::doFilter(
         switch (Authorizer::password(
                 request["email"].asString(),
                 request["password"].asString(),
+                Utils::fromDate(configurator->getAuthExpire()),
                 response)) {
             case Authorizer::Status::OK:
                 attributes->insert("data", response);
@@ -87,6 +92,7 @@ void User::doFilter(
         }
     } else {
         auto attributes = req->getAttributes();
+        auto configurator = app().getPlugin<Configurator>();
         /**
          * data["id"] = newAuth.getValueOfId();
          * type = Authorizer::Type::CheckAuthToken;
@@ -94,6 +100,7 @@ void User::doFilter(
         switch (Authorizer::authToken(
                 request["id"].asInt(),
                 request["authToken"].asString(),
+                Utils::fromDate(configurator->getAuthExpire()),
                 response)) {
             case Authorizer::Status::OK:
                 attributes->insert("data", response);
