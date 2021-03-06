@@ -19,6 +19,10 @@ namespace tech::services::websocket {
                 const drogon::Attributes &attributes
         );
 
+        void close(
+                const drogon::WebSocketConnectionPtr &wsConnPtr
+        );
+
     private:
         std::shared_ptr<tech::structures::App> _app;
     };

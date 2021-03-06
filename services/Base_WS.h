@@ -18,6 +18,10 @@ namespace tech::services::websocket {
                 const drogon::Attributes &attributes
         ) = 0;
 
+        virtual void close(
+                const drogon::WebSocketConnectionPtr &wsConnPtr
+        ) = 0;
+
         drogon::CloseCode requestHandler(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
                 const Json::Value &request,

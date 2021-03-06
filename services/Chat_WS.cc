@@ -39,6 +39,10 @@ void Chat::establish(
         initMessage["id"] = id;
         initMessage["accessToken"] = auth.getValueOfAccessToken();
     }
-    WebSocket::initPing(wsConnPtr, data, chrono::seconds(10));
+    WebSocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+}
+
+void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
+
 }
 

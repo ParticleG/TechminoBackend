@@ -20,8 +20,12 @@ void App::establish(
     _app = make_shared<structures::App>(data["versionCode"].asInt());
     wsConnPtr->setContext(_app);
 
-    auto content = attributes.get<Json::Value>("content");
-    content["message"] = "Connected";
+    auto initMessage = attributes.get<Json::Value>("content");
+    initMessage["message"] = "Connected";
 
-    WebSocket::initPing(wsConnPtr, content, chrono::seconds(26));
+    WebSocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
+}
+
+void App::close(const WebSocketConnectionPtr &wsConnPtr) {
+
 }
