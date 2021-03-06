@@ -7,7 +7,7 @@
 #include <controllers/Base_WS.h>
 
 namespace tech::socket::v1 {
-    class Chat : public Base {
+    class Chat : public drogon::WebSocketController<Chat>, public Base {
     public:
         WS_PATH_LIST_BEGIN
             WS_PATH_ADD("/tech/socket/v1/chat", "tech::filters::Chat");
