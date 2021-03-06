@@ -5,7 +5,7 @@
 #pragma once
 
 #include <json/json.h>
-#include <structures/Player.h>
+#include <.unfinished/structures/Player.h>
 
 namespace tech::structures {
     class BaseRoom : public trantor::NonCopyable {

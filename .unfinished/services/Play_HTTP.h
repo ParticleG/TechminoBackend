@@ -4,43 +4,40 @@
 
 #pragma once
 
-#include <models/Auth.h>
-#include <utils/Http.h>
+#include <drogon/drogon.h>
+#include <plugins/_PlayManager.h>
 
 namespace tech::services::http {
-    class Auth {
+    class Play {
     public:
-        Auth();
+        Play() : _playManager(drogon::app().getPlugin<tech::plugin::PlayManager>()) {};
 
-        void updateAuthToken(
-                const std::string &email,
-                const std::string &authToken,
-                drogon::HttpStatusCode &code,
-                Json::Value &responseBody
-        );
-
-        void getAuthToken(
-                const std::string &email,
-                const std::string &password,
-                drogon::HttpStatusCode &code,
-                Json::Value &responseBody
-        );
-
-        void updateAccessToken(
+        void list(
                 const std::string &email,
                 const std::string &accessToken,
                 drogon::HttpStatusCode &code,
                 Json::Value &responseBody
         );
 
-        void getAccessToken(
+        void info(
                 const std::string &email,
-                const std::string &authToken,
+                const std::string &accessToken,
+                const std::string &roomType,
+                drogon::HttpStatusCode &code,
+                Json::Value &responseBody
+        );
+
+        void create(
+                const std::string &email,
+                const std::string &accessToken,
+                const std::string &roomType,
+                const std::string &roomName,
+                const std::string &roomPassword,
                 drogon::HttpStatusCode &code,
                 Json::Value &responseBody
         );
 
     private:
-        std::shared_ptr<drogon::orm::Mapper<drogon_model::Techmino::Auth>> authMapper;
+        std::shared_ptr<tech::plugin::PlayManager> _playManager;
     };
 }
