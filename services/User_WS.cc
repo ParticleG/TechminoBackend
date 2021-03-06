@@ -29,5 +29,9 @@ void User::establish(
         initMessage["id"] = auth.getValueOfId();
         initMessage["authToken"] = auth.getValueOfAuthToken();
     }
-    WebSocket::initPing(wsConnPtr, data, chrono::seconds(10));
+    WebSocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+}
+
+void User::close(const WebSocketConnectionPtr &wsConnPtr) {
+
 }
