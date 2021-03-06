@@ -23,32 +23,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT_NAME} main.cc)
 
-##########
-# If you include the drogon source code locally in your project, use this method to add drogon
-# add_subdirectory(drogon)
-# target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
-##########
+add_subdirectory(./lib_plugins lib_plugins)
 
-find_package(Drogon CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
-
-if (CMAKE_CXX_STANDARD LESS 17)
-    #With C++14, use boost to support any and string_view
-    message(STATUS "use c++14")
-    find_package(Boost 1.61.0 REQUIRED)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
-elseif (CMAKE_CXX_STANDARD LESS 20)
-    message(STATUS "use c++17")
-else ()
-    message(STATUS "use c++20")
-endif ()
-
-aux_source_directory(utils UTILS_SRC)
 aux_source_directory(controllers CTL_SRC)
+aux_source_directory(filters FLT_SRC)
 aux_source_directory(services SVC_SRC)
-aux_source_directory(filters FILTER_SRC)
-aux_source_directory(plugins PLUGIN_SRC)
-aux_source_directory(models MODEL_SRC)
 
 file(GLOB_RECURSE SCP_LIST ${CMAKE_CURRENT_SOURCE_DIR}/views/*.csp)
 foreach (cspFile ${SCP_LIST})
@@ -60,14 +39,19 @@ foreach (cspFile ${SCP_LIST})
             ARGS create view ${cspFile}
             DEPENDS ${cspFile}
             VERBATIM)
-    set(VIEWSRC ${VIEWSRC} ${classname}.cc)
+    set(VIEW_SRC ${VIEW_SRC} ${classname}.cc)
 endforeach ()
 
-find_package(OpenSSL REQUIRED)
-find_package(cryptopp CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto cryptopp-static)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/utils ${CMAKE_CURRENT_SOURCE_DIR}/models)
-target_sources(${PROJECT_NAME} PRIVATE ${SRC_DIR} ${UTILS_SRC} ${CTL_SRC} ${SVC_SRC} ${FILTER_SRC} ${VIEWSRC} ${PLUGIN_SRC} ${MODEL_SRC})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        PLUGINS_LIB)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_sources(${PROJECT_NAME} PRIVATE
+        ${CTL_SRC}
+        ${FLT_SRC}
+        ${SVC_SRC}
+        ${VIEW_SRC})
 ################################
 # uncomment the following line for dynamically loading views 
 #set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)

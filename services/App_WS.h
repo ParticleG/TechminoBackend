@@ -1,17 +1,18 @@
 //
-// Created by Parti on 2021/2/5.
+// Created by Parti on 2021/2/16.
 //
 
 #pragma once
 
+#include <drogon/WebSocketController.h>
+#include <plugins/HandlerManager.h>
 #include <services/Base_WS.h>
-#include <structures/Chat.h>
-#include <utils/Authorizer.h>
+#include <structures/App.h>
 
 namespace tech::services::websocket {
-    class Chat : public Base {
+    class App : public Base {
     public:
-        Chat();
+        App();
 
         void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
@@ -23,6 +24,6 @@ namespace tech::services::websocket {
         );
 
     private:
-        std::shared_ptr<tech::structures::Chat> _chat;
+        std::shared_ptr<tech::structures::App> _app;
     };
 }

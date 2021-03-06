@@ -221,55 +221,86 @@
         "client_max_memory_body_size": "64K",
         //client_max_websocket_message_size: Set the maximum size of messages sent by WebSocket client. The default value is "128K".
         //One can set it to "1024", "1k", "10M", "1G", etc. Setting it to "" means no limit.
-        "client_max_websocket_message_size": "128K"
+        "client_max_websocket_message_size": "1M"
     },
     //plugins: Define all plugins running in the application
     "plugins": [
         {
-            "name": "tech::plugin::Configurator",
+            "name": "tech::plugins::Configurator",
             "config": {
                 "auth_token_expire_time": 432000,
                 "access_token_expire_time": 1800
             }
         },
         {
-            "name": "tech::plugin::ChatManager",
+            "name": "tech::plugins::ChatManager",
             "dependencies": [
-                "tech::plugin::Configurator"
+                "tech::plugins::Configurator"
             ],
             "config": {
-                "id": "room_chat",
-                "name": "Chat room"
+                "actions": {
+                    "getRoomList": 0,
+                    "joinRoom": 1,
+                    "leaveRoom": 2,
+                    "publish": 3
+                },
+                "channels": [
+                    {
+                        "id": "global",
+                        "capacity": 1024,
+                        "historyCount": 256
+                    }
+                ]
             }
         },
         {
-            "name": "tech::plugin::PlayManager",
+            "name": "tech::plugins::PlayManager",
             "dependencies": [
-                "tech::plugin::Configurator"
+                "tech::plugins::Configurator"
             ],
             "config": {
-                "room_types": [
+                "typeList": [
                     {
-                        "name": "unlimited",
+                        "type": "unlimited",
                         "capacity": 2147483647
                     },
                     {
-                        "name": "r99",
+                        "type": "r99",
                         "capacity": 99
                     },
                     {
-                        "name": "r49",
+                        "type": "r49",
                         "capacity": 49
                     },
                     {
-                        "name": "classic",
+                        "type": "classic",
                         "capacity": 5
                     },
                     {
-                        "name": "solo",
+                        "type": "solo",
                         "capacity": 2
                     }
                 ]
+            }
+        },
+        {
+            "name": "tech::plugins::StreamManager",
+            "dependencies": [
+                "tech::plugins::PlayManager"
+            ],
+            "config": {}
+        },
+        {
+            "name": "tech::plugins::HandlerManager",
+            "dependencies": [
+                "tech::plugins::StreamManager"
+            ],
+            "config": {
+                "App": 0,
+                "User": 1,
+                "Chat": 2,
+                "Play": 3,
+                "Stream": 4
             }
         }
     ],

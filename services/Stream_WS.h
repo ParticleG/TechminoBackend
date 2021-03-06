@@ -5,13 +5,13 @@
 #pragma once
 
 #include <services/Base_WS.h>
-#include <structures/Chat.h>
+#include <structures/Stream.h>
 #include <utils/Authorizer.h>
 
 namespace tech::services::websocket {
-    class Chat : public Base {
+    class Stream : public Base {
     public:
-        Chat();
+        Stream();
 
         void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
@@ -23,6 +23,6 @@ namespace tech::services::websocket {
         );
 
     private:
-        std::shared_ptr<tech::structures::Chat> _chat;
+        std::shared_ptr<tech::structures::Stream> _stream;
     };
 }

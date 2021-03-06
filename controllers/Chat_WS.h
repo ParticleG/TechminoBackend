@@ -4,22 +4,15 @@
 
 #pragma once
 
-#include <services/Chat_WS.h>
+#include <controllers/Base_WS.h>
 
 namespace tech::socket::v1 {
-    class Chat : public drogon::WebSocketController<Chat> {
+    class Chat : public drogon::WebSocketController<Chat>, public Base {
     public:
         WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/online/chat");
+            WS_PATH_ADD("/tech/socket/v1/chat", "tech::filters::Chat");
         WS_PATH_LIST_END
 
-        virtual void handleNewMessage(const drogon::WebSocketConnectionPtr &, std::string &&, const drogon::WebSocketMessageType &) override;
-
-        virtual void handleNewConnection(const drogon::HttpRequestPtr &, const drogon::WebSocketConnectionPtr &) override;
-
-        virtual void handleConnectionClosed(const drogon::WebSocketConnectionPtr &) override;
-
-    private:
-        tech::services::Chat _service;
+        Chat();
     };
 }
