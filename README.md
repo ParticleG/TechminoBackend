@@ -12,8 +12,14 @@ Clone the project:
 git clone https://github.com/26F-Studio/TechminoBackend.git
 ```
 
+Initial vcpkg subdirectory:
+
+```
+./vcpkg/bootstrap-vcpkg.bat
+```
+
 Install necessary packages:
 
 ```
-vcpkg install drogon:x64-windows cryptopp:x64-windows
+./vcpkg/vcpkg install drogon:x64-windows cryptopp:x64-windows --vcpkg-root=./vcpkg
 ```
