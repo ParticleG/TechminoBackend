@@ -234,16 +234,16 @@
         },
         {
             "name": "tech::plugin::HandlerManager",
+            "dependencies": [
+                "tech::plugin::Configurator"
+            ],
             "config": {
                 "App": 0,
                 "User": 1,
                 "Chat": 2,
                 "Play": 3,
                 "Stream": 4
-            },
-            "dependencies": [
-                "tech::plugin::Configurator"
-            ]
+            }
         },
         {
             "name": "tech::plugin::ChatManager",
@@ -251,6 +251,12 @@
                 "tech::plugin::HandlerManager"
             ],
             "config": {
+                "actions": {
+                    "getRoomList": 0,
+                    "joinRoom": 1,
+                    "leaveRoom": 2,
+                    "publish": 3
+                },
                 "channels": [
                     {
                         "id": "global",
@@ -262,32 +268,39 @@
         {
             "name": "tech::plugin::PlayManager",
             "dependencies": [
-                "tech::plugin::Configurator"
+                "tech::plugin::HandlerManager"
             ],
             "config": {
-                "room_types": [
+                "typeList": [
                     {
-                        "name": "unlimited",
+                        "type": "unlimited",
                         "capacity": 2147483647
                     },
                     {
-                        "name": "r99",
+                        "type": "r99",
                         "capacity": 99
                     },
                     {
-                        "name": "r49",
+                        "type": "r49",
                         "capacity": 49
                     },
                     {
-                        "name": "classic",
+                        "type": "classic",
                         "capacity": 5
                     },
                     {
-                        "name": "solo",
+                        "type": "solo",
                         "capacity": 2
                     }
                 ]
             }
+        },
+        {
+            "name": "tech::plugin::StreamManager",
+            "dependencies": [
+                "tech::plugin::PlayManager"
+            ],
+            "config": {}
         }
     ],
     //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
