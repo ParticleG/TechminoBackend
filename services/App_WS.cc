@@ -27,5 +27,7 @@ void App::establish(
 }
 
 void App::close(const WebSocketConnectionPtr &wsConnPtr) {
-
+    if (wsConnPtr->hasContext()) {
+        wsConnPtr->clearContext();
+    }
 }

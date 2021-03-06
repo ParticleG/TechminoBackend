@@ -2,6 +2,7 @@
 // Created by Parti on 2021/2/5.
 //
 
+#include <plugins/PlayManager.h>
 #include <services/Play_WS.h>
 
 using namespace drogon;
@@ -27,5 +28,16 @@ void Play::establish(
 }
 
 void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
-
+    if (wsConnPtr->hasContext()) {
+        auto playManager = app().getPlugin<PlayManager>();
+        auto sidsMap = *wsConnPtr->getContext<structures::Play>()->getSidsMap();
+        for (const auto &pair : sidsMap) {
+            try {
+                playManager->unsubscribe(pair.first, wsConnPtr);
+            } catch (const exception &error) {
+                LOG_WARN << "Unsubscribe failed at room: " << pair.first << ". Reason: " << error.what();
+            }
+        }
+        wsConnPtr->clearContext();
+    }
 }
