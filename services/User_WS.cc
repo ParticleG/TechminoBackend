@@ -33,5 +33,7 @@ void User::establish(
 }
 
 void User::close(const WebSocketConnectionPtr &wsConnPtr) {
-
+    if (wsConnPtr->hasContext()) {
+        wsConnPtr->clearContext();
+    }
 }

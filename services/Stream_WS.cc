@@ -37,5 +37,16 @@ void Stream::establish(
 }
 
 void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
-
+    if (wsConnPtr->hasContext()) {
+        auto streamManager = app().getPlugin<StreamManager>();
+        auto sidsMap = *wsConnPtr->getContext<structures::Stream>()->getSidsMap();
+        for (const auto &pair : sidsMap) {
+            try {
+                streamManager->unsubscribe(pair.first, wsConnPtr);
+            } catch (const exception &error) {
+                LOG_WARN << "Unsubscribe failed at room: " << pair.first << ". Reason: " << error.what();
+            }
+        }
+        wsConnPtr->clearContext();
+    }
 }

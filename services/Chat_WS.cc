@@ -3,6 +3,7 @@
 //
 
 #include <models/Auth.h>
+#include <plugins/ChatManager.h>
 #include <plugins/Configurator.h>
 #include <services/Chat_WS.h>
 #include <utils/Crypto.h>
@@ -43,6 +44,17 @@ void Chat::establish(
 }
 
 void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
-
+    if (wsConnPtr->hasContext()) {
+        auto chatManager = app().getPlugin<ChatManager>();
+        auto sidsMap = *wsConnPtr->getContext<structures::Chat>()->getSidsMap();
+        for (const auto &pair : sidsMap) {
+            try {
+                chatManager->unsubscribe(pair.first, wsConnPtr);
+            } catch (const exception &error) {
+                LOG_WARN << "Unsubscribe failed at room: " << pair.first << ". Reason: " << error.what();
+            }
+        }
+        wsConnPtr->clearContext();
+    }
 }
 
