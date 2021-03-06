@@ -13,6 +13,3 @@
 [submodule "lib_models"]
 	path = lib_models
 	url = https://github.com/26F-Studio/lib_models
-[submodule "vcpkg"]
-	path = vcpkg
-	url = https://github.com/microsoft/vcpkg
