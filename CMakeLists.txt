@@ -23,11 +23,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT_NAME} main.cc)
 
-add_subdirectory(./lib_strategies)
+add_subdirectory(./lib_plugins)
 
 aux_source_directory(controllers CTL_SRC)
 aux_source_directory(filters FLT_SRC)
-aux_source_directory(lib_plugins/plugins PLG_SRC)
 aux_source_directory(services SVC_SRC)
 
 file(GLOB_RECURSE SCP_LIST ${CMAKE_CURRENT_SOURCE_DIR}/views/*.csp)
@@ -44,7 +43,7 @@ foreach (cspFile ${SCP_LIST})
 endforeach ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        STRATEGIES_LIB)
+        PLUGINS_LIB)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
