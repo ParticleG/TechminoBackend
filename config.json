@@ -226,17 +226,14 @@
     //plugins: Define all plugins running in the application
     "plugins": [
         {
-            "name": "tech::plugin::Configurator",
+            "name": "tech::plugins::Configurator",
             "config": {
                 "auth_token_expire_time": 432000,
                 "access_token_expire_time": 1800
             }
         },
         {
-            "name": "tech::plugin::HandlerManager",
-            "dependencies": [
-                "tech::plugin::Configurator"
-            ],
+            "name": "tech::plugins::HandlerManager",
             "config": {
                 "App": 0,
                 "User": 1,
@@ -246,30 +243,7 @@
             }
         },
         {
-            "name": "tech::plugin::ChatManager",
-            "dependencies": [
-                "tech::plugin::HandlerManager"
-            ],
-            "config": {
-                "actions": {
-                    "getRoomList": 0,
-                    "joinRoom": 1,
-                    "leaveRoom": 2,
-                    "publish": 3
-                },
-                "channels": [
-                    {
-                        "id": "global",
-                        "capacity": 1024
-                    }
-                ]
-            }
-        },
-        {
-            "name": "tech::plugin::PlayManager",
-            "dependencies": [
-                "tech::plugin::HandlerManager"
-            ],
+            "name": "tech::plugins::PlayManager",
             "config": {
                 "typeList": [
                     {
@@ -296,10 +270,25 @@
             }
         },
         {
-            "name": "tech::plugin::StreamManager",
-            "dependencies": [
-                "tech::plugin::PlayManager"
-            ],
+            "name": "tech::plugins::ChatManager",
+            "config": {
+                "actions": {
+                    "getRoomList": 0,
+                    "joinRoom": 1,
+                    "leaveRoom": 2,
+                    "publish": 3
+                },
+                "channels": [
+                    {
+                        "id": "global",
+                        "capacity": 1024,
+                        "historyCount": 256
+                    }
+                ]
+            }
+        },
+        {
+            "name": "tech::plugins::StreamManager",
             "config": {}
         }
     ],
