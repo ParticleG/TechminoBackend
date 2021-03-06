@@ -21,5 +21,5 @@ Initial vcpkg subdirectory:
 Install necessary packages:
 
 ```
-./vcpkg/vcpkg install drogon:x64-windows cryptopp:x64-windows
+./vcpkg/vcpkg install drogon:x64-windows cryptopp:x64-windows --vcpkg-root=./vcpkg
 ```
