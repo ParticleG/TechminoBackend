@@ -31,6 +31,8 @@ void Base::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, string &&me
         wsConnPtr->forceClose();
     } else if (type == WebSocketMessageType::Unknown) {
         LOG_DEBUG << "Message is Unknown";
+    } else {
+        LOG_DEBUG << "Message is: " << message;
     }
 }
 
@@ -39,7 +41,5 @@ void Base::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnect
 }
 
 void Base::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
-    if (wsConnPtr->hasContext()) {
-        wsConnPtr->clearContext();
-    }
+    _service->close(wsConnPtr);
 }

@@ -3,49 +3,11 @@
 //
 
 #include <controllers/Play_WS.h>
-#include <utils/WebSocket.h>
+#include <services/Play_WS.h>
 
 using namespace tech::socket::v1;
-using namespace tech::utils;
-using namespace drogon;
 using namespace std;
 
-void Play::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, string &&message,
-                            const WebSocketMessageType &type) {
-    if (type == WebSocketMessageType::Ping) {
-        LOG_DEBUG << "Received a PING";
-    } else if (type == WebSocketMessageType::Text || type == WebSocketMessageType::Binary) {
-        _service.messageHandler(wsConnPtr, message);
-    } else if (type == WebSocketMessageType::Pong) {
-        LOG_DEBUG << "Message is Pong";
-    } else if (type == WebSocketMessageType::Close) {
-        LOG_DEBUG << "Message is Close";
-        wsConnPtr->forceClose();
-    } else if (type == WebSocketMessageType::Unknown) {
-        LOG_DEBUG << "Message is Unknown";
-    }
-}
-
-void Play::handleNewConnection(const HttpRequestPtr &req, const WebSocketConnectionPtr &wsConnPtr) {
-    CloseCode code;
-    string reason;
-
-    string email = req->getParameter("email"),
-            accessToken = req->getParameter("token"),
-            roomID = req->getParameter("id"),
-            password = req->getParameter("passwd"),
-            config = req->getParameter("conf");
-
-    if ((!_service.validate(wsConnPtr, email, accessToken, config, roomID, password, code, reason)) ||
-        (!_service.join(wsConnPtr, code, reason))) {
-        wsConnPtr->send(reason);
-        WebSocket::close(wsConnPtr, code, reason);
-        return;
-    }
-}
-
-void Play::handleConnectionClosed(const WebSocketConnectionPtr &wsConnPtr) {
-    if (wsConnPtr->hasContext()) {
-        _service.quit(wsConnPtr);
-    }
+Play::Play() {
+    _service = make_shared<tech::services::websocket::Play>();
 }
