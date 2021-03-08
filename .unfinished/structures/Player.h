@@ -5,7 +5,7 @@
 #pragma once
 
 #include <drogon/PubSubService.h>
-#include <models/Info.h>
+#include "models/Info.h"
 
 namespace tech::structures {
     class Player {
