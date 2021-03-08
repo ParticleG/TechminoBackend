@@ -12,7 +12,7 @@ namespace tech::filters {
     public:
         User() {}
 
-        virtual void doFilter(
+        void doFilter(
                 const HttpRequestPtr &req,
                 FilterCallback &&filterCallback,
                 FilterChainCallback &&filterChainCallback
