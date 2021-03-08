@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <services/Base_WS.h>
-#include <structures/Chat.h>
-#include <utils/Authorizer.h>
+#include "services/Base_WS.h"
+#include "structures/Chat.h"
+#include "utils/Authorizer.h"
 
 namespace tech::services::websocket {
     class Chat : public Base {

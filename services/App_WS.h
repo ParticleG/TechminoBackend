@@ -5,9 +5,9 @@
 #pragma once
 
 #include <drogon/WebSocketController.h>
-#include <plugins/HandlerManager.h>
-#include <services/Base_WS.h>
-#include <structures/App.h>
+#include "plugins/HandlerManager.h"
+#include "services/Base_WS.h"
+#include "structures/App.h"
 
 namespace tech::services::websocket {
     class App : public Base {
