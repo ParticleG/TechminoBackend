@@ -2,7 +2,7 @@
 // Created by Parti on 2021/2/4.
 //
 
-#include "".unfinished/controllers/Auth.h"
+#include <.unfinished/controllers/Auth.h>
 
 using namespace tech::api::v1;
 using namespace tech::utils;
