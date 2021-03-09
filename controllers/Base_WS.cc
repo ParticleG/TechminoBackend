@@ -15,16 +15,16 @@ void Base::handleNewMessage(const WebSocketConnectionPtr &wsConnPtr, string &&me
         wsConnPtr->send(message, WebSocketMessageType::Pong);
     } else if (type == WebSocketMessageType::Text || type == WebSocketMessageType::Binary) {
         Json::Value request, response;
-        string parseError = WebSocket::toJson(message, request);
+        string parseError = websocket::toJson(message, request);
         if (!parseError.empty()) {
             response["message"] = "Wrong format";
             response["reason"] = parseError;
         } else {
             CloseCode code = _service->requestHandler(wsConnPtr, request, response);
             if (code == CloseCode::kNone) {
-                wsConnPtr->send(WebSocket::fromJson(response));
+                wsConnPtr->send(websocket::fromJson(response));
             } else {
-                WebSocket::close(wsConnPtr, code, WebSocket::fromJson(response));
+                websocket::close(wsConnPtr, code, websocket::fromJson(response));
             }
         }
     } else if (type == WebSocketMessageType::Close) {

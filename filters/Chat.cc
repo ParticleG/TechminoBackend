@@ -4,9 +4,9 @@
 
 #include <filters/Chat.h>
 #include <plugins/Configurator.h>
-#include <utils/Authorizer.h>
-#include <utils/Http.h>
-#include <utils/Utils.h>
+#include <utils/authorizer.h>
+#include <utils/http.h>
+#include <utils/misc.h>
 
 using namespace drogon;
 using namespace tech::filters;
@@ -21,13 +21,13 @@ void Chat::doFilter(
 ) {
     HttpStatusCode code;
     Json::Value request, response;
-    string parseError = Http::toJson(req, request);
+    string parseError = http::toJson(req, request);
 
     if (!parseError.empty()) {
         code = k400BadRequest;
         response["message"] = "Wrong format.";
         response["reason"] = parseError;
-        Http::fromJson(code, response, filterCallback);
+        http::fromJson(code, response, filterCallback);
         return;
     }
 
@@ -42,50 +42,50 @@ void Chat::doFilter(
             code = k400BadRequest;
             response["message"] = "Wrong format";
             response["reason"] = "Requires positive Int64 type 'id', string type 'accessToken'";
-            Http::fromJson(code, response, filterCallback);
+            http::fromJson(code, response, filterCallback);
             return;
         }
         auto attributes = req->getAttributes();
         auto configurator = app().getPlugin<Configurator>();
         /**
          * data["id"] = newAuth.getValueOfId();
-         * type = Authorizer::Type::GetAccessToken;
+         * type = authorizer::Type::GetAccessToken;
          */
-        switch (Authorizer::authToken(
+        switch (authorizer::authToken(
                 request["id"].asInt(),
                 request["authToken"].asString(),
-                Utils::fromDate(configurator->getAuthExpire()),
+                misc::fromDate(configurator->getAuthExpire()),
                 response)) {
-            case Authorizer::Status::OK:
+            case authorizer::Status::OK:
                 attributes->insert("data", response);
-                attributes->insert("type", Authorizer::Type::GetAccessToken);
+                attributes->insert("type", authorizer::Type::GetAccessToken);
                 filterChainCallback();
                 break;
-            case Authorizer::Status::InvalidComponents:
+            case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
                 response["message"] = "Wrong format";
                 response["reason"] = "RequiredRequired positive Int64 type 'id', string type 'authToken' in 'data'";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::NotFound:
+            case authorizer::Status::NotFound:
                 code = k404NotFound;
                 response["message"] = "ID not found";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::Incorrect:
+            case authorizer::Status::Incorrect:
                 code = k403Forbidden;
                 response["message"] = "Access Token is incorrect";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::Expired:
+            case authorizer::Status::Expired:
                 code = k401Unauthorized;
                 response["message"] = "Access Token is expired";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::InternalError:
+            case authorizer::Status::InternalError:
                 code = k500InternalServerError;
                 response["message"] = "Internal error";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
 
         }
@@ -94,43 +94,43 @@ void Chat::doFilter(
         auto configurator = app().getPlugin<Configurator>();
         /**
          * result["id"] = newAuth.getValueOfId();
-         * type = Authorizer::Type::CheckAccessToken;
+         * type = authorizer::Type::CheckAccessToken;
          */
-        switch (Authorizer::accessToken(
+        switch (authorizer::accessToken(
                 request["id"].asInt(),
                 request["accessToken"].asString(),
-                Utils::fromDate(configurator->getAccessExpire()),
+                misc::fromDate(configurator->getAccessExpire()),
                 response)) {
-            case Authorizer::Status::OK:
+            case authorizer::Status::OK:
                 attributes->insert("data", response);
-                attributes->insert("type", Authorizer::Type::CheckAccessToken);
+                attributes->insert("type", authorizer::Type::CheckAccessToken);
                 filterChainCallback();
                 break;
-            case Authorizer::Status::InvalidComponents:
+            case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
                 response["message"] = "Wrong format";
                 response["reason"] = "Requires positive Int64 type 'id', string type 'accessToken' in 'data'";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::NotFound:
+            case authorizer::Status::NotFound:
                 code = k404NotFound;
                 response["message"] = "ID not found";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::Incorrect:
+            case authorizer::Status::Incorrect:
                 code = k403Forbidden;
                 response["message"] = "Auth Token is incorrect";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::Expired:
+            case authorizer::Status::Expired:
                 code = k401Unauthorized;
                 response["message"] = "Auth Token is expired";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
-            case Authorizer::Status::InternalError:
+            case authorizer::Status::InternalError:
                 code = k500InternalServerError;
                 response["message"] = "Internal error";
-                Http::fromJson(code, response, filterCallback);
+                http::fromJson(code, response, filterCallback);
                 break;
         }
     }

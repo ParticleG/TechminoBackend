@@ -9,10 +9,9 @@ using namespace drogon;
 using namespace drogon_model;
 using namespace tech::plugins;
 using namespace tech::services::websocket;
-using namespace tech::utils;
 using namespace std;
 
-Play::Play() : Base(WebSocket::Type::Play) {}
+Play::Play() : Base(tech::utils::websocket::Type::Play) {}
 
 void Play::establish(
         const WebSocketConnectionPtr &wsConnPtr,
@@ -24,13 +23,13 @@ void Play::establish(
 
     Json::Value initMessage;
     initMessage["message"] = "Connected";
-    WebSocket::initPing(wsConnPtr, data, chrono::seconds(10));
+    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 }
 
 void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto playManager = app().getPlugin<PlayManager>();
-        auto sidsMap = *wsConnPtr->getContext<structures::Play>()->getSidsMap();
+        auto sidsMap = wsConnPtr->getContext<structures::Play>()->getSidsMap();
         for (const auto &pair : sidsMap) {
             try {
                 playManager->unsubscribe(pair.first, wsConnPtr);

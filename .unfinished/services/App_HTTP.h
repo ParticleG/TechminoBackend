@@ -6,7 +6,7 @@
 
 #include <models/App.h>
 #include <models/Message.h>
-#include <utils/Http.h>
+#include <utils/http.h>
 
 namespace tech::services::http {
     class App {

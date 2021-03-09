@@ -3,9 +3,9 @@
 //
 
 #include <.unfinished/services/Auth.h>
-#include <utils/Authorizer.h>
-#include <utils/Crypto.h>
-#include <utils/Utils.h>
+#include <utils/authorizer.h>
+#include <utils/crypto.h>
+#include <utils/misc.h>
 #include <plugins/Configurator.h>
 
 using namespace drogon;
@@ -25,7 +25,7 @@ void Auth::updateAuthToken(
         drogon::HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::authToken(id, authToken, code, responseBody)) {
+    if (authorizer::authToken(id, authToken, code, responseBody)) {
         code = k200OK;
         responseBody["message"] = "OK";
     }
@@ -37,7 +37,7 @@ void Auth::getAuthToken(
         drogon::HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::password(email, password, code, responseBody)) {
+    if (authorizer::password(email, password, code, responseBody)) {
         code = k200OK;
         responseBody["message"] = "OK";
     }
@@ -49,7 +49,7 @@ void Auth::updateAccessToken(
         drogon::HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::accessToken(id, accessToken, code, responseBody)) {
+    if (authorizer::accessToken(id, accessToken, code, responseBody)) {
         code = k200OK;
         responseBody["message"] = "OK";
     }
@@ -61,7 +61,7 @@ void Auth::getAccessToken(
         drogon::HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::authToken(id, authToken, code, responseBody)) {
+    if (authorizer::authToken(id, authToken, code, responseBody)) {
         try {
             auto *configurator = app().getPlugin<Configurator>();
             Techmino::Auth auth;

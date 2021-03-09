@@ -8,10 +8,9 @@
 using namespace drogon;
 using namespace tech::plugins;
 using namespace tech::services::websocket;
-using namespace tech::utils;
 using namespace std;
 
-Stream::Stream() : Base(WebSocket::Type::Stream) {}
+Stream::Stream() : Base(tech::utils::websocket::Type::Stream) {}
 
 void Stream::establish(
         const WebSocketConnectionPtr &wsConnPtr,
@@ -24,7 +23,7 @@ void Stream::establish(
     Json::Value initMessage;
     initMessage["message"] = "Connected";
     initMessage["data"] = data["connected"];
-    WebSocket::initPing(wsConnPtr, data, chrono::seconds(10));
+    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 
     auto rid = data["rid"].asString();
     try {
@@ -32,14 +31,14 @@ void Stream::establish(
     } catch (const exception &error) {
         Json::Value response;
         response["message"] = error.what();
-        WebSocket::close(wsConnPtr, CloseCode::kViolation, WebSocket::fromJson(response));
+        tech::utils::websocket::close(wsConnPtr, CloseCode::kViolation, tech::utils::websocket::fromJson(response));
     }
 }
 
 void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto streamManager = app().getPlugin<StreamManager>();
-        auto sidsMap = *wsConnPtr->getContext<structures::Stream>()->getSidsMap();
+        auto sidsMap = wsConnPtr->getContext<structures::Stream>()->getSidsMap();
         for (const auto &pair : sidsMap) {
             try {
                 streamManager->unsubscribe(pair.first, wsConnPtr);

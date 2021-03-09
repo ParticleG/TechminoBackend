@@ -6,7 +6,6 @@
 
 using namespace tech::services::websocket;
 using namespace tech::plugins;
-using namespace tech::utils;
 using namespace drogon;
 using namespace std;
 
@@ -26,4 +25,4 @@ CloseCode Base::requestHandler(
     return _handlerManager->process(wsConnPtr, _type, action, request, response);
 }
 
-Base::Base(const WebSocket::Type &type) : _handlerManager(app().getPlugin<HandlerManager>()), _type(type) {}
+Base::Base(const tech::utils::websocket::Type &type) : _handlerManager(app().getPlugin<HandlerManager>()), _type(type) {}

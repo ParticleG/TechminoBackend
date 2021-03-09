@@ -6,17 +6,16 @@
 #include <plugins/ChatManager.h>
 #include <plugins/Configurator.h>
 #include <services/Chat_WS.h>
-#include <utils/Crypto.h>
-#include <utils/Utils.h>
+#include <utils/crypto.h>
+#include <utils/misc.h>
 
 using namespace drogon;
 using namespace drogon_model;
 using namespace tech::plugins;
 using namespace tech::services::websocket;
-using namespace tech::utils;
 using namespace std;
 
-Chat::Chat() : Base(WebSocket::Type::Chat) {}
+Chat::Chat() : Base(tech::utils::websocket::Type::Chat) {}
 
 void Chat::establish(
         const WebSocketConnectionPtr &wsConnPtr,
@@ -26,27 +25,27 @@ void Chat::establish(
     _chat = make_shared<structures::Chat>(data["id"].asInt());
     wsConnPtr->setContext(_chat);
 
-    auto type = attributes.get<Authorizer::Type>("type");
+    auto type = attributes.get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
     initMessage["message"] = "Connected";
-    if (type == Authorizer::Type::GetAccessToken) {
+    if (type == tech::utils::authorizer::Type::GetAccessToken) {
         Mapper<Techmino::Auth> authMapper(app().getDbClient());
         auto id = _chat->getInfo()->getValueOfId();
         auto *configurator = app().getPlugin<Configurator>();
         auto auth = authMapper.findOne(Criteria(
                 Techmino::Auth::Cols::__id, CompareOperator::EQ, id));
-        auth.setAccessToken(Crypto::keccak(drogon::utils::getUuid()));
-        auth.setAccessTokenExpireTime(Utils::fromDate(configurator->getAccessExpire()));
+        auth.setAccessToken(tech::utils::crypto::keccak(drogon::utils::getUuid()));
+        auth.setAccessTokenExpireTime(tech::utils::misc::fromDate(configurator->getAccessExpire()));
         initMessage["id"] = id;
         initMessage["accessToken"] = auth.getValueOfAccessToken();
     }
-    WebSocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 }
 
 void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto chatManager = app().getPlugin<ChatManager>();
-        auto sidsMap = *wsConnPtr->getContext<structures::Chat>()->getSidsMap();
+        auto sidsMap = wsConnPtr->getContext<structures::Chat>()->getSidsMap();
         for (const auto &pair : sidsMap) {
             try {
                 chatManager->unsubscribe(pair.first, wsConnPtr);
