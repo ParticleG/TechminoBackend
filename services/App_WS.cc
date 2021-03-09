@@ -2,7 +2,7 @@
 // Created by Parti on 2021/2/16.
 //
 
-#include "services/App_WS.h"
+#include <services/App_WS.h>
 
 using namespace tech::services::websocket;
 using namespace tech::plugins;
