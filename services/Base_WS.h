@@ -6,12 +6,12 @@
 
 #include <drogon/WebSocketController.h>
 #include <plugins/HandlerManager.h>
-#include <utils/WebSocket.h>
+#include <utils/websocket.h>
 
 namespace tech::services::websocket {
     class Base {
     public:
-        explicit Base(const tech::utils::WebSocket::Type &type);
+        explicit Base(const tech::utils::websocket::Type &type);
 
         virtual void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
@@ -30,6 +30,6 @@ namespace tech::services::websocket {
 
     private:
         tech::plugins::HandlerManager *_handlerManager;
-        tech::utils::WebSocket::Type _type;
+        tech::utils::websocket::Type _type;
     };
 }

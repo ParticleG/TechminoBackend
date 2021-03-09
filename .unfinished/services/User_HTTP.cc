@@ -3,7 +3,7 @@
 //
 
 #include <.unfinished/services/User_HTTP.h>
-#include <utils/Authorizer.h>
+#include <utils/authorizer.h>
 
 using namespace tech::services::http;
 using namespace tech::utils;
@@ -30,7 +30,7 @@ void User::info(
         drogon::HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::authToken(email, authToken, code, responseBody)) {
+    if (authorizer::authToken(email, authToken, code, responseBody)) {
         try {
             auto matchedUsers = userMapper->findBy(
                     Criteria(Techmino::Info::Cols::_email, CompareOperator::EQ, email)
@@ -57,7 +57,7 @@ void User::modify(
         drogon::HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::authToken(email, authToken, code, responseBody)) {
+    if (authorizer::authToken(email, authToken, code, responseBody)) {
         try {
             Techmino::Info user;
             user.setEmail(email);

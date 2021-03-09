@@ -8,10 +8,9 @@ using namespace drogon;
 using namespace drogon_model;
 using namespace tech::plugins;
 using namespace tech::services::websocket;
-using namespace tech::utils;
 using namespace std;
 
-User::User() : Base(WebSocket::Type::User) {}
+User::User() : Base(tech::utils::websocket::Type::User) {}
 
 void User::establish(
         const WebSocketConnectionPtr &wsConnPtr,
@@ -21,15 +20,15 @@ void User::establish(
     _user = make_shared<structures::User>(data["id"].asInt());
     wsConnPtr->setContext(_user);
 
-    auto type = attributes.get<Authorizer::Type>("type");
+    auto type = attributes.get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
     initMessage["message"] = "Connected";
-    if (type == Authorizer::Type::GetAuthToken) {
+    if (type == tech::utils::authorizer::Type::GetAuthToken) {
         const auto auth = *_user->getAuth();
         initMessage["id"] = auth.getValueOfId();
         initMessage["authToken"] = auth.getValueOfAuthToken();
     }
-    WebSocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 }
 
 void User::close(const WebSocketConnectionPtr &wsConnPtr) {

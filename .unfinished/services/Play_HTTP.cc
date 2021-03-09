@@ -3,8 +3,8 @@
 //
 
 #include <.unfinished/services/Play_HTTP.h>
-#include <utils/Authorizer.h>
-#include <utils/Crypto.h>
+#include <utils/authorizer.h>
+#include <utils/crypto.h>
 
 using namespace tech::services::http;
 using namespace tech::utils;
@@ -17,7 +17,7 @@ void Play::list(
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
+    if (authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
             auto roomList = _playManager->getRoomList();
             code = k200OK;
@@ -38,7 +38,7 @@ void Play::info(
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
+    if (authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
             auto roomList = _playManager->getRoomList(roomType);
             code = k200OK;
@@ -61,7 +61,7 @@ void Play::create(
         HttpStatusCode &code,
         Json::Value &responseBody
 ) {
-    if (Authorizer::accessToken(email, accessToken, code, responseBody)) {
+    if (authorizer::accessToken(email, accessToken, code, responseBody)) {
         try {
             string roomID = Crypto::blake2b("room_" + drogon::utils::getUuid());
             auto tempRoom = _playManager->createRoom(roomID, roomName, roomPassword, roomType);

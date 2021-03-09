@@ -6,7 +6,7 @@
 
 #include <services/Base_WS.h>
 #include <structures/Play.h>
-#include <utils/Authorizer.h>
+#include <utils/authorizer.h>
 
 namespace tech::services::websocket {
     class Play : public Base {

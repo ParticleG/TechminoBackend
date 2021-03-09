@@ -4,15 +4,13 @@
 
 #include <services/App_WS.h>
 
-using namespace tech::services::websocket;
 using namespace tech::plugins;
-using namespace tech::utils;
 using namespace drogon;
 using namespace std;
 
-App::App() : Base(WebSocket::Type::App) {}
+tech::services::websocket::App::App() : Base(tech::utils::websocket::Type::App) {}
 
-void App::establish(
+void tech::services::websocket::App::establish(
         const WebSocketConnectionPtr &wsConnPtr,
         const Attributes &attributes
 ) {
@@ -23,10 +21,10 @@ void App::establish(
     auto initMessage = attributes.get<Json::Value>("content");
     initMessage["message"] = "Connected";
 
-    WebSocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
+    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
 }
 
-void App::close(const WebSocketConnectionPtr &wsConnPtr) {
+void tech::services::websocket::App::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         wsConnPtr->clearContext();
     }

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <models/Info.h>
-#include <utils/Http.h>
+#include <utils/http.h>
 
 namespace tech::services::http {
     class User {
