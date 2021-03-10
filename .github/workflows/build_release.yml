@@ -41,7 +41,7 @@ jobs:
           cmakeAppendedArgs: "-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}"
           buildWithCMake: true
           buildDirectory: "${{github.workspace}}/build"
-          buildWithCMakeArgs: "--config ${{env.BUILD_TYPE}}"
+          buildWithCMakeArgs: "--config ${{env.BUILD_TYPE}} --parallel 2"
 
       - name: Pack TechminoBackend
         working-directory: ${{github.workspace}}
@@ -90,6 +90,7 @@ jobs:
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.ACCESS_TOKEN }}
           submodules: recursive
 
       - name: Cache CryptoPP
