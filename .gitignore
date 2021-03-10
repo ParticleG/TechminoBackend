@@ -33,6 +33,7 @@
 
 # Folders
 .idea
+.vscode
 cmake-build-debug-msvc_x86
 cmake-build-debug-msvc_x64
 cmake-build-debug-wsl
