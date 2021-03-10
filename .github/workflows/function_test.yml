@@ -1,0 +1,11 @@
+name: Function Test
+on:
+  workflow_dispatch:
+jobs:
+  function_test:
+    name: Function Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Try bash commands
+        run: |
+          grep 'processor' /proc/cpuinfo | sort | wc -l
