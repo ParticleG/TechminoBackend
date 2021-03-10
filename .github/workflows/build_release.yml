@@ -3,14 +3,14 @@ on:
   workflow_dispatch:
     inputs:
       version_code:
-        description: 'Version Code'
+        description: "Version Code"
         required: true
       version_name:
-        description: 'Version Name'
+        description: "Version Name"
         required: true
       body:
-        description: 'Description'
-        default: 'New release'
+        description: "Description"
+        default: "New release"
         required: true
 env:
   BUILD_TYPE: Release
@@ -22,25 +22,26 @@ jobs:
       - name: Checkout TechminoBackend
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.ACCESS_TOKEN }}
           submodules: recursive
 
       - name: Setup Vcpkg
         id: setup_vcpkg
         uses: lukka/run-vcpkg@v6
         with:
-          vcpkgDirectory: '${{github.workspace}}/vcpkg'
-          vcpkgTriplet: 'x64-windows'
-          vcpkgArguments: 'drogon cryptopp'
+          vcpkgDirectory: "${{github.workspace}}/vcpkg"
+          vcpkgTriplet: "x64-windows"
+          vcpkgArguments: "drogon cryptopp"
 
       - name: Cmake TechminoBackend
         uses: lukka/run-cmake@v3
         with:
           cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
           useVcpkgToolchainFile: true
-          cmakeAppendedArgs: '-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}'
+          cmakeAppendedArgs: "-DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}"
           buildWithCMake: true
-          buildDirectory: '${{github.workspace}}/build'
-          buildWithCMakeArgs: '--config ${{env.BUILD_TYPE}}'
+          buildDirectory: "${{github.workspace}}/build"
+          buildWithCMakeArgs: "--config ${{env.BUILD_TYPE}}"
 
       - name: Pack TechminoBackend
         working-directory: ${{github.workspace}}
