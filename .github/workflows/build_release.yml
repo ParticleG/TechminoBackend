@@ -132,7 +132,7 @@ jobs:
         shell: bash
         run: |
           cd build
-          sudo make && make install
+          sudo make && sudo make install
 
       - name: Cache Drogon
         id: cache_drogon
@@ -165,7 +165,7 @@ jobs:
         shell: bash
         run: |
           cd build
-          sudo make && make install
+          sudo make && sudo make install
 
       - name: Cmake TechminoBackend
         shell: bash
