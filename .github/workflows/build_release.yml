@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dependencies
-        run: sudo apt update && apt full-upgrade -y && apt install git gcc g++ cmake libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev libc-ares-dev libbrotli-dev postgresql-all libmariadb-dev libsqlite3-dev -y
+        run: sudo apt update && sudo apt full-upgrade -y && sudo apt install git gcc g++ cmake libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev libc-ares-dev libbrotli-dev postgresql-all libmariadb-dev libsqlite3-dev -y
 
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
