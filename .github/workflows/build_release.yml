@@ -19,22 +19,15 @@ jobs:
     name: Windows Latest
     runs-on: windows-latest
     steps:
-      - name: Checkout TechminoBackend source code
+      - name: Checkout TechminoBackend
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Setup Vcpkg
         id: setup_vcpkg
         uses: lukka/run-vcpkg@v6
         with:
-          setupOnly: true
-          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
-          vcpkgDirectory: '${{github.workspace}}/vcpkg'
-
-      - name: Install Packages
-        id: install_vcpkg
-        uses: lukka/run-vcpkg@v6
-        with:
-          vcpkgGitCommitId: '981e65ce0ac1f6c86e5a5ded7824db8780173c76'
           vcpkgDirectory: '${{github.workspace}}/vcpkg'
           vcpkgTriplet: 'x64-windows'
           vcpkgArguments: 'drogon cryptopp'
@@ -91,14 +84,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev postgresql-all libsqlite3-dev
-          sudo apt install libbrotli-dev
-          sudo apt install libcrypto++-dev libcrypto++-doc libcrypto++-utils
+        run: sudo apt update && apt full-upgrade -y && apt install git gcc g++ cmake libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev libc-ares-dev libbrotli-dev postgresql-all libmariadb-dev libsqlite3-dev -y
 
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Cache CryptoPP
         id: cache_cryptopp
@@ -112,7 +103,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: weidai11/cryptopp
-          submodules: true
+          submodules: recursive
           fetch-depth: 0
           path: cryptopp-src
 
@@ -131,22 +122,15 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          cmake .. -DCMAKE_BUILD_TYPE=Debug
 
-      - name: Build CryptoPP
+      - name: Build & install CryptoPP
         if: steps.cache_cryptopp.outputs.cache-hit != 'true'
         working-directory: ${{github.workspace}}/cryptopp-src
         shell: bash
         run: |
           cd build
-          sudo make
-
-      - name: Install CryptoPP
-        working-directory: ${{github.workspace}}/cryptopp-src
-        shell: bash
-        run: |
-          cd build
-          sudo make install
+          sudo make && make install
 
       - name: Cache Drogon
         id: cache_drogon
@@ -160,7 +144,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: an-tao/drogon
-          submodules: true
+          submodules: recursive
           fetch-depth: 0
           path: drogon-src
 
@@ -171,22 +155,15 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+          cmake .. -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql
 
-      - name: Build Drogon
+      - name: Build & install Drogon
         if: steps.cache_drogon.outputs.cache-hit != 'true'
         working-directory: ${{github.workspace}}/drogon-src
         shell: bash
         run: |
           cd build
-          sudo make
-
-      - name: Install Drogon
-        working-directory: ${{github.workspace}}/drogon-src
-        shell: bash
-        run: |
-          cd build
-          sudo make install
+          sudo make && make install
 
       - name: Cmake TechminoBackend
         shell: bash
@@ -199,7 +176,7 @@ jobs:
       - name: Build TechminoBackend
         working-directory: ${{github.workspace}}/build
         shell: bash
-        run: cmake --build . --config $BUILD_TYPE
+        run: cmake --build . --config $BUILD_TYPE --parallel 2
 
       - name: Pack TechminoBackend
         working-directory: ${{github.workspace}}
