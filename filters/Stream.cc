@@ -47,7 +47,7 @@ void Stream::doFilter(
         auto configurator = app().getPlugin<Configurator>();
         /**
          * result["id"] = newAuth.getValueOfId();
-         * result["connected"] = getRoom(rid)->getPlayers();
+         * result["connected"] = getSharedRoom(rid)->getPlayers();
          * result["rid"] = rid;
          */
         switch (authorizer::accessToken(
@@ -64,7 +64,7 @@ void Stream::doFilter(
                     http::fromJson(code, response, filterCallback);
                 } else {
                     try {
-                        response["connected"] = app().getPlugin<StreamManager>()->getRoom(rid)->getPlayers();
+                        response["connected"] = app().getPlugin<StreamManager>()->getSharedRoom(rid).second.getPlayers();
                         response["rid"] = rid;
                         attributes->insert("data", response);
                         filterChainCallback();
