@@ -64,7 +64,7 @@ void Stream::doFilter(
                     http::fromJson(code, response, filterCallback);
                 } else {
                     try {
-                        response["connected"] = app().getPlugin<StreamManager>()->getSharedRoom(rid).second.getPlayers();
+                        response["connected"] = app().getPlugin<StreamManager>()->getSharedRoom(rid).room.getPlayers();
                         response["rid"] = rid;
                         attributes->insert("data", response);
                         filterChainCallback();
