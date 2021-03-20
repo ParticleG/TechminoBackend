@@ -31,6 +31,7 @@ Install necessary packages:
 Configure project: (Replace `{Project_Path}` to the absolute path of this project in your disk, for release version just change `Debug` to `Release`)
 
 ```bash
+./vcpkg/installed/x64-windows/tools/drogon/drogon_ctl.exe create model ./lib_models/models
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="{PROJECT_PATH}/vcpkg/scripts/buildsystems/vcpkg.cmake" -G "CodeBlocks - NMake Makefiles" "{PROJECT_PATH}"
@@ -88,6 +89,7 @@ git submodule update --init
 Configure project: (for release version just change `Debug` to `Release`)
 
 ```bash
+drogon_ctl create model ./lib_models/models
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug
