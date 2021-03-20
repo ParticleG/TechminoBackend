@@ -1,3 +1,15 @@
-[submodule "drogon"]
-	path = drogon
-	url = https://github.com/an-tao/drogon
+[submodule "lib_models"]
+	path = lib_models
+	url = https://github.com/26F-Studio/lib_models
+[submodule "lib_plugins"]
+	path = lib_plugins
+	url = https://github.com/26F-Studio/lib_plugins
+[submodule "lib_structures"]
+	path = lib_structures
+	url = https://github.com/26F-Studio/lib_structures
+[submodule "lib_utils"]
+	path = lib_utils
+	url = https://github.com/26F-Studio/lib_utils
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/an-tao/vcpkg
