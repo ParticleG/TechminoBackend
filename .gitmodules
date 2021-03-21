@@ -10,3 +10,6 @@
 [submodule "lib_utils"]
 	path = lib_utils
 	url = https://github.com/26F-Studio/lib_utils
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg
