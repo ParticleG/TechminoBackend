@@ -33,6 +33,13 @@ jobs:
           vcpkgTriplet: "x64-windows"
           vcpkgArguments: "drogon cryptopp"
 
+      - name: Config Database Models
+        shell: bash
+        working-directory: ${{github.workspace}}
+        run: |
+          ./vcpkg/installed/x64-windows/tools/drogon/drogon_ctl.exe create model ./lib_models/Models
+          y
+
       - name: Cmake TechminoBackend
         uses: lukka/run-cmake@v3
         with:
@@ -85,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Dependencies
-        run: sudo apt update && sudo apt full-upgrade -y && sudo apt install git gcc g++ cmake libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev libc-ares-dev libbrotli-dev postgresql-all libmariadb-dev libsqlite3-dev -y
+        run: sudo apt update && sudo apt install git gcc g++ cmake libjsoncpp-dev uuid-dev openssl libssl-dev zlib1g-dev libc-ares-dev libbrotli-dev postgresql-all libmariadb-dev libsqlite3-dev -y
 
       - name: Checkout TechminoBackend source code
         uses: actions/checkout@v2
@@ -166,6 +173,14 @@ jobs:
         run: |
           cd build
           sudo make && sudo make install
+
+      - name: Config Database Models
+        shell: bash
+        working-directory: ${{github.workspace}}/lib_models
+        run: |
+          cd models
+          dg_ctl create model ./
+          y
 
       - name: Cmake TechminoBackend
         shell: bash
