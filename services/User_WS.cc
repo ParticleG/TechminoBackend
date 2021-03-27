@@ -14,13 +14,13 @@ User::User() : Base(tech::utils::websocket::Type::User) {}
 
 void User::establish(
         const WebSocketConnectionPtr &wsConnPtr,
-        const Attributes &attributes
+        const AttributesPtr &attributes
 ) {
-    auto data = attributes.get<Json::Value>("data");
+    auto data = attributes->get<Json::Value>("data");
     _user = make_shared<structures::User>(data["id"].asInt());
     wsConnPtr->setContext(_user);
 
-    auto type = attributes.get<tech::utils::authorizer::Type>("type");
+    auto type = attributes->get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
     initMessage["message"] = "Connected";
     if (type == tech::utils::authorizer::Type::GetAuthToken) {

@@ -16,6 +16,8 @@ void App::doFilter(
         FilterCallback &&filterCallback,
         FilterChainCallback &&filterChainCallback
 ) {
+    LOG_DEBUG << "New Connection";
+
     HttpStatusCode code;
     Json::Value request, response;
     string parseError = http::toJson(req, request);

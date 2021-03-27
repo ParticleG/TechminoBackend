@@ -24,7 +24,7 @@ namespace tech::socket::v1 {
                     response["message"] = "Wrong format";
                     response["reason"] = parseError;
                 } else {
-                    drogon::CloseCode code = _service->requestHandler(wsConnPtr, request, response);
+                    drogon::CloseCode code = _service.requestHandler(wsConnPtr, request, response);
                     if (code == drogon::CloseCode::kNone) {
                         wsConnPtr->send(tech::utils::websocket::fromJson(response));
                     } else {
@@ -44,18 +44,18 @@ namespace tech::socket::v1 {
                 const drogon::HttpRequestPtr &req,
                 const drogon::WebSocketConnectionPtr &wsConnPtr
         ) {
-            _service->establish(wsConnPtr, *req->getAttributes());
+            _service.establish(wsConnPtr, req->getAttributes());
         }
 
         virtual void handleConnectionClosed(
                 const drogon::WebSocketConnectionPtr &wsConnPtr
         ) {
-            _service->close(wsConnPtr);
+            _service.close(wsConnPtr);
         }
 
-        virtual ~Base() {};
+        virtual ~Base() = default;
 
     protected:
-        std::shared_ptr<serviceType> _service{};
+        serviceType _service{};
     };
 }

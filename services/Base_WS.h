@@ -15,7 +15,7 @@ namespace tech::services::websocket {
 
         virtual void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
-                const drogon::Attributes &attributes
+                const drogon::AttributesPtr &attributes
         ) = 0;
 
         virtual void close(

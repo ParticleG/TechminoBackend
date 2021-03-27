@@ -15,9 +15,9 @@ Play::Play() : Base(tech::utils::websocket::Type::Play) {}
 
 void Play::establish(
         const WebSocketConnectionPtr &wsConnPtr,
-        const Attributes &attributes
+        const AttributesPtr &attributes
 ) {
-    auto data = attributes.get<Json::Value>("data");
+    auto data = attributes->get<Json::Value>("data");
     _play = make_shared<structures::Play>(data["id"].asInt());
     wsConnPtr->setContext(_play);
 

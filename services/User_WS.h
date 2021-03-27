@@ -15,12 +15,12 @@ namespace tech::services::websocket {
 
         void establish(
                 const drogon::WebSocketConnectionPtr &wsConnPtr,
-                const drogon::Attributes &attributes
-        );
+                const drogon::AttributesPtr &attributes
+        ) override;
 
         void close(
                 const drogon::WebSocketConnectionPtr &wsConnPtr
-        );
+        ) override;
 
     private:
         std::shared_ptr<tech::structures::User> _user;

@@ -14,9 +14,9 @@ Stream::Stream() : Base(tech::utils::websocket::Type::Stream) {}
 
 void Stream::establish(
         const WebSocketConnectionPtr &wsConnPtr,
-        const Attributes &attributes
+        const AttributesPtr &attributes
 ) {
-    auto data = attributes.get<Json::Value>("data");
+    auto data = attributes->get<Json::Value>("data");
     _stream = make_shared<structures::Stream>(data["id"].asInt());
     wsConnPtr->setContext(_stream);
 
