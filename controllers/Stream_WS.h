@@ -13,5 +13,6 @@ namespace tech::socket::v1 {
         WS_PATH_LIST_BEGIN
             WS_PATH_ADD("/tech/socket/v1/play", "tech::filters::Stream");
         WS_PATH_LIST_END
+        Stream();
     };
 }

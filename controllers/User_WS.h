@@ -13,5 +13,6 @@ namespace tech::socket::v1 {
         WS_PATH_LIST_BEGIN
             WS_PATH_ADD("/tech/socket/v1/user", "tech::filters::User");
         WS_PATH_LIST_END
+        User();
     };
 }
