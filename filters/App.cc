@@ -16,39 +16,16 @@ void App::doFilter(
         FilterCallback &&filterCallback,
         FilterChainCallback &&filterChainCallback
 ) {
-    LOG_DEBUG << "New Connection";
-
     HttpStatusCode code;
-    Json::Value request, response;
-    string parseError = http::toJson(req, request);
-
-    if (!parseError.empty()) {
-        code = k400BadRequest;
-        response["message"] = "Wrong format.";
-        response["reason"] = parseError;
-        http::fromJson(code, response, filterCallback);
-        return;
-    }
-
-    if (!(
-            request.isMember("version") && request["version"].isInt()
-    )) {
-        code = k400BadRequest;
-        response["message"] = "Wrong format";
-        response["reason"] = "Requires int type 'version'";
-        http::fromJson(code, response, filterCallback);
-        return;
-    }
+    Json::Value response;
     auto attributes = req->getAttributes();
     /**
-     * result["versionCode"] = versionCode
-     * result["content"]["newest"]["code"] = newestApp.getValueOfVersionCode();
-     * result["content"]["newest"]["name"] = newestApp.getValueOfVersionName();
-     * result["content"]["newest"]["content"] = newestApp.getValueOfVersionContent();
+     * result["content"]["newestCode"] = newestApp.getValueOfVersionCode();
+     * result["content"]["newestName"] = newestApp.getValueOfVersionName();
+     * result["content"]["lowest"] = leastApp.getValueOfVersionCode();
      * result["content"]["notice"] = notice.getValueOfContent();
      */
     switch (authorizer::versionCode(
-            request["version"].asInt(),
             response
     )) {
         case authorizer::Status::OK:
@@ -64,18 +41,19 @@ void App::doFilter(
             [[unlikely]] case authorizer::Status::NotFound:
             code = k404NotFound;
             response["message"] = "Something went wrong";
-            response["reason"] = "Impossible auth status.";
+            response["reason"] = "Impossible app status.";
             http::fromJson(code, response, filterCallback);
             break;
             [[unlikely]] case authorizer::Status::Incorrect:
             code = k403Forbidden;
             response["message"] = "Something went wrong";
-            response["reason"] = "Impossible auth status.";
+            response["reason"] = "Impossible app status.";
             http::fromJson(code, response, filterCallback);
             break;
-        case authorizer::Status::Expired:
+            [[unlikely]] case authorizer::Status::Expired:
             code = k401Unauthorized;
-            response["message"] = "Outdated version";
+            response["message"] = "Something went wrong";
+            response["reason"] = "Impossible app status.";
             http::fromJson(code, response, filterCallback);
             break;
         case authorizer::Status::InternalError:
