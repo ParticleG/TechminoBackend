@@ -15,10 +15,10 @@ void tech::services::websocket::App::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _app = make_shared<structures::App>(data["versionCode"].asInt());
+    _app = make_shared<structures::App>();
     wsConnPtr->setContext(_app);
 
-    auto initMessage = attributes->get<Json::Value>("content");
+    auto initMessage = data["content"];
     initMessage["message"] = "Connected";
 
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
