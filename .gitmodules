@@ -13,3 +13,6 @@
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg
+[submodule "lib_database"]
+	path = lib_database
+	url = https://github.com/26F-Studio/lib_database
