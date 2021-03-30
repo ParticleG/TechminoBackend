@@ -14,6 +14,7 @@ CloseCode Base::requestHandler(
         const Json::Value &request,
         Json::Value &response
 ) {
+    LOG_DEBUG << tech::utils::websocket::fromJson(request);
     if (!(
             request.isMember("action") && request["action"].isInt()
     )) {
