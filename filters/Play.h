@@ -10,7 +10,7 @@ using namespace drogon;
 namespace tech::filters {
     class Play : public HttpFilter<Play> {
     public:
-        Play() {}
+        Play() = default;
 
         void doFilter(
                 const HttpRequestPtr &req,
