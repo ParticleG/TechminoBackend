@@ -11,7 +11,7 @@ namespace tech::socket::v1 {
     class Stream : public Base<Stream, tech::services::websocket::Stream> {
     public:
         WS_PATH_LIST_BEGIN
-            WS_PATH_ADD("/tech/socket/v1/play", "tech::filters::Stream");
+            WS_PATH_ADD("/tech/socket/v1/stream", "tech::filters::Stream")
         WS_PATH_LIST_END
         Stream();
     };
