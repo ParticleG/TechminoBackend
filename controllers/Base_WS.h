@@ -35,8 +35,8 @@ namespace tech::socket::v1 {
                 wsConnPtr->forceClose();
             } else if (type == drogon::WebSocketMessageType::Unknown) {
                 LOG_DEBUG << "Message is Unknown";
-            } else {
-                LOG_DEBUG << "Message is: " << message;
+            } else if (type != drogon::WebSocketMessageType::Pong) {
+                LOG_DEBUG << "Message is " << static_cast<int>(type) << ": " << message;
             }
         }
 
