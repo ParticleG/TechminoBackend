@@ -29,7 +29,7 @@ void Chat::establish(
 
     auto type = attributes->get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
-    initMessage["message"] = "Connected";
+    initMessage["type"] = "Connect";
     if (type == tech::utils::authorizer::Type::GetAccessToken) {
         auto id = _chat->getInfo()->getValueOfId();
         auto *configurator = app().getPlugin<Configurator>();

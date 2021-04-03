@@ -25,8 +25,8 @@ void User::doFilter(
 
     if (!parseError.empty()) {
         code = k400BadRequest;
-        response["message"] = "Wrong format.";
-        response["reason"] = parseError;
+        response["type"] = "Error";
+        response["reason"] = "Wrong format: " + parseError;
         http::fromJson(code, response, filterCallback);
         return;
     }
@@ -40,8 +40,8 @@ void User::doFilter(
                 request.isMember("password") && request["password"].isString()
         )) {
             code = k400BadRequest;
-            response["message"] = "Wrong format";
-            response["reason"] = "Requires string type 'email', string type 'authToken' or int type 'id', string type 'authToken'";
+            response["type"] = "Error";
+            response["reason"] = "Wrong format: Requires string type 'email', string type 'authToken' or int type 'id', string type 'authToken'";
             http::fromJson(code, response, filterCallback);
             return;
         }
@@ -63,30 +63,32 @@ void User::doFilter(
                 break;
             case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
-                response["message"] = "Wrong format";
-                response["reason"] = "Requires string type 'email' and 'password' in 'data'";
+                response["type"] = "Error";
+                response["reason"] = "Wrong format: Requires string type 'email' and 'password' in 'data'";
                 http::fromJson(code, response, filterCallback);
                 break;
                 [[unlikely]] case authorizer::Status::NotFound:
                 code = k404NotFound;
-                response["message"] = "Something went wrong";
+                response["type"] = "Error";
                 response["reason"] = "Impossible auth status.";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::Incorrect:
                 code = k403Forbidden;
-                response["message"] = "Email or Password is incorrect";
+                response["type"] = "Error";
+                response["reason"] = "Email or Password is incorrect";
                 http::fromJson(code, response, filterCallback);
                 break;
                 [[unlikely]] case authorizer::Status::Expired:
                 code = k401Unauthorized;
-                response["message"] = "Something went wrong";
+                response["type"] = "Error";
                 response["reason"] = "Impossible auth status.";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::InternalError:
                 code = k500InternalServerError;
-                response["message"] = "Internal error";
+                response["type"] = "Error";
+                response["reason"] = "Internal error";
                 http::fromJson(code, response, filterCallback);
                 break;
         }
@@ -109,28 +111,32 @@ void User::doFilter(
                 break;
             case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
-                response["message"] = "Wrong format";
-                response["reason"] = "Requires positive Int64 type 'id', string type 'authToken' in 'data'";
+                response["type"] = "Error";
+                response["reason"] = "Wrong format: Requires positive Int64 type 'id', string type 'authToken' in 'data'";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::NotFound:
                 code = k404NotFound;
-                response["message"] = "ID not found";
+                response["type"] = "Error";
+                response["reason"] = "ID not found";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::Incorrect:
                 code = k403Forbidden;
-                response["message"] = "Auth Token is incorrect";
+                response["type"] = "Error";
+                response["reason"] = "Auth Token is incorrect";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::Expired:
                 code = k401Unauthorized;
-                response["message"] = "Auth Token is expired";
+                response["type"] = "Error";
+                response["reason"] = "Auth Token is expired";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::InternalError:
                 code = k500InternalServerError;
-                response["message"] = "Internal error";
+                response["type"] = "Error";
+                response["reason"] = "Internal error";
                 http::fromJson(code, response, filterCallback);
                 break;
         }

@@ -22,7 +22,7 @@ void Play::establish(
     wsConnPtr->setContext(_play);
 
     Json::Value initMessage;
-    initMessage["message"] = "Connected";
+    initMessage["type"] = "Connect";
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 }
 

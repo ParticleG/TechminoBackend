@@ -22,7 +22,7 @@ void User::establish(
 
     auto type = attributes->get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
-    initMessage["message"] = "Connected";
+    initMessage["type"] = "Connect";
     if (type == tech::utils::authorizer::Type::GetAuthToken) {
         const auto auth = *_user->getAuth();
         initMessage["id"] = auth.getValueOfId();

@@ -34,31 +34,32 @@ void App::doFilter(
             break;
         case authorizer::Status::InvalidComponents:
             code = k400BadRequest;
-            response["message"] = "Wrong format";
-            response["reason"] = "Requires positive int type 'version' in 'data'";
+            response["type"] = "Error";
+            response["reason"] = "Wrong format: Requires positive int type 'version' in 'data'";
             http::fromJson(code, response, filterCallback);
             break;
             [[unlikely]] case authorizer::Status::NotFound:
             code = k404NotFound;
-            response["message"] = "Something went wrong";
+            response["type"] = "Error";
             response["reason"] = "Impossible app status.";
             http::fromJson(code, response, filterCallback);
             break;
             [[unlikely]] case authorizer::Status::Incorrect:
             code = k403Forbidden;
-            response["message"] = "Something went wrong";
+            response["type"] = "Error";
             response["reason"] = "Impossible app status.";
             http::fromJson(code, response, filterCallback);
             break;
             [[unlikely]] case authorizer::Status::Expired:
             code = k401Unauthorized;
-            response["message"] = "Something went wrong";
+            response["type"] = "Error";
             response["reason"] = "Impossible app status.";
             http::fromJson(code, response, filterCallback);
             break;
         case authorizer::Status::InternalError:
             code = k500InternalServerError;
-            response["message"] = "Internal error";
+            response["type"] = "Error";
+            response["reason"] = "Internal error";
             http::fromJson(code, response, filterCallback);
             break;
     }

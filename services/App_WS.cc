@@ -19,7 +19,7 @@ void tech::services::websocket::App::establish(
     wsConnPtr->setContext(_app);
 
     auto initMessage = data["content"];
-    initMessage["message"] = "Connected";
+    initMessage["type"] = "Connect";
 
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
 }

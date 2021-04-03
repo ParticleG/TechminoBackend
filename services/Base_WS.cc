@@ -14,13 +14,12 @@ CloseCode Base::requestHandler(
         const Json::Value &request,
         Json::Value &response
 ) {
-    LOG_DEBUG << tech::utils::websocket::fromJson(request);
     if (!(
             request.isMember("action") && request["action"].isInt()
     )) {
-        response["message"] = "Wrong format";
-        response["reason"] = "Requires int type 'action' in 'data'";
-        return CloseCode::kNone;
+        response["type"] = "Warn";
+        response["reason"] = "Wrong format: Requires int type 'action' in 'data'";
+        return CloseCode::kNormalClosure;
     }
     auto action = request["action"].asInt();
     return _handlerManager->process(wsConnPtr, _type, action, request, response);

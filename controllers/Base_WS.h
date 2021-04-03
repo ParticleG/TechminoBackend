@@ -18,16 +18,18 @@ namespace tech::socket::v1 {
             if (type == drogon::WebSocketMessageType::Ping) {
                 wsConnPtr->send(message, drogon::WebSocketMessageType::Pong);
             } else if (type == drogon::WebSocketMessageType::Text || type == drogon::WebSocketMessageType::Binary) {
+                LOG_DEBUG << "New message: " << message;
                 Json::Value request, response;
                 std::string parseError = tech::utils::websocket::toJson(message, request);
                 if (!parseError.empty()) {
-                    response["message"] = "Wrong format";
-                    response["reason"] = parseError;
+                    response["type"] = "Warn";
+                    response["reason"] = "Wrong format: " + parseError;
+                    wsConnPtr->send(tech::utils::websocket::fromJson(response));
                 } else {
                     drogon::CloseCode code = _service.requestHandler(wsConnPtr, request, response);
-                    if (code == drogon::CloseCode::kNone) {
+                    if (code == drogon::CloseCode::kNormalClosure) {
                         wsConnPtr->send(tech::utils::websocket::fromJson(response));
-                    } else {
+                    } else if (code != drogon::CloseCode::kNone) {
                         tech::utils::websocket::close(wsConnPtr, code, tech::utils::websocket::fromJson(response));
                     }
                 }

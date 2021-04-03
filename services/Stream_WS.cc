@@ -21,7 +21,7 @@ void Stream::establish(
     wsConnPtr->setContext(_stream);
 
     Json::Value initMessage;
-    initMessage["message"] = "Connected";
+    initMessage["type"] = "Connect";
     initMessage["data"] = data["connected"];
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 
@@ -30,7 +30,8 @@ void Stream::establish(
         app().getPlugin<StreamManager>()->subscribe(rid, wsConnPtr);
     } catch (const exception &error) {
         Json::Value response;
-        response["message"] = error.what();
+        response["type"] = "Error";
+        response["reason"] = error.what();
         tech::utils::websocket::close(wsConnPtr, CloseCode::kViolation, tech::utils::websocket::fromJson(response));
     }
 }
