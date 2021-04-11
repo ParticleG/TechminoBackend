@@ -32,23 +32,23 @@ void Play::doFilter(
     }
 
     if (!(
-            request.isMember("id") && request["id"].isInt64() &&
+            request.isMember("uid") && request["uid"].isInt64() &&
             request.isMember("accessToken") && request["accessToken"].isString()
     )) {
         code = k400BadRequest;
         response["type"] = "Error";
-        response["reason"] = "Wrong format: Requires positive Int64 type 'id', string type 'accessToken'";
+        response["reason"] = "Wrong format: Requires positive Int64 type 'uid', string type 'accessToken'";
         http::fromJson(code, response, filterCallback);
         return;
     } else {
         auto attributes = req->getAttributes();
         auto configurator = app().getPlugin<Configurator>();
         /**
-         * result["id"] = newAuth.getValueOfId();
+         * result["uid"] = newAuth.getValueOfId();
          * type = authorizer::Type::CheckAccessToken;
          */
         switch (authorizer::accessToken(
-                request["id"].asInt(),
+                request["uid"].asInt(),
                 request["accessToken"].asString(),
                 misc::fromDate(configurator->getAccessExpire()),
                 response)) {
@@ -60,7 +60,7 @@ void Play::doFilter(
             case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
                 response["type"] = "Error";
-                response["reason"] = "Wrong format: Requires positive Int64 type 'id', string type 'accessToken' in 'data'";
+                response["reason"] = "Wrong format: Requires positive Int64 type 'uid', string type 'accessToken' in 'data'";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::NotFound:

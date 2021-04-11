@@ -46,7 +46,7 @@ void Stream::doFilter(
         auto attributes = req->getAttributes();
         auto configurator = app().getPlugin<Configurator>();
         /**
-         * result["id"] = newAuth.getValueOfId();
+         * result["uid"] = newAuth.getValueOfId();
          * result["connected"] = getSharedRoom(rid)->getPlayers();
          * result["rid"] = rid;
          */
@@ -75,12 +75,12 @@ void Stream::doFilter(
                         http::fromJson(code, response, filterCallback);
                     }
                 }
-            }
                 break;
+            }
             case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
                 response["type"] = "Error";
-                response["reason"] = "Wrong format: Requires positive Int64 type 'id', string type 'accessToken' in 'data'";
+                response["reason"] = "Wrong format: Requires positive Int64 type 'uid', string type 'accessToken' in 'data'";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::NotFound:

@@ -32,7 +32,7 @@ void User::doFilter(
     }
 
     if (!(
-            request.isMember("id") && request["id"].isInt64() &&
+            request.isMember("uid") && request["uid"].isInt64() &&
             request.isMember("authToken") && request["authToken"].isString()
     )) {
         if (!(
@@ -41,14 +41,14 @@ void User::doFilter(
         )) {
             code = k400BadRequest;
             response["type"] = "Error";
-            response["reason"] = "Wrong format: Requires string type 'email', string type 'authToken' or int type 'id', string type 'authToken'";
+            response["reason"] = "Wrong format: Requires string type 'email', string type 'authToken' or int type 'uid', string type 'authToken'";
             http::fromJson(code, response, filterCallback);
             return;
         }
         auto attributes = req->getAttributes();
         auto configurator = app().getPlugin<Configurator>();
         /**
-         * data["id"] = newAuth.getValueOfId();
+         * data["uid"] = newAuth.getValueOfId();
          * type = authorizer::Type::GetAuthToken;
          */
         switch (authorizer::password(
@@ -79,10 +79,10 @@ void User::doFilter(
                 response["reason"] = "Email or Password is incorrect";
                 http::fromJson(code, response, filterCallback);
                 break;
-                [[unlikely]] case authorizer::Status::Expired:
+            case authorizer::Status::Expired:
                 code = k401Unauthorized;
                 response["type"] = "Error";
-                response["reason"] = "Impossible auth status.";
+                response["reason"] = "Account not validated";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::InternalError:
@@ -96,11 +96,11 @@ void User::doFilter(
         auto attributes = req->getAttributes();
         auto configurator = app().getPlugin<Configurator>();
         /**
-         * data["id"] = newAuth.getValueOfId();
+         * data["uid"] = newAuth.getValueOfId();
          * type = authorizer::Type::CheckAuthToken;
          */
         switch (authorizer::authToken(
-                request["id"].asInt(),
+                request["uid"].asInt(),
                 request["authToken"].asString(),
                 misc::fromDate(configurator->getAuthExpire()),
                 response)) {
@@ -112,7 +112,7 @@ void User::doFilter(
             case authorizer::Status::InvalidComponents:
                 code = k400BadRequest;
                 response["type"] = "Error";
-                response["reason"] = "Wrong format: Requires positive Int64 type 'id', string type 'authToken' in 'data'";
+                response["reason"] = "Wrong format: Requires positive Int64 type 'uid', string type 'authToken' in 'data'";
                 http::fromJson(code, response, filterCallback);
                 break;
             case authorizer::Status::NotFound:
