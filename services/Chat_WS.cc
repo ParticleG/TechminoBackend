@@ -17,14 +17,14 @@ using namespace tech::services::websocket;
 using namespace tech::utils;
 using namespace std;
 
-Chat::Chat() : Base(tech::utils::websocket::Type::Chat) {}
+Chat::Chat() : Base(tech::strategies::actions::Prefix::chat) {}
 
 void Chat::establish(
         const WebSocketConnectionPtr &wsConnPtr,
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _chat = make_shared<structures::Chat>(data["id"].asInt());
+    _chat = make_shared<structures::Chat>(data["uid"].asInt());
     wsConnPtr->setContext(_chat);
 
     auto type = attributes->get<tech::utils::authorizer::Type>("type");
@@ -36,7 +36,7 @@ void Chat::establish(
         auto auth = Auth().retrieveAuthById(id);
         auth.setAccessToken(crypto::keccak(drogon::utils::getUuid()));
         auth.setAccessTokenExpireTime(misc::fromDate(configurator->getAccessExpire()));
-        initMessage["id"] = id;
+        initMessage["uid"] = id;
         initMessage["accessToken"] = auth.getValueOfAccessToken();
     }
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
@@ -45,12 +45,12 @@ void Chat::establish(
 void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto chatManager = app().getPlugin<ChatManager>();
-        auto sidsMap = wsConnPtr->getContext<structures::Chat>()->getSidsMap();
-        for (const auto &pair : sidsMap) {
+        auto rids = get<vector<string>>(wsConnPtr->getContext<structures::Chat>()->getRid());
+        for (const auto &rid : rids) {
             try {
-                chatManager->unsubscribe(pair.first, wsConnPtr);
+                chatManager->unsubscribe(rid, wsConnPtr);
             } catch (const exception &error) {
-                LOG_WARN << "Unsubscribe failed at room: " << pair.first << ". Reason: " << error.what();
+                LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
             }
         }
         wsConnPtr->clearContext();

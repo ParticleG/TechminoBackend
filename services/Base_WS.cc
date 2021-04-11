@@ -21,8 +21,8 @@ CloseCode Base::requestHandler(
         response["reason"] = "Wrong format: Requires int type 'action' in 'data'";
         return CloseCode::kNormalClosure;
     }
-    auto action = request["action"].asInt();
-    return _handlerManager->process(wsConnPtr, _type, action, request, response);
+    return _handlerManager->process(wsConnPtr, _prefix, request["action"].asInt(), request, response);
 }
 
-Base::Base(const tech::utils::websocket::Type &type) : _handlerManager(app().getPlugin<HandlerManager>()), _type(type) {}
+Base::Base(const tech::strategies::actions::Prefix &prefix) :
+        _handlerManager(app().getPlugin<HandlerManager>()), _prefix(prefix) {}

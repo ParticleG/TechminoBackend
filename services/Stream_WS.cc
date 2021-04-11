@@ -10,19 +10,19 @@ using namespace tech::plugins;
 using namespace tech::services::websocket;
 using namespace std;
 
-Stream::Stream() : Base(tech::utils::websocket::Type::Stream) {}
+Stream::Stream() : Base(tech::strategies::actions::Prefix::stream) {}
 
 void Stream::establish(
         const WebSocketConnectionPtr &wsConnPtr,
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _stream = make_shared<structures::Stream>(data["id"].asInt());
+    _stream = make_shared<structures::Stream>(data["uid"].asInt());
     wsConnPtr->setContext(_stream);
 
     Json::Value initMessage;
     initMessage["type"] = "Connect";
-    initMessage["data"] = data["connected"];
+    initMessage["data"]["connected"] = data["connected"];
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 
     auto rid = data["rid"].asString();
@@ -39,13 +39,11 @@ void Stream::establish(
 void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto streamManager = app().getPlugin<StreamManager>();
-        auto sidsMap = wsConnPtr->getContext<structures::Stream>()->getSidsMap();
-        for (const auto &pair : sidsMap) {
-            try {
-                streamManager->unsubscribe(pair.first, wsConnPtr);
-            } catch (const exception &error) {
-                LOG_WARN << "Unsubscribe failed at room: " << pair.first << ". Reason: " << error.what();
-            }
+        auto rid = get<string>(wsConnPtr->getContext<structures::Stream>()->getRid());
+        try {
+            streamManager->unsubscribe(rid, wsConnPtr);
+        } catch (const exception &error) {
+            LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
         }
         wsConnPtr->clearContext();
     }

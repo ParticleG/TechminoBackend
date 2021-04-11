@@ -8,7 +8,7 @@ using namespace tech::plugins;
 using namespace drogon;
 using namespace std;
 
-tech::services::websocket::App::App() : Base(tech::utils::websocket::Type::App) {}
+tech::services::websocket::App::App() : Base(tech::strategies::actions::Prefix::app) {}
 
 void tech::services::websocket::App::establish(
         const WebSocketConnectionPtr &wsConnPtr,

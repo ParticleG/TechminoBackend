@@ -10,14 +10,14 @@ using namespace tech::plugins;
 using namespace tech::services::websocket;
 using namespace std;
 
-User::User() : Base(tech::utils::websocket::Type::User) {}
+User::User() : Base(tech::strategies::actions::Prefix::user) {}
 
 void User::establish(
         const WebSocketConnectionPtr &wsConnPtr,
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _user = make_shared<structures::User>(data["id"].asInt());
+    _user = make_shared<structures::User>(data["uid"].asInt());
     wsConnPtr->setContext(_user);
 
     auto type = attributes->get<tech::utils::authorizer::Type>("type");
@@ -25,7 +25,7 @@ void User::establish(
     initMessage["type"] = "Connect";
     if (type == tech::utils::authorizer::Type::GetAuthToken) {
         const auto auth = *_user->getAuth();
-        initMessage["id"] = auth.getValueOfId();
+        initMessage["uid"] = auth.getValueOfId();
         initMessage["authToken"] = auth.getValueOfAuthToken();
     }
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
