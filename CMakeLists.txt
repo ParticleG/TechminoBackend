@@ -7,11 +7,12 @@ check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
 check_include_file_cxx(ranges HAS_RANGES)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP ")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 endif ()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
