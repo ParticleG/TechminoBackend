@@ -17,6 +17,7 @@ void Stream::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
+    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Try setting context: " << data["uid"].asInt();
     wsConnPtr->setContext(make_shared<structures::Stream>(data["uid"].asInt()));
 
     Json::Value initMessage;
@@ -27,11 +28,13 @@ void Stream::establish(
 
     auto rid = data["rid"].asString();
     try {
+        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Try subscribing 'Stream'";
         app().getPlugin<StreamManager>()->subscribe(rid, wsConnPtr);
     } catch (const exception &error) {
         Json::Value response;
         response["type"] = "Error";
         response["reason"] = error.what();
+        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Subscribe failed: " << tech::utils::websocket::fromJson(response);
         tech::utils::websocket::close(wsConnPtr, CloseCode::kViolation, tech::utils::websocket::fromJson(response));
     }
 }
