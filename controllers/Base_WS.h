@@ -18,7 +18,7 @@ namespace tech::socket::v1 {
             if (type == drogon::WebSocketMessageType::Ping) {
                 wsConnPtr->send(message, drogon::WebSocketMessageType::Pong);
             } else if (type == drogon::WebSocketMessageType::Text || type == drogon::WebSocketMessageType::Binary) {
-                LOG_DEBUG << "New message: " << message;
+                LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] New message: " << message;
                 Json::Value request, response;
                 std::string parseError = tech::utils::websocket::toJson(message, request);
                 if (!parseError.empty()) {
@@ -46,12 +46,14 @@ namespace tech::socket::v1 {
                 const drogon::HttpRequestPtr &req,
                 const drogon::WebSocketConnectionPtr &wsConnPtr
         ) {
+            LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] New connection";
             _service.establish(wsConnPtr, req->getAttributes());
         }
 
         virtual void handleConnectionClosed(
                 const drogon::WebSocketConnectionPtr &wsConnPtr
         ) {
+            LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Connection closed";
             _service.close(wsConnPtr);
         }
 

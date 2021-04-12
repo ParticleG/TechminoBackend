@@ -18,22 +18,25 @@ void Play::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _play = make_shared<structures::Play>(data["uid"].asInt());
-    wsConnPtr->setContext(_play);
+    wsConnPtr->setContext(make_shared<structures::Play>(data["uid"].asInt()));
 
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] After established: " << tech::utils::websocket::fromJson(initMessage);
 }
 
 void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto playManager = app().getPlugin<PlayManager>();
         auto rid = get<string>(wsConnPtr->getContext<structures::Play>()->getRid());
-        try {
-            playManager->unsubscribe(rid, wsConnPtr);
-        } catch (const exception &error) {
-            LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
+        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Before closing: " << rid;
+        if(!rid.empty()) {
+            try {
+                playManager->unsubscribe(rid, wsConnPtr);
+            } catch (const exception &error) {
+                LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
+            }
         }
         wsConnPtr->clearContext();
     }

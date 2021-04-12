@@ -17,13 +17,13 @@ void Stream::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _stream = make_shared<structures::Stream>(data["uid"].asInt());
-    wsConnPtr->setContext(_stream);
+    wsConnPtr->setContext(make_shared<structures::Stream>(data["uid"].asInt()));
 
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     initMessage["data"]["connected"] = data["connected"];
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] After established: " << tech::utils::websocket::fromJson(initMessage);
 
     auto rid = data["rid"].asString();
     try {
@@ -40,10 +40,13 @@ void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto streamManager = app().getPlugin<StreamManager>();
         auto rid = get<string>(wsConnPtr->getContext<structures::Stream>()->getRid());
-        try {
-            streamManager->unsubscribe(rid, wsConnPtr);
-        } catch (const exception &error) {
-            LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
+        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Before closing: " << rid;
+        if(!rid.empty()) {
+            try {
+                streamManager->unsubscribe(rid, wsConnPtr);
+            } catch (const exception &error) {
+                LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
+            }
         }
         wsConnPtr->clearContext();
     }

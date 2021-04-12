@@ -21,8 +21,5 @@ namespace tech::services::websocket {
         void close(
                 const drogon::WebSocketConnectionPtr &wsConnPtr
         ) override;
-
-    private:
-        std::shared_ptr<tech::structures::Stream> _stream;
     };
 }
