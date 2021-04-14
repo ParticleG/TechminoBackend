@@ -10,7 +10,7 @@ using namespace drogon;
 using namespace std;
 
 void App::validateAccount(const HttpRequestPtr &req, function<void(const HttpResponsePtr &)> &&callback) {
-    HttpStatusCode code;
+    HttpStatusCode code = HttpStatusCode::k200OK;
     Json::Value request;
     request["id"] = req->getParameter("id");
     request["code"] = req->getParameter("code");

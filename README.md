@@ -8,7 +8,7 @@ Backend for the tetromino-based game [Techmino](https://github.com/26F-Studio/Te
 
 ### Windows
 
-Clone  and init the project:
+Clone and init the project:
 
 ```bash
 git clone https://github.com/26F-Studio/TechminoBackend.git
@@ -28,7 +28,8 @@ Install necessary packages:
 ./vcpkg/vcpkg install drogon:x64-windows cryptopp:x64-windows --vcpkg-root=./vcpkg
 ```
 
-Configure project: (Replace `{Project_Path}` to the absolute path of this project in your disk, for release version just change `Debug` to `Release`)
+Configure project: (Replace `{Project_Path}` to the absolute path of this project in your disk, for release version just
+change `Debug` to `Release`)
 
 ```bash
 ./vcpkg/installed/x64-windows/tools/drogon/drogon_ctl.exe create model ./lib_models/models
@@ -78,7 +79,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug
 sudo make && sudo make install
 ```
 
-Clone  and init the project:
+Clone and init the project:
 
 ```bash
 git clone https://github.com/26F-Studio/TechminoBackend.git

@@ -13,6 +13,7 @@ namespace tech::socket::v1 {
         WS_PATH_LIST_BEGIN
             WS_PATH_ADD("/tech/socket/v1/app", "tech::filters::App")
         WS_PATH_LIST_END
+
         App();
     };
 }

@@ -23,15 +23,15 @@ void Play::establish(
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
-    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] After established: " << tech::utils::websocket::fromJson(initMessage);
+    tech::utils::misc::logger(typeid(*this).name(), "After established: " + tech::utils::websocket::fromJson(initMessage));
 }
 
 void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto playManager = app().getPlugin<PlayManager>();
         auto rid = get<string>(wsConnPtr->getContext<structures::Play>()->getRid());
-        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Before closing: " << rid;
-        if(!rid.empty()) {
+        tech::utils::misc::logger(typeid(*this).name(), "Before closing: " + rid);
+        if (!rid.empty()) {
             try {
                 playManager->unsubscribe(rid, wsConnPtr);
             } catch (const exception &error) {

@@ -4,6 +4,7 @@
 
 #include <services/Base_WS.h>
 #include <utils/websocket.h>
+#include <utils/misc.h>
 
 using namespace tech::services::websocket;
 using namespace tech::plugins;
@@ -22,7 +23,7 @@ CloseCode Base::requestHandler(
         response["reason"] = "Wrong format: Requires int type 'action' in 'data'";
         return CloseCode::kNormalClosure;
     }
-    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] New request: " << tech::utils::websocket::fromJson(request);
+    tech::utils::misc::logger(typeid(*this).name(), "New request: " + tech::utils::websocket::fromJson(request));
     return _handlerManager->process(wsConnPtr, _prefix, request["action"].asInt(), request, response);
 }
 

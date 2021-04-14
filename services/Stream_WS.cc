@@ -17,24 +17,24 @@ void Stream::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Try setting context: " << data["uid"].asInt();
+    tech::utils::misc::logger(typeid(*this).name(), "Try setting context: " + to_string(data["uid"].asInt()));
     wsConnPtr->setContext(make_shared<structures::Stream>(data["uid"].asInt()));
 
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     initMessage["data"]["connected"] = data["connected"];
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
-    LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] After established: " << tech::utils::websocket::fromJson(initMessage);
+    tech::utils::misc::logger(typeid(*this).name(), "After established: " + tech::utils::websocket::fromJson(initMessage));
 
     auto rid = data["rid"].asString();
     try {
-        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Try subscribing 'Stream'";
+        tech::utils::misc::logger(typeid(*this).name(), "Try subscribing 'Stream': " + rid);
         app().getPlugin<StreamManager>()->subscribe(rid, wsConnPtr);
     } catch (const exception &error) {
         Json::Value response;
         response["type"] = "Error";
         response["reason"] = error.what();
-        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Subscribe failed: " << tech::utils::websocket::fromJson(response);
+        tech::utils::misc::logger(typeid(*this).name(), "Subscribe failed: " + tech::utils::websocket::fromJson(response));
         tech::utils::websocket::close(wsConnPtr, CloseCode::kViolation, tech::utils::websocket::fromJson(response));
     }
 }
@@ -43,8 +43,8 @@ void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
     if (wsConnPtr->hasContext()) {
         auto streamManager = app().getPlugin<StreamManager>();
         auto rid = get<string>(wsConnPtr->getContext<structures::Stream>()->getRid());
-        LOG_DEBUG << "(" << GetCurrentThreadId() << ")[" << typeid(*this).name() <<"] Before closing: " << rid;
-        if(!rid.empty()) {
+        tech::utils::misc::logger(typeid(*this).name(), "Before closing: " + rid);
+        if (!rid.empty()) {
             try {
                 streamManager->unsubscribe(rid, wsConnPtr);
             } catch (const exception &error) {
