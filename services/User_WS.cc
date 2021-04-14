@@ -17,14 +17,13 @@ void User::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _user = make_shared<structures::User>(data["uid"].asInt());
-    wsConnPtr->setContext(_user);
+    wsConnPtr->setContext(make_shared<structures::User>(data["uid"].asInt()));
 
     auto type = attributes->get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     if (type == tech::utils::authorizer::Type::GetAuthToken) {
-        const auto auth = *_user->getAuth();
+        auto auth = wsConnPtr->getContext<structures::User>()->getAuth();
         initMessage["uid"] = auth.getValueOfId();
         initMessage["authToken"] = auth.getValueOfAuthToken();
     }

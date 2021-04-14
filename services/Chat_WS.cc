@@ -24,14 +24,13 @@ void Chat::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _chat = make_shared<structures::Chat>(data["uid"].asInt());
-    wsConnPtr->setContext(_chat);
+    wsConnPtr->setContext(make_shared<structures::Chat>(data["uid"].asInt()));
 
     auto type = attributes->get<tech::utils::authorizer::Type>("type");
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     if (type == tech::utils::authorizer::Type::GetAccessToken) {
-        auto id = _chat->getInfo()->getValueOfId();
+        auto id = wsConnPtr->getContext<structures::Chat>()->getInfo().getValueOfId();
         auto *configurator = app().getPlugin<Configurator>();
         auto auth = Auth().retrieveAuthById(id);
         auth.setAccessToken(crypto::keccak(drogon::utils::getUuid()));
