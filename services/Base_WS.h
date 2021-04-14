@@ -29,6 +29,8 @@ namespace tech::services::websocket {
                 Json::Value &response
         );
 
+        virtual ~Base() = default;
+
     private:
         tech::plugins::HandlerManager *_handlerManager;
         tech::strategies::actions::Prefix _prefix;
