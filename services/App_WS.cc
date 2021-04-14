@@ -15,8 +15,7 @@ void tech::services::websocket::App::establish(
         const AttributesPtr &attributes
 ) {
     auto data = attributes->get<Json::Value>("data");
-    _app = make_shared<structures::App>();
-    wsConnPtr->setContext(_app);
+    wsConnPtr->setContext(make_shared<structures::App>());
 
     auto initMessage = data["content"];
     initMessage["type"] = "Connect";
