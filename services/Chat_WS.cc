@@ -52,7 +52,6 @@ void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
                 LOG_WARN << "Unsubscribe failed at room: " << rid << ". Reason: " << error.what();
             }
         }
-        wsConnPtr->clearContext();
     }
 }
 

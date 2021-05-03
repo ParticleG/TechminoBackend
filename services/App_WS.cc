@@ -23,8 +23,4 @@ void tech::services::websocket::App::establish(
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
 }
 
-void tech::services::websocket::App::close(const WebSocketConnectionPtr &wsConnPtr) {
-    if (wsConnPtr->hasContext()) {
-        wsConnPtr->clearContext();
-    }
-}
+void tech::services::websocket::App::close(const WebSocketConnectionPtr &wsConnPtr) {}

@@ -30,8 +30,4 @@ void User::establish(
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 }
 
-void User::close(const WebSocketConnectionPtr &wsConnPtr) {
-    if (wsConnPtr->hasContext()) {
-        wsConnPtr->clearContext();
-    }
-}
+void User::close(const WebSocketConnectionPtr &wsConnPtr) {}
