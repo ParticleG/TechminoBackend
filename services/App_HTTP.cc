@@ -21,7 +21,7 @@ Json::Value App::validateAccount(HttpStatusCode &code, const Json::Value &reques
     Json::Value response;
     if (request["id"].asString().empty() || request["code"].asString().empty()) {
         response["type"] = "Error";
-        response["message"] = "Requires parameter 'id' and 'code'";
+        response["reason"] = "Requires parameter 'id' and 'code'";
         code = HttpStatusCode::k400BadRequest;
     } else {
         uint64_t id = strtoull(request["id"].asString().c_str(), nullptr, 10);
