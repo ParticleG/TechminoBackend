@@ -97,7 +97,6 @@ Json::Value User::loginAccount(
         const Json::Value &request,
         vector<Cookie> &cookies
 ) {
-    LOG_INFO << websocket::fromJson(request);
     bool remember = false;
     Json::Value response;
     if (!(
@@ -263,12 +262,21 @@ Json::Value User::profileAvatar(HttpStatusCode &code, const Json::Value &request
         response["reason"] = "Requires 'uid'";
         code = HttpStatusCode::k400BadRequest;
     } else {
+        std::string hash;
+        bool hasHash = false;
+        if (request.isMember("hash") && request["hash"].isString()) {
+            hasHash = true;
+            hash = request["hash"].asString();
+        }
         try {
             auto info = _infoMapper.findOne(
                     Criteria(Techmino::Info::Cols::__id, CompareOperator::EQ, request["uid"].asInt64())
             );
+            if (hasHash && hash != info.getValueOfAvatarHash()) {
+                response["data"]["hash"] = info.getValueOfAvatarHash();
+                response["data"]["avatar"] = info.getValueOfAvatar();
+            }
             response["type"] = "Success";
-            response["data"]["avatar"] = info.getValueOfAvatar();
         } catch (const UnexpectedRows &e) {
             LOG_WARN << e.what();
             response["type"] = "Warn";
@@ -312,7 +320,7 @@ Json::Value User::UpdateAvatar(HttpStatusCode &code, const Json::Value &request)
                     info.setAvatarHash(crypto::blake2b(request["avatar"].asString()));
                     _infoMapper.update(info);
                     response["type"] = "Success";
-                    response["data"]["avatarHash"] = info.getValueOfAvatarHash();
+                    response["data"]["hash"] = info.getValueOfAvatarHash();
                 }
                     break;
                 case authorizer::Status::InvalidComponents:
