@@ -60,6 +60,20 @@ void User::profileInfo(const HttpRequestPtr &req, function<void(const drogon::Ht
     http::fromJson(code, _service.profileInfo(code, request), callback);
 }
 
+void User::updateInfo(const HttpRequestPtr &req, function<void(const drogon::HttpResponsePtr &)> &&callback) {
+    HttpStatusCode code = HttpStatusCode::k200OK;
+    Json::Value request, response;
+    string parseError = http::toJson(req, request);
+    if (!parseError.empty()) {
+        code = k400BadRequest;
+        response["type"] = "Error";
+        response["reason"] = "Wrong format: " + parseError;
+        http::fromJson(code, response, callback);
+        return;
+    }
+    http::fromJson(code, _service.updateInfo(code, request), callback);
+}
+
 void User::profileAvatar(const HttpRequestPtr &req, function<void(const drogon::HttpResponsePtr &)> &&callback) {
     HttpStatusCode code = HttpStatusCode::k200OK;
     Json::Value request, response;
@@ -74,10 +88,9 @@ void User::profileAvatar(const HttpRequestPtr &req, function<void(const drogon::
     http::fromJson(code, _service.profileAvatar(code, request), callback);
 }
 
-void User::UpdateAvatar(const HttpRequestPtr &req, function<void(const drogon::HttpResponsePtr &)> &&callback) {
+void User::updateAvatar(const HttpRequestPtr &req, function<void(const drogon::HttpResponsePtr &)> &&callback) {
     HttpStatusCode code = HttpStatusCode::k200OK;
     Json::Value request, response;
-    vector<Cookie> cookies;
     string parseError = http::toJson(req, request);
     if (!parseError.empty()) {
         code = k400BadRequest;
@@ -86,5 +99,5 @@ void User::UpdateAvatar(const HttpRequestPtr &req, function<void(const drogon::H
         http::fromJson(code, response, callback);
         return;
     }
-    http::fromJson(code, _service.UpdateAvatar(code, request), callback);
+    http::fromJson(code, _service.updateAvatar(code, request), callback);
 }

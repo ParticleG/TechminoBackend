@@ -23,9 +23,11 @@ namespace tech::services::http {
 
         Json::Value profileInfo(drogon::HttpStatusCode &code, const Json::Value &request);
 
+        Json::Value updateInfo(drogon::HttpStatusCode &code, const Json::Value &request);
+
         Json::Value profileAvatar(drogon::HttpStatusCode &code, const Json::Value &request);
 
-        Json::Value UpdateAvatar(drogon::HttpStatusCode &code, const Json::Value &request);
+        Json::Value updateAvatar(drogon::HttpStatusCode &code, const Json::Value &request);
 
     private:
         drogon::orm::Mapper<drogon_model::Techmino::Auth> _authMapper;

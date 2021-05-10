@@ -14,8 +14,9 @@ namespace tech::api::v1 {
             METHOD_ADD(User::validateAccount, "/register", drogon::Post);
             METHOD_ADD(User::loginAccount, "/login", drogon::Post);
             METHOD_ADD(User::profileInfo, "/profile/info", drogon::Post);
+            METHOD_ADD(User::updateInfo, "/profile/info", drogon::Put);
             METHOD_ADD(User::profileAvatar, "/profile/avatar", drogon::Post);
-            METHOD_ADD(User::UpdateAvatar, "/profile/avatar", drogon::Put);
+            METHOD_ADD(User::updateAvatar, "/profile/avatar", drogon::Put);
         METHOD_LIST_END
 
         void validateAccount(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
@@ -24,9 +25,11 @@ namespace tech::api::v1 {
 
         void profileInfo(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
+        void updateInfo(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
+
         void profileAvatar(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
-        void UpdateAvatar(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
+        void updateAvatar(const drogon::HttpRequestPtr &req, std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
     private:
         services::http::User _service;

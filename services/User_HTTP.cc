@@ -253,6 +253,82 @@ Json::Value User::profileInfo(HttpStatusCode &code, const Json::Value &request) 
     return response;
 }
 
+Json::Value User::updateInfo(HttpStatusCode &code, const Json::Value &request) {
+    Json::Value response;
+    if (!(
+            request.isMember("uid") && request["uid"].isInt64() &&
+            request.isMember("authToken") && request["authToken"].isString()
+    )) {
+        response["type"] = "Error";
+        response["reason"] = "Requires 'uid', 'authToken'";
+        code = HttpStatusCode::k400BadRequest;
+    } else {
+        try {
+            Json::Value result;
+            auto newExpireTime = misc::fromDate(app().getPlugin<Configurator>()->getAuthExpire());
+            switch (authorizer::authToken(
+                    request["uid"].asInt64(),
+                    request["authToken"].asString(),
+                    newExpireTime,
+                    result)) {
+                case authorizer::Status::OK: {
+                    auto info = _infoMapper.findOne(
+                            Criteria(Techmino::Info::Cols::__id, CompareOperator::EQ, request["uid"].asInt64())
+                    );
+                    if (request.isMember("username") && request["username"].isString()) {
+                        info.setUsername(request["username"].asString());
+                    }
+                    if (request.isMember("motto") && request["motto"].isString()) {
+                        info.setMotto(request["motto"].asString());
+                    }
+                    _infoMapper.update(info);
+                    response["type"] = "Success";
+                    response["data"]["username"] = info.getValueOfUsername();
+                    response["data"]["motto"] = info.getValueOfMotto();
+                }
+                    break;
+                case authorizer::Status::InvalidComponents:
+                    code = k400BadRequest;
+                    response["type"] = "Error";
+                    response["reason"] = "Wrong format: Requires string type 'email' and 'password' in 'data'";
+                    break;
+                case authorizer::Status::NotFound:
+                    code = k404NotFound;
+                    response["type"] = "Error";
+                    response["reason"] = "Impossible auth status.";
+                    break;
+                case authorizer::Status::Incorrect:
+                    code = k403Forbidden;
+                    response["type"] = "Error";
+                    response["reason"] = "Email or Password is incorrect";
+                    break;
+                case authorizer::Status::Expired:
+                    code = k401Unauthorized;
+                    response["type"] = "Error";
+                    response["reason"] = "Account not validated";
+                    break;
+                case authorizer::Status::InternalError:
+                    code = k500InternalServerError;
+                    response["type"] = "Error";
+                    response["reason"] = "Internal error";
+                    break;
+            }
+        } catch (const UnexpectedRows &e) {
+            LOG_WARN << e.what();
+            response["type"] = "Warn";
+            response["reason"] = "ID not found";
+            code = HttpStatusCode::k404NotFound;
+        } catch (const orm::DrogonDbException &e) {
+            LOG_ERROR << "error:" << e.base().what();
+            response["type"] = "Error";
+            response["reason"] = "Internal error";
+            code = HttpStatusCode::k500InternalServerError;
+            return response;
+        }
+    }
+    return response;
+}
+
 Json::Value User::profileAvatar(HttpStatusCode &code, const Json::Value &request) {
     Json::Value response;
     if (!(
@@ -293,7 +369,7 @@ Json::Value User::profileAvatar(HttpStatusCode &code, const Json::Value &request
     return response;
 }
 
-Json::Value User::UpdateAvatar(HttpStatusCode &code, const Json::Value &request) {
+Json::Value User::updateAvatar(HttpStatusCode &code, const Json::Value &request) {
     Json::Value response;
     if (!(
             request.isMember("uid") && request["uid"].isInt64() &&
