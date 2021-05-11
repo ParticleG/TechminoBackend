@@ -2,6 +2,7 @@
 // Created by Parti on 2021/2/16.
 //
 
+#include <plugins/UserManager.h>
 #include <services/User_WS.h>
 
 using namespace drogon;
@@ -28,6 +29,9 @@ void User::establish(
         initMessage["authToken"] = auth.getValueOfAuthToken();
     }
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+    app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::user);
 }
 
-void User::close(const WebSocketConnectionPtr &wsConnPtr) {}
+void User::close(const WebSocketConnectionPtr &wsConnPtr) {
+    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::user);
+}

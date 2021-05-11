@@ -5,9 +5,9 @@
 #include <database/Auth.h>
 #include <plugins/ChatManager.h>
 #include <plugins/Configurator.h>
+#include <plugins/UserManager.h>
 #include <services/Chat_WS.h>
 #include <utils/crypto.h>
-#include <utils/misc.h>
 
 using namespace drogon;
 using namespace drogon_model;
@@ -39,6 +39,7 @@ void Chat::establish(
         initMessage["accessToken"] = auth.getValueOfAccessToken();
     }
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+    app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::chat);
 }
 
 void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
@@ -53,5 +54,6 @@ void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
             }
         }
     }
+    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::chat);
 }
 

@@ -3,6 +3,7 @@
 //
 
 #include <plugins/StreamManager.h>
+#include <plugins/UserManager.h>
 #include <services/Stream_WS.h>
 
 using namespace drogon;
@@ -30,6 +31,7 @@ void Stream::establish(
     try {
         tech::utils::misc::logger(typeid(*this).name(), "Try subscribing 'Stream': " + rid);
         app().getPlugin<StreamManager>()->subscribe(rid, wsConnPtr);
+        app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::stream);
     } catch (const exception &error) {
         Json::Value response;
         response["type"] = "Error";
@@ -52,4 +54,5 @@ void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
             }
         }
     }
+    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::stream);
 }

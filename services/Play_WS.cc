@@ -3,6 +3,7 @@
 //
 
 #include <plugins/PlayManager.h>
+#include <plugins/UserManager.h>
 #include <services/Play_WS.h>
 
 using namespace drogon;
@@ -24,6 +25,7 @@ void Play::establish(
     initMessage["type"] = "Connect";
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
     tech::utils::misc::logger(typeid(*this).name(), "After established: " + tech::utils::websocket::fromJson(initMessage));
+    app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::play);
 }
 
 void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
@@ -39,4 +41,5 @@ void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
             }
         }
     }
+    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::play);
 }
