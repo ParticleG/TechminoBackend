@@ -37,7 +37,7 @@ void User::loginAccount(const HttpRequestPtr &req, function<void(const drogon::H
         return;
     }
     request["uid"] = req->getCookie("uid");
-    request["authToken"] = req->getCookie("authToken");
+    request["webToken"] = req->getCookie("webToken");
     response = _service.loginAccount(code, request, cookies);
     if (cookies.empty()) {
         http::fromJson(code, response, callback);

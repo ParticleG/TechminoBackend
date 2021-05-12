@@ -103,7 +103,7 @@ Json::Value User::loginAccount(
             request.isMember("email") && request["email"].isString() &&
             request.isMember("password") && request["password"].isString()
     )) {
-        if (request["uid"].asString().empty() || request["authToken"].asString().empty()) {
+        if (request["uid"].asString().empty() || request["webToken"].asString().empty()) {
             code = k400BadRequest;
             response["type"] = "Error";
             response["reason"] = "Wrong format: Requires 'email' and 'password'";
@@ -111,9 +111,9 @@ Json::Value User::loginAccount(
             Json::Value result;
             int64_t uid = strtoll(request["uid"].asString().c_str(), nullptr, 10);
             auto newExpireTime = misc::fromDate(app().getPlugin<Configurator>()->getAuthExpire());
-            switch (authorizer::authToken(
+            switch (authorizer::webToken(
                     uid,
-                    request["authToken"].asString(),
+                    request["webToken"].asString(),
                     newExpireTime,
                     result)) {
                 case authorizer::Status::OK:
@@ -147,18 +147,18 @@ Json::Value User::loginAccount(
             response.clear();
             response["type"] = "Success";
             response["data"]["uid"] = auth.getValueOfId();
-            response["data"]["authToken"] = auth.getValueOfAuthToken();
+            response["data"]["webToken"] = auth.getValueOfWebToken();
             if (remember) {
                 Cookie uidCookie("uid", to_string(auth.getValueOfId())),
-                        authTokenCookie("authToken", auth.getValueOfAuthToken());
+                        webTokenCookie("webToken", auth.getValueOfWebToken());
                 uidCookie.setExpiresDate(misc::toDate(newExpireTime));
-                authTokenCookie.setExpiresDate(misc::toDate(newExpireTime));
+                webTokenCookie.setExpiresDate(misc::toDate(newExpireTime));
                 uidCookie.setPath("/");
-                authTokenCookie.setPath("/");
+                webTokenCookie.setPath("/");
                 uidCookie.setHttpOnly(false);
-                authTokenCookie.setHttpOnly(false);
+                webTokenCookie.setHttpOnly(false);
                 cookies.push_back(uidCookie);
-                cookies.push_back(authTokenCookie);
+                cookies.push_back(webTokenCookie);
             }
         }
             break;
@@ -200,15 +200,15 @@ Json::Value User::profileInfo(HttpStatusCode &code, const Json::Value &request) 
         response["reason"] = "Requires 'uid'";
         code = HttpStatusCode::k400BadRequest;
     } else {
-        string authToken;
+        string webToken;
         if (!(
-                request.isMember("authToken") &&
-                request["authToken"].isString() &&
-                !request["authToken"].asString().empty()
+                request.isMember("webToken") &&
+                request["webToken"].isString() &&
+                !request["webToken"].asString().empty()
         )) {
-            authToken = "null";
+            webToken = "null";
         } else {
-            authToken = request["authToken"].asString();
+            webToken = request["webToken"].asString();
         }
         try {
             auto info = _infoMapper.findOne(
@@ -221,9 +221,9 @@ Json::Value User::profileInfo(HttpStatusCode &code, const Json::Value &request) 
 
             Json::Value result;
             auto newExpireTime = misc::fromDate(app().getPlugin<Configurator>()->getAuthExpire());
-            switch (authorizer::authToken(
+            switch (authorizer::webToken(
                     request["uid"].asInt64(),
-                    authToken,
+                    webToken,
                     newExpireTime,
                     result)) {
                 case authorizer::Status::OK:
@@ -257,18 +257,18 @@ Json::Value User::updateInfo(HttpStatusCode &code, const Json::Value &request) {
     Json::Value response;
     if (!(
             request.isMember("uid") && request["uid"].isInt64() &&
-            request.isMember("authToken") && request["authToken"].isString()
+            request.isMember("webToken") && request["webToken"].isString()
     )) {
         response["type"] = "Error";
-        response["reason"] = "Requires 'uid', 'authToken'";
+        response["reason"] = "Requires 'uid', 'webToken'";
         code = HttpStatusCode::k400BadRequest;
     } else {
         try {
             Json::Value result;
             auto newExpireTime = misc::fromDate(app().getPlugin<Configurator>()->getAuthExpire());
-            switch (authorizer::authToken(
+            switch (authorizer::webToken(
                     request["uid"].asInt64(),
-                    request["authToken"].asString(),
+                    request["webToken"].asString(),
                     newExpireTime,
                     result)) {
                 case authorizer::Status::OK: {
@@ -373,19 +373,19 @@ Json::Value User::updateAvatar(HttpStatusCode &code, const Json::Value &request)
     Json::Value response;
     if (!(
             request.isMember("uid") && request["uid"].isInt64() &&
-            request.isMember("authToken") && request["authToken"].isString() &&
+            request.isMember("webToken") && request["webToken"].isString() &&
             request.isMember("avatar") && request["avatar"].isString()
     )) {
         response["type"] = "Error";
-        response["reason"] = "Requires 'uid', 'authToken', and 'avatar'";
+        response["reason"] = "Requires 'uid', 'webToken', and 'avatar'";
         code = HttpStatusCode::k400BadRequest;
     } else {
         try {
             Json::Value result;
             auto newExpireTime = misc::fromDate(app().getPlugin<Configurator>()->getAuthExpire());
-            switch (authorizer::authToken(
+            switch (authorizer::webToken(
                     request["uid"].asInt64(),
-                    request["authToken"].asString(),
+                    request["webToken"].asString(),
                     newExpireTime,
                     result)) {
                 case authorizer::Status::OK: {
