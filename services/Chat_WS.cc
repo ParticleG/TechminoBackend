@@ -39,7 +39,11 @@ void Chat::establish(
         initMessage["accessToken"] = auth.getValueOfAccessToken();
     }
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
-    app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::chat);
+    app().getPlugin<UserManager>()->subscribe(
+            wsConnPtr->getContext<structures::Chat>()->getInfo().getValueOfId(),
+            wsConnPtr,
+            UserManager::MapType::chat
+    );
 }
 
 void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
@@ -54,6 +58,10 @@ void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
             }
         }
     }
-    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::chat);
+    app().getPlugin<UserManager>()->unsubscribe(
+            wsConnPtr->getContext<structures::Chat>()->getInfo().getValueOfId(),
+            wsConnPtr,
+            UserManager::MapType::chat
+    );
 }
 

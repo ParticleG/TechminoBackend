@@ -24,8 +24,13 @@ void Play::establish(
     Json::Value initMessage;
     initMessage["type"] = "Connect";
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
-    tech::utils::misc::logger(typeid(*this).name(), "After established: " + tech::utils::websocket::fromJson(initMessage));
-    app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::play);
+    tech::utils::misc::logger(typeid(*this).name(),
+                              "After established: " + tech::utils::websocket::fromJson(initMessage));
+    app().getPlugin<UserManager>()->subscribe(
+            wsConnPtr->getContext<structures::Play>()->getInfo().getValueOfId(),
+            wsConnPtr,
+            UserManager::MapType::play
+    );
 }
 
 void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
@@ -41,5 +46,9 @@ void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
             }
         }
     }
-    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::play);
+    app().getPlugin<UserManager>()->unsubscribe(
+            wsConnPtr->getContext<structures::Play>()->getInfo().getValueOfId(),
+            wsConnPtr,
+            UserManager::MapType::play
+    );
 }

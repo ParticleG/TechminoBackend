@@ -25,18 +25,24 @@ void Stream::establish(
     initMessage["type"] = "Connect";
     initMessage["data"]["connected"] = data["connected"];
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
-    tech::utils::misc::logger(typeid(*this).name(), "After established: " + tech::utils::websocket::fromJson(initMessage));
+    tech::utils::misc::logger(typeid(*this).name(),
+                              "After established: " + tech::utils::websocket::fromJson(initMessage));
 
     auto rid = data["rid"].asString();
     try {
         tech::utils::misc::logger(typeid(*this).name(), "Try subscribing 'Stream': " + rid);
         app().getPlugin<StreamManager>()->subscribe(rid, wsConnPtr);
-        app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::stream);
+        app().getPlugin<UserManager>()->subscribe(
+                wsConnPtr->getContext<structures::Stream>()->getUid(),
+                wsConnPtr,
+                UserManager::MapType::stream
+        );
     } catch (const exception &error) {
         Json::Value response;
         response["type"] = "Error";
         response["reason"] = error.what();
-        tech::utils::misc::logger(typeid(*this).name(), "Subscribe failed: " + tech::utils::websocket::fromJson(response));
+        tech::utils::misc::logger(typeid(*this).name(),
+                                  "Subscribe failed: " + tech::utils::websocket::fromJson(response));
         tech::utils::websocket::close(wsConnPtr, CloseCode::kViolation, tech::utils::websocket::fromJson(response));
     }
 }
@@ -54,5 +60,9 @@ void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
             }
         }
     }
-    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::stream);
+    app().getPlugin<UserManager>()->unsubscribe(
+            wsConnPtr->getContext<structures::Stream>()->getUid(),
+            wsConnPtr,
+            UserManager::MapType::stream
+    );
 }

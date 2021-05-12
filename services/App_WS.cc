@@ -20,7 +20,7 @@ void tech::services::websocket::App::establish(
     auto initMessage = data["content"];
     initMessage["type"] = "Connect";
 
-    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(26));
+    tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
 }
 
 void tech::services::websocket::App::close(const WebSocketConnectionPtr &wsConnPtr) {}

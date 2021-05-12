@@ -29,9 +29,17 @@ void User::establish(
         initMessage["authToken"] = auth.getValueOfAuthToken();
     }
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
-    app().getPlugin<UserManager>()->subscribe(wsConnPtr, UserManager::MapType::user);
+    app().getPlugin<UserManager>()->subscribe(
+            wsConnPtr->getContext<structures::User>()->getAuth().getValueOfId(),
+            wsConnPtr,
+            UserManager::MapType::user
+    );
 }
 
 void User::close(const WebSocketConnectionPtr &wsConnPtr) {
-    app().getPlugin<UserManager>()->unsubscribe(wsConnPtr, UserManager::MapType::user);
+    app().getPlugin<UserManager>()->unsubscribe(
+            wsConnPtr->getContext<structures::User>()->getAuth().getValueOfId(),
+            wsConnPtr,
+            UserManager::MapType::user
+    );
 }
