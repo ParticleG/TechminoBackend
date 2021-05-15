@@ -60,7 +60,6 @@ void Chat::close(const WebSocketConnectionPtr &wsConnPtr) {
     }
     app().getPlugin<UserManager>()->unsubscribe(
             wsConnPtr->getContext<structures::Chat>()->getInfo().getValueOfId(),
-            wsConnPtr,
             UserManager::MapType::chat
     );
 }

@@ -39,7 +39,6 @@ void User::establish(
 void User::close(const WebSocketConnectionPtr &wsConnPtr) {
     app().getPlugin<UserManager>()->unsubscribe(
             wsConnPtr->getContext<structures::User>()->getAuth().getValueOfId(),
-            wsConnPtr,
             UserManager::MapType::user
     );
 }

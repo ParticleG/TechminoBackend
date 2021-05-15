@@ -48,7 +48,6 @@ void Play::close(const WebSocketConnectionPtr &wsConnPtr) {
     }
     app().getPlugin<UserManager>()->unsubscribe(
             wsConnPtr->getContext<structures::Play>()->getInfo().getValueOfId(),
-            wsConnPtr,
             UserManager::MapType::play
     );
 }

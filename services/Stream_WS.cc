@@ -62,7 +62,6 @@ void Stream::close(const WebSocketConnectionPtr &wsConnPtr) {
     }
     app().getPlugin<UserManager>()->unsubscribe(
             wsConnPtr->getContext<structures::Stream>()->getUid(),
-            wsConnPtr,
             UserManager::MapType::stream
     );
 }
