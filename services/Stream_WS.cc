@@ -23,7 +23,6 @@ void Stream::establish(
 
     Json::Value initMessage;
     initMessage["type"] = "Connect";
-    initMessage["data"]["connected"] = data["connected"];
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
     tech::utils::misc::logger(typeid(*this).name(),
                               "After established: " + tech::utils::websocket::fromJson(initMessage));

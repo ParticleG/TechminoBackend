@@ -4,7 +4,6 @@
 
 #include <filters/Stream.h>
 #include <plugins/Configurator.h>
-#include <plugins/StreamManager.h>
 #include <utils/authorizer.h>
 #include <utils/http.h>
 #include <utils/misc.h>
@@ -64,7 +63,6 @@ void Stream::doFilter(
                     http::fromJson(code, response, filterCallback);
                 } else {
                     try {
-                        response["connected"] = app().getPlugin<StreamManager>()->getSharedRoom(rid).room.getPlayers();
                         response["rid"] = rid;
                         attributes->insert("data", response);
                         filterChainCallback();
