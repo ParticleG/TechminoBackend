@@ -27,10 +27,10 @@ void Stream::establish(
     tech::utils::misc::logger(typeid(*this).name(),
                               "After established: " + tech::utils::websocket::fromJson(initMessage));
 
-    auto rid = data["rid"].asString();
+    auto srid = data["srid"].asString();
     try {
-        tech::utils::misc::logger(typeid(*this).name(), "Try subscribing 'Stream': " + rid);
-        app().getPlugin<StreamManager>()->subscribe(rid, wsConnPtr);
+        tech::utils::misc::logger(typeid(*this).name(), "Try subscribing 'Stream': " + srid);
+        app().getPlugin<StreamManager>()->subscribe(srid, wsConnPtr);
         app().getPlugin<UserManager>()->subscribe(
                 wsConnPtr->getContext<structures::Stream>()->getUid(),
                 wsConnPtr,

@@ -34,11 +34,11 @@ void Stream::doFilter(
     if (!(
             request.isMember("uid") && request["uid"].isInt64() &&
             request.isMember("accessToken") && request["accessToken"].isString() &&
-            request.isMember("rid") && request["rid"].isString()
+            request.isMember("srid") && request["srid"].isString()
     )) {
         code = k400BadRequest;
         response["type"] = "Error";
-        response["reason"] = "Wrong format: Requires positive Int64 type 'uid', string type 'accessToken', string type 'rid'";
+        response["reason"] = "Wrong format: Requires positive Int64 type 'uid', string type 'accessToken', string type 'srid'";
         http::fromJson(code, response, filterCallback);
         return;
     } else {
@@ -55,15 +55,15 @@ void Stream::doFilter(
                 misc::fromDate(configurator->getAccessExpire()),
                 response)) {
             case authorizer::Status::OK: {
-                auto rid = request["rid"].asString();
-                if (rid.empty()) {
+                auto srid = request["srid"].asString();
+                if (srid.empty()) {
                     code = k400BadRequest;
                     response["type"] = "Error";
-                    response["reason"] = "Wrong format: Requires string type 'rid' in 'data'";
+                    response["reason"] = "Wrong format: Requires string type 'srid' in 'data'";
                     http::fromJson(code, response, filterCallback);
                 } else {
                     try {
-                        response["rid"] = rid;
+                        response["srid"] = srid;
                         attributes->insert("data", response);
                         filterChainCallback();
                     } catch (const out_of_range &) {
