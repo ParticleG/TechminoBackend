@@ -2,6 +2,7 @@
 // Created by Parti on 2021/2/16.
 //
 
+#include <plugins/AppManager.h>
 #include <services/App_WS.h>
 
 using namespace tech::plugins;
@@ -21,6 +22,10 @@ void tech::services::websocket::App::establish(
     initMessage["type"] = "Connect";
 
     tech::utils::websocket::initPing(wsConnPtr, initMessage, chrono::seconds(10));
+
+    app().getPlugin<AppManager>()->subscribe(wsConnPtr);
 }
 
-void tech::services::websocket::App::close(const WebSocketConnectionPtr &wsConnPtr) {}
+void tech::services::websocket::App::close(const WebSocketConnectionPtr &wsConnPtr) {
+    app().getPlugin<AppManager>()->unsubscribe(wsConnPtr);
+}
