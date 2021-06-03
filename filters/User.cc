@@ -100,7 +100,7 @@ void User::doFilter(
          * type = authorizer::Type::CheckAuthToken;
          */
         switch (authorizer::authToken(
-                request["uid"].asInt(),
+                request["uid"].asInt64(),
                 request["authToken"].asString(),
                 misc::fromDate(configurator->getAuthExpire()),
                 response)) {
